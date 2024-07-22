@@ -3,26 +3,92 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login - Cabana Açaí</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="login-container">
-        <h1>Login</h1>
-        <form id="loginForm">
-            <label for="email">Email:</label>
-            <input type="email" id="email" required>
-            <label for="password">Senha:</label>
-            <input type="password" id="password" required>
-            <button type="submit">Login</button>
-        </form>
+    <div class="container">
+        <div id="auth">
+            <img src="https://i.ibb.co/jZ6rbSp/logo-cabana.png" alt="Logo Cabana Açaí" class="logo">
+            <h1>Cabana Açaí</h1>
+            <h2>Login</h2>
+            <form id="loginForm">
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" required>
+                <label for="loginPassword">Senha:</label>
+                <input type="password" id="loginPassword" required>
+                <button type="submit">Entrar</button>
+            </form>
+        </div>
     </div>
+
     <!-- Adicionando os scripts do Firebase diretamente no HTML -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging.js"></script>
-    <script src="firebase-config.js"></script>
-    <script src="index.js"></script>
+    <script>
+        // Configuração do Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
+            authDomain: "cabana-8d55e.firebaseapp.com",
+            databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
+            projectId: "cabana-8d55e",
+            storageBucket: "cabana-8d55e.appspot.com",
+            messagingSenderId: "706144237954",
+            appId: "1:706144237954:web:345c10370972486afc779b",
+            measurementId: "G-96Y337GYT8"
+        };
+
+        // Inicialize o Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const messaging = firebase.messaging();
+        const db = firebase.firestore();
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then(async (userCredential) => {
+                    const user = userCredential.user;
+                    const token = await messaging.getToken({ vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' });
+
+                    await db.collection("tokens").add({
+                        uid: user.uid,
+                        token: token
+                    });
+
+                    switch(email) {
+                        case 'joaofmarcelino1@gmail.com':
+                            window.location.href = 'joaofelipe.html';
+                            break;
+                        case 'giovanni.silva18@gmail.com':
+                            window.location.href = 'geovane.html';
+                            break;
+                        case 'moises110723@gmail.com':
+                            window.location.href = 'moises.html';
+                            break;
+                        case 'felipeaugusto02001@gmail.com':
+                            window.location.href = 'felipeaugusto.html';
+                            break;
+                        case 'gurgel6901@icloud.com':
+                            window.location.href = 'pedro.html';
+                            break;
+                        case 'jackson_division@hotmail.com':
+                            window.location.href = 'jackson.html';
+                            break;
+                        default:
+                            alert('Login bem-sucedido, mas o redirecionamento falhou.');
+                    }
+                })
+                .catch((error) => {
+                    console.error('Erro ao fazer login:', error);
+                    alert('Erro ao fazer login. Por favor, tente novamente.');
+                });
+        });
+    </script>
 </body>
 </html>

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - Enviar Notificações</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Painel Administrativo - Enviar Notificações</h1>
+        <form id="sendMessageForm">
+            <label for="motoboySelect">Selecionar Motoboy:</label>
+            <select id="motoboySelect">
+                <option value="geovane">Geovane</option>
+                <option value="felipeaugusto">Felipe Augusto</option>
+                <option value="boaz">Boaz</option>
+                <option value="moises">Moisés</option>
+                <option value="fellipematheus">Fellipe Matheus</option>
+                <option value="joaofelipe">João Felipe</option>
+                <option value="pedro">Pedro Lucas</option>
+            </select>
+
+            <label for="messageInput">Mensagem:</label>
+            <input type="text" id="messageInput" required>
+
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

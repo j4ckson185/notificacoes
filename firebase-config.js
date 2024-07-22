@@ -18,22 +18,4 @@ const database = getDatabase(app);
 const auth = getAuth();
 const messaging = getMessaging(app);
 
-// Solicitar token FCM e salvar no banco de dados
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' }).then((currentToken) => {
-            if (currentToken) {
-                console.log('Token FCM:', currentToken);
-                set(ref(database, 'tokens/' + user.uid), {
-                    token: currentToken
-                });
-            } else {
-                console.log('No registration token available. Request permission to generate one.');
-            }
-        }).catch((err) => {
-            console.log('An error occurred while retrieving token. ', err);
-        });
-    }
-});
-
-export { database, ref, push, onChildAdded, remove, auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut };
+export { database, ref, push, onChildAdded, remove, set, auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, getMessaging, getToken };

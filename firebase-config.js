@@ -1,4 +1,3 @@
-// Importação compatível
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-app-compat.js';
 import { getDatabase, ref, push, onChildAdded, remove } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-database-compat.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-auth-compat.js';

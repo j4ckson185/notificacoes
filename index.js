@@ -1,4 +1,4 @@
-import { auth, signInWithEmailAndPassword, onAuthStateChanged, database, ref, set } from './firebase-config.js';
+import { auth, signInWithEmailAndPassword, onAuthStateChanged, database, ref, set, getMessaging, getToken } from './firebase-config.js';
 
 const loginForm = document.getElementById('loginForm');
 

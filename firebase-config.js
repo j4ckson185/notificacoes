@@ -1,6 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-app-compat.js';
 import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-database-compat.js';
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-auth.js';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-auth-compat.js';
 import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-messaging-compat.js';
 
 const firebaseConfig = {

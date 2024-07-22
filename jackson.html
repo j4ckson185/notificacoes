@@ -10,28 +10,61 @@
     <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jZ6rbSp/logo-cabana.png">
     <link rel="manifest" href="manifest.json">
     <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
         .buttons {
             display: flex;
-            gap: 10px;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #5cb85c;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 48%;
+        }
+
+        button:hover {
+            background-color: #4cae4c;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div id="auth">
-            <img src="https://i.ibb.co/jZ6rbSp/logo-cabana.png" alt="Logo Cabana Açaí" class="logo">
-            <h1>Cabana Açaí</h1>
-            <h2>Mensagens para Jackson</h2>
-            <div id="messagesSection">
-                <h1>Mensagens</h1>
-                <div id="messages"></div>
-                <div class="buttons">
-                    <button id="deleteAllButton">Apagar todas</button>
-                    <button id="logoutButton">Sair</button>
-                </div>
-            </div>
+        <h1>Mensagens para Jackson</h1>
+        <div id="messages"></div>
+        <div class="buttons">
+            <button id="deleteAllButton">Apagar todas</button>
+            <button id="logoutButton">Sair</button>
         </div>
-
         <audio id="notificationSound" preload="auto">
             <source src="assets/notification.mp3" type="audio/mpeg">
             <source src="assets/notification.ogg" type="audio/ogg">

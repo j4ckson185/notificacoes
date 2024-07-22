@@ -1,4 +1,4 @@
-import { auth, signInWithEmailAndPassword, onAuthStateChanged, database, ref, set, getMessaging, getToken } from './firebase-config.js';
+import { auth, signInWithEmailAndPassword, onAuthStateChanged, database, ref, set, messaging, getToken } from './firebase-config.js';
 
 const loginForm = document.getElementById('loginForm');
 
@@ -19,7 +19,6 @@ loginForm.addEventListener('submit', (e) => {
 });
 
 function saveTokenAndRedirect(user) {
-    const messaging = getMessaging();
     getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' })
         .then((currentToken) => {
             if (currentToken) {

@@ -1,7 +1,10 @@
 import { auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove } from './firebase-config.js';
 
+const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');
 const deleteAllButton = document.getElementById('deleteAllButton');
+const authDiv = document.getElementById('auth');
+const messagesSection = document.getElementById('messagesSection');
 const messagesDiv = document.getElementById('messages');
 const notificationSound = document.getElementById('notificationSound');
 
@@ -10,7 +13,7 @@ const motoboy = 'jackson';
 
 // Registrar o Service Worker
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/firebase-messaging-sw.js')
+    navigator.serviceWorker.register('/service-worker.js')
         .then(registration => {
             console.log('Service Worker registrado com sucesso:', registration);
         })
@@ -19,19 +22,25 @@ if ('serviceWorker' in navigator) {
         });
 }
 
-// Verifica o estado de autenticação do usuário
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        loadMessages();
-    } else {
-        window.location.href = 'index.html';
-    }
+// Lógica de Login
+loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            loginForm.reset();
+            requestNotificationPermission();
+        })
+        .catch((error) => {
+            alert('Erro ao entrar: ' + error.message);
+        });
 });
 
 // Lógica de Logout
 logoutButton.addEventListener('click', () => {
     signOut(auth).then(() => {
-        window.location.href = 'index.html';
+        // Logout bem-sucedido
     }).catch((error) => {
         alert('Erro ao sair: ' + error.message);
     });
@@ -46,6 +55,18 @@ deleteAllButton.addEventListener('click', () => {
         }).catch((error) => {
             alert('Erro ao apagar mensagens: ' + error.message);
         });
+    }
+});
+
+// Verifica o estado de autenticação do usuário
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        authDiv.style.display = 'none';
+        messagesSection.style.display = 'block';
+        loadMessages();
+    } else {
+        authDiv.style.display = 'block';
+        messagesSection.style.display = 'none';
     }
 });
 

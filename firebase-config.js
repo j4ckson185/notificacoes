@@ -30,4 +30,4 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 
-export { messaging, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, set, database, ref, push, onChildAdded, remove, db, collection };
+export { messaging, getToken, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, set, database, ref, push, onChildAdded, remove, db, collection };

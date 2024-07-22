@@ -1,18 +1,27 @@
-import { auth, onAuthStateChanged, signOut, database, ref, onChildAdded, remove } from './firebase-config.js';
+import { auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove } from './firebase-config.js';
 
 const logoutButton = document.getElementById('logoutButton');
 const deleteAllButton = document.getElementById('deleteAllButton');
-const messagesSection = document.getElementById('messagesSection');
 const messagesDiv = document.getElementById('messages');
 const notificationSound = document.getElementById('notificationSound');
 
 // Nome do motoboy fixo para Jackson
 const motoboy = 'jackson';
 
+// Registrar o Service Worker
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+        .then(registration => {
+            console.log('Service Worker registrado com sucesso:', registration);
+        })
+        .catch(error => {
+            console.log('Falha ao registrar o Service Worker:', error);
+        });
+}
+
 // Verifica o estado de autenticação do usuário
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        messagesSection.style.display = 'block';
         loadMessages();
     } else {
         window.location.href = 'index.html';
@@ -80,40 +89,20 @@ function requestNotificationPermission() {
         Notification.requestPermission().then(permission => {
             if (permission === 'granted') {
                 console.log('Permissão para notificações concedida.');
-                // Obter token FCM
-                getTokenFCM();
+                // Solicitar permissão para tocar som no iOS
+                requestAudioPermission();
             }
         });
     }
 }
 
-// Obter token FCM
-function getTokenFCM() {
-    const messaging = firebase.messaging();
-    messaging.getToken({ vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' })
-        .then((currentToken) => {
-            if (currentToken) {
-                console.log('Token FCM:', currentToken);
-                saveToken(currentToken);
-            } else {
-                console.log('Nenhum token de registro disponível. Solicite permissão para gerar um.');
-            }
-        })
-        .catch((err) => {
-            console.log('Erro ao obter o token FCM:', err);
-        });
-}
-
-// Salvar token FCM no banco de dados
-function saveToken(token) {
-    const tokenRef = ref(database, `tokens/${motoboy}`);
-    set(tokenRef, {
-        token: token
-    }).then(() => {
-        console.log('Token salvo com sucesso.');
-    }).catch((error) => {
-        console.error('Erro ao salvar o token:', error);
-    });
+// Solicitar permissão para tocar som no iOS
+function requestAudioPermission() {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    oscillator.connect(audioContext.destination);
+    oscillator.start(0);
+    oscillator.stop(0);
 }
 
 // Mostrar notificação e tocar som

@@ -1,3 +1,4 @@
+// admin.js
 document.getElementById('sendMessageForm').addEventListener('submit', function(e) {
     e.preventDefault();
 
@@ -5,6 +6,8 @@ document.getElementById('sendMessageForm').addEventListener('submit', function(e
     const message = document.getElementById('messageInput').value;
 
     if (message) {
+        // Envie a notificação para o servidor (implemente a lógica do servidor)
+        // Exemplo:
         fetch('/send-notification', {
             method: 'POST',
             headers: {

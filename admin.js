@@ -15,13 +15,22 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
         let token = '';
 
         querySnapshot.forEach((doc) => {
-            if (doc.data().uid === motoboy) {
-                token = doc.data().token;
+            const docData = doc.data();
+            const motoboyEmailMap = {
+                'jackson': 'jackson_division@hotmail.com',
+                'geovane': 'giovanni.silva18@gmail.com',
+                'moises': 'moises110723@gmail.com',
+                'felipeaugusto': 'felipeaugusto02001@gmail.com',
+                'pedro': 'gurgel6901@icloud.com'
+            };
+
+            if (docData.email === motoboyEmailMap[motoboy]) {
+                token = docData.token;
             }
         });
 
         if (token) {
-            fetch('/send-notification', {
+            fetch('https://cabana-8d55e.uc.r.appspot.com/send-notification', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

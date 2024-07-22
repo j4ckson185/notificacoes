@@ -1,39 +1,54 @@
-// index.js
-import { initializeApp } from "firebase/app";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
+import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging.js";
+import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { firebaseConfig } from './firebase-config.js';
 
-// Substitua pelas configurações do seu projeto Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
-    authDomain: "cabana-8d55e.firebaseapp.com",
-    databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
-    projectId: "cabana-8d55e",
-    storageBucket: "cabana-8d55e.appspot.com",
-    messagingSenderId: "706144237954",
-    appId: "1:706144237954:web:345c10370972486afc779b",
-    measurementId: "G-96Y337GYT8"
-};
-
-// Inicialize o Firebase
 const app = initializeApp(firebaseConfig);
-
-// Obtenha uma referência para o serviço de autenticação
 const auth = getAuth(app);
+const messaging = getMessaging(app);
+const db = getFirestore(app);
 
-// Manipule o formulário de login
-document.getElementById('loginForm').addEventListener('submit', async (e) => {
+document.getElementById('loginForm').addEventListener('submit', function(e) {
     e.preventDefault();
-
     const email = document.getElementById('email').value;
     const password = document.getElementById('password').value;
 
-    try {
-        // Crie um novo usuário com email e senha
-        await createUserWithEmailAndPassword(auth, email, password);
-        console.log('Usuário registrado com sucesso!');
-        // Redirecione para a próxima página (por exemplo, o painel administrativo)
-        // window.location.href = 'admin.html';
-    } catch (error) {
-        console.error('Erro ao registrar usuário:', error.message);
-    }
+    signInWithEmailAndPassword(auth, email, password)
+        .then(async (userCredential) => {
+            const user = userCredential.user;
+            const token = await getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' });
+
+            await addDoc(collection(db, "tokens"), {
+                uid: user.uid,
+                token: token
+            });
+
+            switch(email) {
+                case 'joaofmarcelino1@gmail.com':
+                    window.location.href = 'joaofelipe.html';
+                    break;
+                case 'giovanni.silva18@gmail.com':
+                    window.location.href = 'geovane.html';
+                    break;
+                case 'moises110723@gmail.com':
+                    window.location.href = 'moises.html';
+                    break;
+                case 'felipeaugusto02001@gmail.com':
+                    window.location.href = 'felipeaugusto.html';
+                    break;
+                case 'gurgel6901@icloud.com':
+                    window.location.href = 'pedro.html';
+                    break;
+                case 'jackson_division@hotmail.com':
+                    window.location.href = 'jackson.html';
+                    break;
+                default:
+                    alert('Login bem-sucedido, mas o redirecionamento falhou.');
+            }
+        })
+        .catch((error) => {
+            console.error('Erro ao fazer login:', error);
+            alert('Erro ao fazer login. Por favor, tente novamente.');
+        });
 });

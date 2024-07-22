@@ -14,16 +14,19 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
         const querySnapshot = await getDocs(tokensRef);
         let token = '';
 
+        const motoboyEmailMap = {
+            'jackson': 'jackson_division@hotmail.com',
+            'geovane': 'giovanni.silva18@gmail.com',
+            'moises': 'moises110723@gmail.com',
+            'felipeaugusto': 'felipeaugusto02001@gmail.com',
+            'pedro': 'gurgel6901@icloud.com',
+            'boaz': 'boaz.email@example.com', // Adicione o email correto para Boaz
+            'fellipematheus': 'fellipematheus.email@example.com', // Adicione o email correto para Fellipe Matheus
+            'joaofelipe': 'joaofmarcelino1@gmail.com'
+        };
+
         querySnapshot.forEach((doc) => {
             const docData = doc.data();
-            const motoboyEmailMap = {
-                'jackson': 'jackson_division@hotmail.com',
-                'geovane': 'giovanni.silva18@gmail.com',
-                'moises': 'moises110723@gmail.com',
-                'felipeaugusto': 'felipeaugusto02001@gmail.com',
-                'pedro': 'gurgel6901@icloud.com'
-            };
-
             if (docData.email === motoboyEmailMap[motoboy]) {
                 token = docData.token;
             }

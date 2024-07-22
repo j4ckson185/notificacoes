@@ -19,4 +19,4 @@ const messaging = getMessaging(app);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
-export { messaging, getToken, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove };
+export { messaging, getToken, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, set, database, ref, onChildAdded, remove };

@@ -1,5 +1,5 @@
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
-import { getMessaging } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging.js";
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-app-compat.js';
+import { getMessaging } from 'https://www.gstatic.com/firebasejs/9.0.2/firebase-messaging-compat.js';
 
 const db = getFirestore();
 const messaging = getMessaging();

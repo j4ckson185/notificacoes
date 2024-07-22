@@ -1,8 +1,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
+import { getMessaging } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 import { getDatabase, ref, push, onChildAdded, remove, set } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
-
 
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -19,4 +18,4 @@ const messaging = getMessaging(app);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
-export { messaging, getMessaging, getToken, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, set, database, ref, push, onChildAdded, remove };
+export { messaging, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, set, database, ref, push, onChildAdded, remove };

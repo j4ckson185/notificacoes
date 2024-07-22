@@ -8,8 +8,7 @@ const firebaseConfig = {
     projectId: "cabana-8d55e",
     storageBucket: "cabana-8d55e.appspot.com",
     messagingSenderId: "706144237954",
-    appId: "1:706144237954:web:345c10370972486afc779b",
-    measurementId: "G-96Y337GYT8"
+    appId: "1:706144237954:web:345c10370972486afc779b"
 };
 
 firebase.initializeApp(firebaseConfig);
@@ -25,21 +24,4 @@ messaging.onBackgroundMessage((payload) => {
     };
 
     self.registration.showNotification(notificationTitle, notificationOptions);
-});
-
-self.addEventListener('install', event => {
-    console.log('Service Worker instalado');
-    self.skipWaiting();
-});
-
-self.addEventListener('activate', event => {
-    console.log('Service Worker ativado');
-});
-
-self.addEventListener('notificationclick', event => {
-    event.notification.close();
-});
-
-self.addEventListener('notificationclose', event => {
-    console.log('Notificação fechada');
 });

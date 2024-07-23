@@ -1,24 +1,30 @@
-import { app, firestore, collection, getDocs } from './firebase-config.js';
+import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+import { getMessaging } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 
-document.getElementById('sendMessageForm').addEventListener('submit', async function(e) {
+const db = getFirestore();
+const auth = getAuth();
+const messaging = getMessaging();
+
+document.getElementById('sendMessageForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
     const motoboy = document.getElementById('motoboySelect').value;
     const message = document.getElementById('messageInput').value;
 
     if (message) {
-        const tokensRef = collection(firestore, "tokens");
+        const tokensRef = collection(db, "tokens");
         const querySnapshot = await getDocs(tokensRef);
         let token = '';
 
         querySnapshot.forEach((doc) => {
-            if (doc.id === motoboy) {
+            if (doc.data().uid === motoboy) {
                 token = doc.data().token;
             }
         });
 
         if (token) {
-            fetch('https://cabana-8d55e.uc.r.appspot.com/send-notification', {
+            fetch('/send-notification', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -28,7 +34,12 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
                     message: message
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro do servidor: ' + response.statusText);
+                }
+                return response.json();
+            })
             .then(data => {
                 console.log('Mensagem enviada com sucesso:', data);
                 document.getElementById('messageInput').value = '';

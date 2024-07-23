@@ -1,15 +1,4 @@
-import { 
-    auth, 
-    signInWithEmailAndPassword, 
-    onAuthStateChanged, 
-    signOut, 
-    firestore, 
-    collection, 
-    doc, 
-    setDoc, 
-    deleteDoc, 
-    onSnapshot 
-} from './firebase-config.js';
+import { auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, firestore, collection, doc, setDoc, deleteDoc, onSnapshot, getDatabase, ref, onChildAdded, set } from './firebase-config.js';
 import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 
 const loginForm = document.getElementById('loginForm');
@@ -20,6 +9,7 @@ const messagesDiv = document.getElementById('messages');
 const notificationSound = document.getElementById('notificationSound');
 
 const messaging = getMessaging();
+const database = getDatabase(); // Get the Realtime Database instance
 
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -55,25 +45,14 @@ onAuthStateChanged(auth, (user) => {
 });
 
 function loadMessages(userId) {
-    const messagesRef = collection(firestore, `messages/${userId}`);
+    const messagesRef = ref(database, `messages/${userId}`);
     messagesDiv.innerHTML = '';
-    onSnapshot(messagesRef, (snapshot) => {
-        snapshot.forEach((doc) => {
-            const message = doc.data().text;
-            const messageElement = document.createElement('div');
-            messageElement.textContent = message;
-
-            const deleteButton = document.createElement('button');
-            deleteButton.textContent = 'X';
-            deleteButton.addEventListener('click', () => {
-                deleteDoc(doc(firestore, `messages/${userId}/${doc.id}`));
-            });
-
-            messageElement.appendChild(deleteButton);
-            messagesDiv.appendChild(messageElement);
-
-            playNotificationSound();
-        });
+    onChildAdded(messagesRef, (snapshot) => {
+        const message = snapshot.val().text;
+        const messageElement = document.createElement('div');
+        messageElement.textContent = message;
+        messagesDiv.appendChild(messageElement);
+        playNotificationSound();
     });
 }
 

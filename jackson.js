@@ -102,10 +102,5 @@ onMessage(messaging, (payload) => {
     playNotificationSound();
     const newMessage = document.createElement('div');
     newMessage.textContent = payload.notification.body;
-    newMessage.classList.add('message'); // Added class for styling
     messagesDiv.appendChild(newMessage);
 });
-
-set(notificationSound, 'src', './notification.mp3');
-
-export {};

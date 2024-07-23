@@ -1,4 +1,4 @@
-import { firestore, collection, getDocs } from './firebase-config.js';
+import { firestore, collection, getDocs, getDatabase, ref, set } from './firebase-config.js';
 
 document.getElementById('sendMessageForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -18,33 +18,16 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
         });
 
         if (token) {
-            fetch('https://fcm.googleapis.com/fcm/send', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'key=BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' // Substitua YOUR_SERVER_KEY pela sua chave do servidor FCM
-                },
-                body: JSON.stringify({
-                    to: token,
-                    notification: {
-                        title: 'Nova Mensagem',
-                        body: message,
-                        sound: 'notification.mp3'
-                    }
-                })
+            // Send message to Realtime Database
+            set(ref(getDatabase(), `messages/${motoboy}`), {
+                text: message
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Erro do servidor: ${response.status} - ${response.statusText}`);
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Mensagem enviada com sucesso:', data);
+            .then(() => {
+                console.log('Mensagem enviada com sucesso para o Realtime Database!');
                 document.getElementById('messageInput').value = '';
             })
             .catch((error) => {
-                console.error('Erro ao enviar a mensagem:', error);
+                console.error('Erro ao enviar a mensagem para o Realtime Database:', error);
             });
         } else {
             console.error('Token não encontrado para o motoboy:', motoboy);

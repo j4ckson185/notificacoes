@@ -66,11 +66,17 @@
                     if (currentToken) {
                         console.log('Token gerado: ', currentToken);
                         // Exemplo de obtenção do userId após login (substitua com sua lógica de autenticação)
-                        const userId = firebase.auth().currentUser.uid; // Supondo que você esteja usando o Firebase Authentication
-                        // Salve o token no Firestore ou Realtime Database
-                        firestore.collection('tokens').doc(userId).set({
-                            uid: userId,
-                            token: currentToken
+                        firebase.auth().onAuthStateChanged((user) => {
+                            if (user) {
+                                const userId = user.uid;
+                                // Salve o token no Firestore ou Realtime Database
+                                firestore.collection('tokens').doc(userId).set({
+                                    uid: userId,
+                                    token: currentToken
+                                });
+                            } else {
+                                console.log('Usuário não autenticado.');
+                            }
                         });
                     } else {
                         console.log('Nenhum token disponível. Solicite permissão para gerar um token.');

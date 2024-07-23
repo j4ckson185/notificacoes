@@ -3,6 +3,7 @@ import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc, onSnapshot }
 import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 import { getDatabase, ref, push, onChildAdded, remove, set } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js'; // Import onValue directly
 
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -45,6 +46,6 @@ export {
     setDoc, 
     doc, 
     deleteDoc, 
-    onSnapshot, 
-    onValue
+    onSnapshot,
+    onValue // Export onValue
 };

@@ -1,8 +1,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
 import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getDatabase, ref, push, onChildAdded, remove } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
-import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+import { getFirestore, collection, doc, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -17,7 +16,31 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 const auth = getAuth(app);
-const database = getDatabase(app);
 const firestore = getFirestore(app);
 
-export { app, messaging, getToken, onMessage, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, push, onChildAdded, remove, firestore, collection, getDocs };
+async function saveTokenToDatabase(token, userId) {
+    try {
+        await setDoc(doc(firestore, 'tokens', userId), { token });
+    } catch (error) {
+        console.error('Erro ao salvar o token no Firestore:', error);
+    }
+}
+
+async function requestPermission(userId) {
+    try {
+        const permission = await Notification.requestPermission();
+        if (permission === 'granted') {
+            const token = await getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' });
+            if (token) {
+                console.log('Token FCM:', token);
+                await saveTokenToDatabase(token, userId);
+            }
+        } else {
+            console.log('Permissão para notificações negada');
+        }
+    } catch (error) {
+        console.error('Erro ao obter o token FCM:', error);
+    }
+}
+
+export { app, messaging, getMessaging, getToken, onMessage, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, firestore, collection, doc, setDoc, requestPermission };

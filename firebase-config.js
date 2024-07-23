@@ -14,9 +14,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 const messaging = getMessaging(app);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
-export { app, messaging, auth, database, ref, push, onChildAdded, remove, getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut };
+export { messaging, auth, database, ref, push, onChildAdded, remove, signInWithEmailAndPassword, onAuthStateChanged, signOut };

@@ -45,5 +45,6 @@ export {
     setDoc, 
     doc, 
     deleteDoc, 
-    onSnapshot 
+    onSnapshot, 
+    onValue
 };

@@ -1,6 +1,4 @@
-import { getFirestore, collection, getDocs } from './firebase-config.js';
-
-const db = getFirestore();
+import { firestore, collection, getDocs } from './firebase-config.js';
 
 document.getElementById('sendMessageForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -9,7 +7,7 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
     const message = document.getElementById('messageInput').value;
 
     if (message) {
-        const tokensRef = collection(db, "tokens");
+        const tokensRef = collection(firestore, "tokens");
         const querySnapshot = await getDocs(tokensRef);
         let token = '';
 

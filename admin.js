@@ -27,12 +27,12 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
                 document.getElementById('messageInput').value = '';
 
                 // Enviar notificação push usando FCM
-                fetch('https://fcm.googleapis.com/fcm/send', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' // Substitua pela sua chave de servidor
-                    },
+fetch('https://fcm.googleapis.com/fcm/send', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'key=BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' // Replace with your actual server key
+    },
                     body: JSON.stringify({
                         to: token,
                         notification: {

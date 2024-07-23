@@ -1,9 +1,7 @@
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js";
-import { getMessaging } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js";
 import { app } from './firebase-config.js';
 
 const db = getFirestore(app);
-const messaging = getMessaging(app);
 
 document.getElementById('sendMessageForm').addEventListener('submit', async function(e) {
     e.preventDefault();

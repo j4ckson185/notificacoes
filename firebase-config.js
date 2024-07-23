@@ -1,7 +1,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
 import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getFirestore, collection, doc, setDoc } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+import { getFirestore, collection, doc, setDoc, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -20,7 +20,7 @@ const firestore = getFirestore(app);
 
 async function saveTokenToDatabase(token, userId) {
     try {
-        await setDoc(doc(firestore, 'tokens', userId), { token });
+        await setDoc(doc(firestore, 'tokens', userId), { token, userId });
     } catch (error) {
         console.error('Erro ao salvar o token no Firestore:', error);
     }
@@ -43,4 +43,4 @@ async function requestPermission(userId) {
     }
 }
 
-export { app, messaging, getMessaging, getToken, onMessage, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, firestore, collection, doc, setDoc, requestPermission };
+export { app, messaging, getMessaging, getToken, onMessage, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, firestore, collection, doc, setDoc, getDocs, requestPermission };

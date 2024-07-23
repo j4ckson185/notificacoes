@@ -9,7 +9,7 @@ const messagesDiv = document.getElementById('messages');
 const notificationSound = document.getElementById('notificationSound');
 
 // Nome do motoboy fixo para Jackson
-const motoboy = 'jackson_division@hotmail.com';
+const motoboy = 'jackson_division_at_hotmail.com';
 
 // Registrar o Service Worker
 if ('serviceWorker' in navigator) {
@@ -30,7 +30,7 @@ loginForm.addEventListener('submit', (e) => {
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             loginForm.reset();
-            saveToken(email);
+            saveToken(email.replace('@', '_at_'));
         })
         .catch((error) => {
             alert('Erro ao entrar: ' + error.message);

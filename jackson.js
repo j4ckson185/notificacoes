@@ -9,8 +9,6 @@ const messagesSection = document.getElementById('messagesSection');
 const messagesDiv = document.getElementById('messages');
 const notificationSound = document.getElementById('notificationSound');
 
-const messaging = getMessaging(app);
-
 const motoboy = 'jackson';
 
 // Registrar o Service Worker

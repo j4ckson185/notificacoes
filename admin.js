@@ -31,8 +31,9 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
                 })
             })
             .then(response => {
+                console.log('Resposta completa do servidor:', response);
                 if (!response.ok) {
-                    return response.json().then(err => { throw new Error(err); });
+                    throw new Error(`Erro do servidor: ${response.statusText}`);
                 }
                 return response.json();  // Parse response as JSON
             })

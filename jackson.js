@@ -1,5 +1,4 @@
-import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
-import { auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, push, onChildAdded, remove } from './firebase-config.js';
+import { messaging, onMessage, getToken, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove } from './firebase-config.js';
 
 const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');
@@ -9,6 +8,7 @@ const messagesSection = document.getElementById('messagesSection');
 const messagesDiv = document.getElementById('messages');
 const notificationSound = document.getElementById('notificationSound');
 
+// Nome do motoboy fixo para Jackson
 const motoboy = 'jackson';
 
 // Registrar o Service Worker
@@ -76,25 +76,21 @@ function loadMessages() {
     messagesDiv.innerHTML = '';
     onChildAdded(messagesRef, (data) => {
         const message = data.val().text;
-        displayMessage(message, data.key);
+        const messageElement = document.createElement('div');
+        messageElement.textContent = message;
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'X';
+        deleteButton.addEventListener('click', () => {
+            remove(ref(database, `messages/${motoboy}/${data.key}`));
+        });
+
+        messageElement.appendChild(deleteButton);
+        messagesDiv.appendChild(messageElement);
+
+        // Mostrar notificação e tocar som
+        showNotification(message);
     });
-}
-
-// Função para exibir mensagens na página
-function displayMessage(message, key) {
-    const messageElement = document.createElement('div');
-    messageElement.textContent = message;
-
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'X';
-    deleteButton.addEventListener('click', () => {
-        remove(ref(database, `messages/${motoboy}/${key}`));
-    });
-
-    messageElement.appendChild(deleteButton);
-    messagesDiv.appendChild(messageElement);
-
-    playNotificationSound();
 }
 
 // Função para tocar o som de notificação
@@ -146,18 +142,16 @@ function showNotification(message) {
     }
 }
 
-// Receber mensagens em primeiro plano
-onMessage(messaging, (payload) => {
-    console.log('Mensagem recebida em primeiro plano:', payload);
-    if (payload.notification) {
-        const message = payload.notification.body;
-        displayMessage(message, payload.messageId);
-    }
-});
-
 // Preparar o som para tocar
 window.addEventListener('load', () => {
     notificationSound.play().catch(error => {
         console.log('Erro ao preparar o som de notificação:', error);
     });
+});
+
+// Listener para mensagens recebidas em primeiro plano
+onMessage(messaging, (payload) => {
+    console.log('Mensagem recebida em primeiro plano:', payload);
+    const message = payload.notification.body;
+    showNotification(message);
 });

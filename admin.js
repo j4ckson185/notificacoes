@@ -1,6 +1,9 @@
-import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js";
+import { getMessaging } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-messaging.js";
+import { app } from './firebase-config.js'; // Certifique-se de que a inicialização do app está sendo importada
 
-const db = getFirestore();
+const db = getFirestore(app);
+const messaging = getMessaging(app);
 
 document.getElementById('sendMessageForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -14,13 +17,13 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
         let token = '';
 
         querySnapshot.forEach((doc) => {
-            if (doc.data().email === motoboy) {
+            if (doc.data().uid === motoboy) {
                 token = doc.data().token;
             }
         });
 
         if (token) {
-            fetch('https://cabana-8d55e.uc.r.appspot.com/send-notification', {  // Altere a URL para apontar para o backend no Google Cloud
+            fetch('/send-notification', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -31,11 +34,10 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
                 })
             })
             .then(response => {
-                console.log('Resposta completa do servidor:', response);
                 if (!response.ok) {
-                    throw new Error(`Erro do servidor: ${response.statusText}`);
+                    throw new Error('Erro do servidor: ' + response.statusText);
                 }
-                return response.json();  // Parse response as JSON
+                return response.json();
             })
             .then(data => {
                 console.log('Mensagem enviada com sucesso:', data);

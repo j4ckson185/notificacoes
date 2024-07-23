@@ -1,5 +1,5 @@
 import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js';
-import { app, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, push, onChildAdded, remove } from './firebase-config.js';
+import { auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, push, onChildAdded, remove } from './firebase-config.js';
 
 const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');
@@ -28,7 +28,7 @@ if ('serviceWorker' in navigator) {
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
-    const password = document.getElementId('loginPassword').value;
+    const password = document.getElementById('loginPassword').value;
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             loginForm.reset();

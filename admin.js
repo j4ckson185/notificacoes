@@ -31,7 +31,7 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': 'key=BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' // Substitua pela sua chave de servidor
+                        'Authorization': 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' // Substitua pela sua chave de servidor
                     },
                     body: JSON.stringify({
                         to: token,

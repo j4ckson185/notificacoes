@@ -1,5 +1,5 @@
 import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js';
-import { auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, push, onChildAdded, remove } from './firebase-config.js';
+import { app, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, push, onChildAdded, remove } from './firebase-config.js';
 
 const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');
@@ -9,7 +9,7 @@ const messagesSection = document.getElementById('messagesSection');
 const messagesDiv = document.getElementById('messages');
 const notificationSound = document.getElementById('notificationSound');
 
-const messaging = getMessaging();
+const messaging = getMessaging(app);
 
 const motoboy = 'jackson';
 
@@ -18,7 +18,6 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/firebase-messaging-sw.js')
         .then(registration => {
             console.log('Service Worker registrado com sucesso:', registration);
-            messaging.useServiceWorker(registration);
         })
         .catch(error => {
             console.log('Falha ao registrar o Service Worker:', error);

@@ -40,4 +40,10 @@ export {
     remove, 
     firestore, 
     getFirestore, 
-    collection,
+    collection, 
+    getDocs, 
+    setDoc, 
+    doc, 
+    deleteDoc, 
+    onSnapshot 
+};

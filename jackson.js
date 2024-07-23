@@ -1,4 +1,4 @@
-import { messaging, getMessaging, getToken, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove, set } from './firebase-config.js';
+import { messaging, getToken, onMessage, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove, set } from './firebase-config.js';
 
 const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');
@@ -16,7 +16,6 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/firebase-messaging-sw.js')
         .then(registration => {
             console.log('Service Worker registrado com sucesso:', registration);
-            messaging.useServiceWorker(registration);
         })
         .catch(error => {
             console.log('Falha ao registrar o Service Worker:', error);
@@ -160,4 +159,11 @@ window.addEventListener('load', () => {
     notificationSound.play().catch(error => {
         console.log('Erro ao preparar o som de notificação:', error);
     });
+});
+
+// Ouvir mensagens quando a página está em primeiro plano
+onMessage(messaging, (payload) => {
+    console.log('Mensagem recebida em primeiro plano:', payload);
+    const message = payload.notification.body;
+    showNotification(message);
 });

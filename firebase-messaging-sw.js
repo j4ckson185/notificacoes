@@ -1,5 +1,5 @@
-importScripts('https://www.gstatic.com/firebasejs/9.0.2/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/9.0.2/firebase-messaging-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js');
 
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -21,25 +21,9 @@ messaging.onBackgroundMessage((payload) => {
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
         body: payload.notification.body,
-        icon: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png'
+        icon: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png',
+        sound: 'assets/notification.mp3' // Inclua o caminho para o som da notificação
     };
 
     self.registration.showNotification(notificationTitle, notificationOptions);
-});
-
-self.addEventListener('install', event => {
-    console.log('Service Worker instalado');
-    self.skipWaiting();
-});
-
-self.addEventListener('activate', event => {
-    console.log('Service Worker ativado');
-});
-
-self.addEventListener('notificationclick', event => {
-    event.notification.close();
-});
-
-self.addEventListener('notificationclose', event => {
-    console.log('Notificação fechada');
 });

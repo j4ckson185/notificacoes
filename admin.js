@@ -1,12 +1,9 @@
-import { getFirestore, collection, getDocs } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
-import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getMessaging } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
+import { app, getMessaging, getAuth, getFirestore, collection, getDocs } from './firebase-config.js';
 
-const db = getFirestore();
-const auth = getAuth();
-const messaging = getMessaging();
+const db = getFirestore(app);
+const messaging = getMessaging(app);
 
-document.getElementById('sendMessageForm').addEventListener('submit', async function (e) {
+document.getElementById('sendMessageForm').addEventListener('submit', async function(e) {
     e.preventDefault();
 
     const motoboy = document.getElementById('motoboySelect').value;
@@ -34,12 +31,7 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
                     message: message
                 })
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro do servidor: ' + response.statusText);
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 console.log('Mensagem enviada com sucesso:', data);
                 document.getElementById('messageInput').value = '';

@@ -1,8 +1,6 @@
 import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js";
-import { getMessaging } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js";
 
 const db = getFirestore();
-const messaging = getMessaging();
 
 document.getElementById('sendMessageForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -16,7 +14,7 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
         let token = '';
 
         querySnapshot.forEach((doc) => {
-            if (doc.data().uid === motoboy) {
+            if (doc.data().email === motoboy) {
                 token = doc.data().token;
             }
         });

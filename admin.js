@@ -20,7 +20,7 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
         });
 
         if (token) {
-            fetch('/send-notification', {
+            fetch('https://cabana-8d55e.uc.r.appspot.com/send-notification', {  // Altere a URL para apontar para o backend no Google Cloud
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

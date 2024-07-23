@@ -1,92 +1,80 @@
-import { messaging, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove, onMessage } from './firebase-config.js';
+import { auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, firestore, collection, doc, getToken, requestPermission } from './firebase-config.js';
 
 const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');
-const deleteAllButton = document.getElementById('deleteAllButton');
 const authDiv = document.getElementById('auth');
 const messagesSection = document.getElementById('messagesSection');
 const messagesDiv = document.getElementById('messages');
 const notificationSound = document.getElementById('notificationSound');
 
-// Nome do motoboy fixo para Jackson
-const motoboy = 'jackson';
-
-// Registrar o Service Worker
-if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/firebase-messaging-sw.js')
-        .then(registration => {
-            console.log('Service Worker registrado com sucesso:', registration);
+loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            loginForm.reset();
+            requestPermission(userCredential.user.uid);
         })
-        .catch(error => {
-            console.log('Falha ao registrar o Service Worker:', error);
+        .catch((error) => {
+            alert('Erro ao entrar: ' + error.message);
         });
-}
+});
 
-// Verifica o estado de autenticação do usuário
+logoutButton.addEventListener('click', () => {
+    signOut(auth).then(() => {
+        console.log('Logout bem-sucedido');
+    }).catch((error) => {
+        alert('Erro ao sair: ' + error.message);
+    });
+});
+
 onAuthStateChanged(auth, (user) => {
     if (user) {
         authDiv.style.display = 'none';
         messagesSection.style.display = 'block';
-        loadMessages();
+        loadMessages(user.uid);
     } else {
         authDiv.style.display = 'block';
         messagesSection.style.display = 'none';
     }
 });
 
-// Função para carregar as mensagens
-function loadMessages() {
-    const messagesRef = ref(database, `messages/${motoboy}`);
+function loadMessages(userId) {
+    const messagesRef = collection(firestore, `messages/${userId}`);
     messagesDiv.innerHTML = '';
-    onChildAdded(messagesRef, (data) => {
-        const message = data.val().text;
-        const messageElement = document.createElement('div');
-        messageElement.textContent = message;
+    onSnapshot(messagesRef, (snapshot) => {
+        snapshot.forEach((doc) => {
+            const message = doc.data().text;
+            const messageElement = document.createElement('div');
+            messageElement.textContent = message;
 
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'X';
-        deleteButton.addEventListener('click', () => {
-            remove(ref(database, `messages/${motoboy}/${data.key}`));
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'X';
+            deleteButton.addEventListener('click', () => {
+                deleteDoc(doc(firestore, `messages/${userId}/${doc.id}`));
+            });
+
+            messageElement.appendChild(deleteButton);
+            messagesDiv.appendChild(messageElement);
+
+            playNotificationSound();
         });
-
-        messageElement.appendChild(deleteButton);
-        messagesDiv.appendChild(messageElement);
-
-        // Mostrar notificação e tocar som
-        showNotification(message);
     });
 }
 
-// Função para tocar o som de notificação
 function playNotificationSound() {
-    notificationSound.currentTime = 0; // Rewind to start
+    notificationSound.currentTime = 0;
     const playPromise = notificationSound.play();
     if (playPromise !== undefined) {
-        playPromise.catch(error => {
+        playPromise.catch((error) => {
             console.error('Erro ao reproduzir o som de notificação:', error);
         });
     }
 }
 
-// Mostrar notificação e tocar som
-function showNotification(message) {
-    if ('Notification' in window && navigator.serviceWorker) {
-        navigator.serviceWorker.ready.then(registration => {
-            registration.showNotification('Nova mensagem', {
-                body: message,
-                tag: 'new-message',
-                icon: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png'
-            });
-
-            // Tocar o som após mostrar a notificação
-            playNotificationSound();
-        });
-    }
-}
-
-// Listener para mensagens recebidas em primeiro plano
-onMessage(messaging, (payload) => {
-    console.log('Mensagem recebida em primeiro plano:', payload);
-    const { title, body } = payload.notification;
-    showNotification(`${title}: ${body}`);
+window.addEventListener('load', () => {
+    notificationSound.play().catch((error) => {
+        console.log('Erro ao preparar o som de notificação:', error);
+    });
 });

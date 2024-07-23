@@ -1,4 +1,4 @@
-import { auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, firestore, collection, doc, getToken, requestPermission } from './firebase-config.js';
+import { auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, firestore, collection, doc, getDocs, getToken, requestPermission } from './firebase-config.js';
 
 const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');
@@ -41,7 +41,7 @@ onAuthStateChanged(auth, (user) => {
 });
 
 function loadMessages(userId) {
-    const messagesRef = collection(firestore, `messages`, userId);
+    const messagesRef = collection(firestore, `messages/${userId}`);
     messagesDiv.innerHTML = '';
     onSnapshot(messagesRef, (snapshot) => {
         snapshot.forEach((doc) => {
@@ -52,7 +52,7 @@ function loadMessages(userId) {
             const deleteButton = document.createElement('button');
             deleteButton.textContent = 'X';
             deleteButton.addEventListener('click', () => {
-                deleteDoc(doc(firestore, `messages`, userId, doc.id));
+                deleteDoc(doc(firestore, `messages/${userId}`, doc.id));
             });
 
             messageElement.appendChild(deleteButton);

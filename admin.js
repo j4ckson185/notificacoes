@@ -18,14 +18,19 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
         });
 
         if (token) {
-            fetch('https://cabana-8d55e.uc.r.appspot.com/send-notification', {
+            fetch('https://fcm.googleapis.com/fcm/send', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': 'key=BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' // Substitua YOUR_SERVER_KEY pela sua chave do servidor FCM
                 },
                 body: JSON.stringify({
-                    token: token,
-                    message: message
+                    to: token,
+                    notification: {
+                        title: 'Nova Mensagem',
+                        body: message,
+                        sound: 'notification.mp3'
+                    }
                 })
             })
             .then(response => {

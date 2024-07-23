@@ -30,7 +30,12 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
                     message: message
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();  // Parse response as JSON
+            })
             .then(data => {
                 console.log('Mensagem enviada com sucesso:', data);
                 document.getElementById('messageInput').value = '';

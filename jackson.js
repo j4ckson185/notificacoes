@@ -100,6 +100,4 @@ onMessage(messaging, (payload) => {
     console.log('Mensagem recebida em segundo plano: ', payload);
     playNotificationSound();
     const newMessage = document.createElement('div');
-    newMessage.textContent = payload.notification.body;
-    messagesDiv.appendChild(newMessage);
-});
+    newMessage.textContent

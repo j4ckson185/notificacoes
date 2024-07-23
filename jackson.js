@@ -1,4 +1,4 @@
-import { auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove, set, messaging, getToken, firestore, collection, getDocs, setDoc, doc, deleteDoc } from './firebase-config.js';
+import { auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove, set, messaging, getToken } from './firebase-config.js';
 
 const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');
@@ -16,7 +16,6 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/firebase-messaging-sw.js')
         .then(registration => {
             console.log('Service Worker registrado com sucesso:', registration);
-            messaging.useServiceWorker(registration);
         })
         .catch(error => {
             console.log('Falha ao registrar o Service Worker:', error);

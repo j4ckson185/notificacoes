@@ -1,4 +1,4 @@
-import { auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove } from './firebase-config.js';
+import { messaging, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove } from './firebase-config.js';
 
 const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');
@@ -84,6 +84,7 @@ function showNotification(message) {
     }
 }
 
+// Listener para mensagens recebidas em primeiro plano
 messaging.onMessage((payload) => {
     console.log('Mensagem recebida em primeiro plano:', payload);
     const { title, body } = payload.notification;

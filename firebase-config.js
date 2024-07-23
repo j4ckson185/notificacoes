@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getFirestore } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
+import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
 import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 import { getDatabase, ref, push, onChildAdded, remove, set } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
@@ -20,4 +20,4 @@ const auth = getAuth(app);
 const database = getDatabase(app);
 const firestore = getFirestore(app);
 
-export { app, messaging, getMessaging, getToken, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, set, database, ref, push, onChildAdded, remove, firestore, getFirestore };
+export { app, messaging, getMessaging, getToken, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, set, database, ref, push, onChildAdded, remove, firestore, getFirestore, collection, getDocs, setDoc, doc, deleteDoc };

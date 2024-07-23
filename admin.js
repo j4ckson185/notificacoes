@@ -7,42 +7,42 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
     const message = document.getElementById('messageInput').value;
 
     if (message) {
-        const tokensRef = collection(firestore, "tokens");
-        const querySnapshot = await getDocs(tokensRef);
-        let token = '';
+        try {
+            const tokensRef = collection(firestore, "tokens");
+            const querySnapshot = await getDocs(tokensRef);
+            let token = '';
 
-        querySnapshot.forEach((doc) => {
-            if (doc.data().uid === motoboy) {
-                token = doc.data().token;
-            }
-        });
-
-        if (token) {
-            fetch('https://cabana-8d55e.uc.r.appspot.com/send-notification', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    token: token,
-                    message: message
-                })
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro do servidor');
+            querySnapshot.forEach((doc) => {
+                if (doc.data().uid === motoboy) {
+                    token = doc.data().token;
                 }
-                return response.json();
-            })
-            .then(data => {
+            });
+
+            if (token) {
+                const response = await fetch('https://cabana-8d55e.uc.r.appspot.com/send-notification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        token: token,
+                        message: message
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Erro do servidor: ${response.status} - ${errorText}`);
+                }
+
+                const data = await response.json();
                 console.log('Mensagem enviada com sucesso:', data);
                 document.getElementById('messageInput').value = '';
-            })
-            .catch((error) => {
-                console.error('Erro ao enviar a mensagem:', error);
-            });
-        } else {
-            console.error('Token não encontrado para o motoboy:', motoboy);
+            } else {
+                console.error('Token não encontrado para o motoboy:', motoboy);
+            }
+        } catch (error) {
+            console.error('Erro ao enviar a mensagem:', error);
         }
     }
 });

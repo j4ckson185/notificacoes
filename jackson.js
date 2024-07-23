@@ -1,22 +1,4 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js';
-import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js';
-import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js';
-import { getDatabase, ref, onChildAdded, remove } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js';
-
-const firebaseConfig = {
-    apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
-    authDomain: "cabana-8d55e.firebaseapp.com",
-    projectId: "cabana-8d55e",
-    storageBucket: "cabana-8d55e.appspot.com",
-    messagingSenderId: "706144237954",
-    appId: "1:706144237954:web:345c10370972486afc779b",
-    databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com"
-};
-
-const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
-const auth = getAuth(app);
-const database = getDatabase(app);
+import { app, messaging, auth, getMessaging, getAuth, getDatabase, ref, onChildAdded, remove } from './firebase-config.js';
 
 const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');
@@ -29,14 +11,16 @@ const notificationSound = document.getElementById('notificationSound');
 // Nome do motoboy fixo para Jackson
 const motoboy = 'jackson';
 
-navigator.serviceWorker.register('/firebase-messaging-sw.js')
-    .then(registration => {
-        console.log('Service Worker registrado com sucesso:', registration);
-        messaging.useServiceWorker(registration);
-    })
-    .catch(error => {
-        console.log('Falha ao registrar o Service Worker:', error);
-    });
+// Registrar o Service Worker
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/firebase-messaging-sw.js')
+        .then(registration => {
+            console.log('Service Worker registrado com sucesso:', registration);
+        })
+        .catch(error => {
+            console.log('Falha ao registrar o Service Worker:', error);
+        });
+}
 
 // Verifica o estado de autenticação do usuário
 onAuthStateChanged(auth, (user) => {
@@ -52,7 +36,7 @@ onAuthStateChanged(auth, (user) => {
 
 // Função para carregar as mensagens
 function loadMessages() {
-    const messagesRef = ref(database, `messages/${motoboy}`);
+    const messagesRef = ref(getDatabase(app), `messages/${motoboy}`);
     messagesDiv.innerHTML = '';
     onChildAdded(messagesRef, (data) => {
         const message = data.val().text;
@@ -62,7 +46,7 @@ function loadMessages() {
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'X';
         deleteButton.addEventListener('click', () => {
-            remove(ref(database, `messages/${motoboy}/${data.key}`));
+            remove(ref(getDatabase(app), `messages/${motoboy}/${data.key}`));
         });
 
         messageElement.appendChild(deleteButton);

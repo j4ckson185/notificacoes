@@ -1,7 +1,7 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getMessaging, onMessage, getToken } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
-import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getDatabase, ref, onChildAdded } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js';
+import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js';
+import { getAuth, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js';
+import { getDatabase, ref, onChildAdded, remove } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -18,51 +18,90 @@ const messaging = getMessaging(app);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
-function loadMessages(email) {
-    const sanitizedEmail = email.replace(".", "_at_");
-    const messagesRef = ref(database, `messages/${sanitizedEmail}`);
+const loginForm = document.getElementById('loginForm');
+const logoutButton = document.getElementById('logoutButton');
+const deleteAllButton = document.getElementById('deleteAllButton');
+const authDiv = document.getElementById('auth');
+const messagesSection = document.getElementById('messagesSection');
+const messagesDiv = document.getElementById('messages');
+const notificationSound = document.getElementById('notificationSound');
+
+// Nome do motoboy fixo para Jackson
+const motoboy = 'jackson';
+
+navigator.serviceWorker.register('/firebase-messaging-sw.js')
+    .then(registration => {
+        console.log('Service Worker registrado com sucesso:', registration);
+        messaging.useServiceWorker(registration);
+    })
+    .catch(error => {
+        console.log('Falha ao registrar o Service Worker:', error);
+    });
+
+// Verifica o estado de autenticação do usuário
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        authDiv.style.display = 'none';
+        messagesSection.style.display = 'block';
+        loadMessages();
+    } else {
+        authDiv.style.display = 'block';
+        messagesSection.style.display = 'none';
+    }
+});
+
+// Função para carregar as mensagens
+function loadMessages() {
+    const messagesRef = ref(database, `messages/${motoboy}`);
+    messagesDiv.innerHTML = '';
     onChildAdded(messagesRef, (data) => {
         const message = data.val().text;
         const messageElement = document.createElement('div');
         messageElement.textContent = message;
-        document.getElementById('messages').appendChild(messageElement);
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'X';
+        deleteButton.addEventListener('click', () => {
+            remove(ref(database, `messages/${motoboy}/${data.key}`));
+        });
+
+        messageElement.appendChild(deleteButton);
+        messagesDiv.appendChild(messageElement);
+
+        // Mostrar notificação e tocar som
+        showNotification(message);
     });
 }
 
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        const email = user.email;
-        loadMessages(email);
-    } else {
-        console.log('Usuário não autenticado');
+// Função para tocar o som de notificação
+function playNotificationSound() {
+    notificationSound.currentTime = 0; // Rewind to start
+    const playPromise = notificationSound.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(error => {
+            console.error('Erro ao reproduzir o som de notificação:', error);
+        });
     }
-});
-
-navigator.serviceWorker.register('/firebase-messaging-sw.js')
-    .then((registration) => {
-        console.log('Service Worker registrado com sucesso:', registration);
-        return getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' });
-    })
-    .then((currentToken) => {
-        if (currentToken) {
-            console.log('Token FCM:', currentToken);
-        } else {
-            console.log('Nenhum token disponível.');
-        }
-    })
-    .catch((err) => {
-        console.error('Erro ao registrar o Service Worker ou obter o token FCM:', err);
-    });
-
-onMessage(messaging, (payload) => {
-    console.log('Mensagem recebida em primeiro plano:', payload);
-    showNotification(payload.notification);
-});
-
-function showNotification(notification) {
-    const options = {
-        body: notification.body,
-        icon: notification.icon
-    };
-    new Notification(notification.title, options);
 }
+
+// Mostrar notificação e tocar som
+function showNotification(message) {
+    if ('Notification' in window && navigator.serviceWorker) {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.showNotification('Nova mensagem', {
+                body: message,
+                tag: 'new-message',
+                icon: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png'
+            });
+
+            // Tocar o som após mostrar a notificação
+            playNotificationSound();
+        });
+    }
+}
+
+messaging.onMessage((payload) => {
+    console.log('Mensagem recebida em primeiro plano:', payload);
+    const { title, body } = payload.notification;
+    showNotification(`${title}: ${body}`);
+});

@@ -11,7 +11,7 @@
     <link rel="manifest" href="manifest.json">
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script> <!-- Adicionando Firebase Firestore SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
 </head>
 <body>
     <div class="container">
@@ -65,6 +65,8 @@
                 messaging.getToken({ vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' }).then((currentToken) => {
                     if (currentToken) {
                         console.log('Token gerado: ', currentToken);
+                        // Exemplo de obtenção do userId após login (substitua com sua lógica de autenticação)
+                        const userId = firebase.auth().currentUser.uid; // Supondo que você esteja usando o Firebase Authentication
                         // Salve o token no Firestore ou Realtime Database
                         firestore.collection('tokens').doc(userId).set({
                             uid: userId,

@@ -1,6 +1,4 @@
-import { app, getFirestore, collection, getDocs } from './firebase-config.js';
-
-const db = getFirestore(app);
+import { firestore, collection, getDocs } from './firebase-config.js';
 
 document.getElementById('sendMessageForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -9,7 +7,7 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
     const message = document.getElementById('messageInput').value;
 
     if (message) {
-        const tokensRef = collection(db, "tokens");
+        const tokensRef = collection(firestore, "tokens");
         const querySnapshot = await getDocs(tokensRef);
         let token = '';
 
@@ -20,7 +18,7 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
         });
 
         if (token) {
-            fetch('/send-notification', {
+            fetch('https://cabana-8d55e.uc.r.appspot.com/send-notification', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -30,7 +28,12 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
                     message: message
                 })
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro do servidor');
+                }
+                return response.json();
+            })
             .then(data => {
                 console.log('Mensagem enviada com sucesso:', data);
                 document.getElementById('messageInput').value = '';

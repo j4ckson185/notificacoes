@@ -19,6 +19,7 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
             });
 
             if (token) {
+                console.log('Token encontrado para o motoboy:', token);
                 const response = await fetch('https://cabana-8d55e.uc.r.appspot.com/send-notification', {
                     method: 'POST',
                     headers: {

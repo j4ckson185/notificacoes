@@ -1,4 +1,4 @@
-import { firestore, collection, getDocs } from './firebase-config.js';
+import { app, firestore, collection, getDocs } from './firebase-config.js';
 
 document.getElementById('sendMessageForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -12,7 +12,7 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
         let token = '';
 
         querySnapshot.forEach((doc) => {
-            if (doc.data().uid === motoboy) {
+            if (doc.id === motoboy) {
                 token = doc.data().token;
             }
         });
@@ -28,12 +28,7 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
                     message: message
                 })
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Erro do servidor');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 console.log('Mensagem enviada com sucesso:', data);
                 document.getElementById('messageInput').value = '';

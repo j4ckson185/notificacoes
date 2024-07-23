@@ -9,6 +9,8 @@
     <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/jZ6rbSp/logo-cabana.png">
     <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/jZ6rbSp/logo-cabana.png">
     <link rel="manifest" href="manifest.json">
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js"></script>
 </head>
 <body>
     <div class="container">
@@ -40,5 +42,42 @@
     </div>
 
     <script src="jackson.js" type="module"></script>
+    <script>
+        const firebaseConfig = {
+            // Sua configuração Firebase aqui
+            apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
+            authDomain: "cabana-8d55e.firebaseapp.com",
+            databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
+            projectId: "cabana-8d55e",
+            storageBucket: "cabana-8d55e.appspot.com",
+            messagingSenderId: "706144237954",
+            appId: "1:706144237954:web:345c10370972486afc779b",
+            measurementId: "G-96Y337GYT8"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const messaging = firebase.messaging();
+
+        Notification.requestPermission().then((permission) => {
+            if (permission === 'granted') {
+                getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' }).then((currentToken) => {
+                    if (currentToken) {
+                        console.log('Token gerado: ', currentToken);
+                        // Salve o token no Firestore ou Realtime Database
+                        setDoc(doc(firestore, 'tokens', userId), {
+                            uid: userId,
+                            token: currentToken
+                        });
+                    } else {
+                        console.log('Nenhum token disponível. Solicite permissão para gerar um token.');
+                    }
+                }).catch((err) => {
+                    console.log('Erro ao recuperar o token: ', err);
+                });
+            } else {
+                console.log('Permissão de notificação negada.');
+            }
+        });
+    </script>
 </body>
 </html>

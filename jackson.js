@@ -1,4 +1,4 @@
-import { messaging, onMessage, getToken, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove } from './firebase-config.js';
+import { messaging, getToken, onMessage, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove, firestore, setDoc, doc } from './firebase-config.js';
 
 const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');
@@ -9,7 +9,7 @@ const messagesDiv = document.getElementById('messages');
 const notificationSound = document.getElementById('notificationSound');
 
 // Nome do motoboy fixo para Jackson
-const motoboy = 'jackson';
+const motoboy = 'jackson_division@hotmail.com';
 
 // Registrar o Service Worker
 if ('serviceWorker' in navigator) {
@@ -30,7 +30,7 @@ loginForm.addEventListener('submit', (e) => {
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             loginForm.reset();
-            requestNotificationPermission();
+            saveToken(email);
         })
         .catch((error) => {
             alert('Erro ao entrar: ' + error.message);
@@ -155,3 +155,25 @@ onMessage(messaging, (payload) => {
     const message = payload.notification.body;
     showNotification(message);
 });
+
+// Função para salvar o token FCM no Firestore
+function saveToken(email) {
+    getToken(messaging, { vapidKey: 'BJIv4vMW_5J4Zlus1ueRy2UlLqT3rOAoz63xZXBlS93_cE9QTplnB4kDiFBgE-B7U2QXobcDKK-6VqGAdyC47_Q' })
+        .then((currentToken) => {
+            if (currentToken) {
+                const tokenRef = doc(firestore, 'tokens', email);
+                setDoc(tokenRef, { token: currentToken })
+                    .then(() => {
+                        console.log('Token FCM salvo com sucesso.');
+                    })
+                    .catch((error) => {
+                        console.error('Erro ao salvar o token FCM:', error);
+                    });
+            } else {
+                console.log('Nenhum token de registro disponível. Solicite permissão para gerar um.');
+            }
+        })
+        .catch((error) => {
+            console.error('Erro ao obter o token FCM:', error);
+        });
+}

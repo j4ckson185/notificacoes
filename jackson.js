@@ -1,4 +1,4 @@
-import { app, messaging, auth, getMessaging, getAuth, getDatabase, ref, onChildAdded, remove } from './firebase-config.js';
+import { app, messaging, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, ref, push, onChildAdded, remove } from './firebase-config.js';
 
 const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');
@@ -36,7 +36,7 @@ onAuthStateChanged(auth, (user) => {
 
 // Função para carregar as mensagens
 function loadMessages() {
-    const messagesRef = ref(getDatabase(app), `messages/${motoboy}`);
+    const messagesRef = ref(database, `messages/${motoboy}`);
     messagesDiv.innerHTML = '';
     onChildAdded(messagesRef, (data) => {
         const message = data.val().text;
@@ -46,7 +46,7 @@ function loadMessages() {
         const deleteButton = document.createElement('button');
         deleteButton.textContent = 'X';
         deleteButton.addEventListener('click', () => {
-            remove(ref(getDatabase(app), `messages/${motoboy}/${data.key}`));
+            remove(ref(database, `messages/${motoboy}/${data.key}`));
         });
 
         messageElement.appendChild(deleteButton);

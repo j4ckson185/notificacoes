@@ -2,7 +2,6 @@ importScripts('https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js'
 importScripts('https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js');
 
 const firebaseConfig = {
-    // Sua configuração Firebase aqui
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
     authDomain: "cabana-8d55e.firebaseapp.com",
     databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",

@@ -51,6 +51,7 @@ function loadMessages(userId) {
         const message = snapshot.val().text;
         const messageElement = document.createElement('div');
         messageElement.textContent = message;
+        messageElement.classList.add('message'); // Added class for styling
         messagesDiv.appendChild(messageElement);
         playNotificationSound();
     });
@@ -100,4 +101,11 @@ onMessage(messaging, (payload) => {
     console.log('Mensagem recebida em segundo plano: ', payload);
     playNotificationSound();
     const newMessage = document.createElement('div');
-    newMessage.textContent = payload.notification.body
+    newMessage.textContent = payload.notification.body;
+    newMessage.classList.add('message'); // Added class for styling
+    messagesDiv.appendChild(newMessage);
+});
+
+set(notificationSound, 'src', './notification.mp3');
+
+export {};

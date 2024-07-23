@@ -1,4 +1,6 @@
-import { firestore, collection, getDocs } from './firebase-config.js';
+import { getFirestore, collection, getDocs } from './firebase-config.js';
+
+const db = getFirestore();
 
 document.getElementById('sendMessageForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -7,43 +9,42 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
     const message = document.getElementById('messageInput').value;
 
     if (message) {
-        try {
-            const tokensRef = collection(firestore, "tokens");
-            const querySnapshot = await getDocs(tokensRef);
-            let token = '';
+        const tokensRef = collection(db, "tokens");
+        const querySnapshot = await getDocs(tokensRef);
+        let token = '';
 
-            querySnapshot.forEach((doc) => {
-                if (doc.data().uid === motoboy) {
-                    token = doc.data().token;
-                }
-            });
+        querySnapshot.forEach((doc) => {
+            if (doc.data().uid === motoboy) {
+                token = doc.data().token;
+            }
+        });
 
-            if (token) {
-                console.log('Token encontrado para o motoboy:', token);
-                const response = await fetch('https://cabana-8d55e.uc.r.appspot.com/send-notification', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        token: token,
-                        message: message
-                    })
-                });
-
+        if (token) {
+            fetch('https://cabana-8d55e.uc.r.appspot.com/send-notification', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    token: token,
+                    message: message
+                })
+            })
+            .then(response => {
                 if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`Erro do servidor: ${response.status} - ${errorText}`);
+                    throw new Error(`Erro do servidor: ${response.status} - ${response.statusText}`);
                 }
-
-                const data = await response.json();
+                return response.json();
+            })
+            .then(data => {
                 console.log('Mensagem enviada com sucesso:', data);
                 document.getElementById('messageInput').value = '';
-            } else {
-                console.error('Token não encontrado para o motoboy:', motoboy);
-            }
-        } catch (error) {
-            console.error('Erro ao enviar a mensagem:', error);
+            })
+            .catch((error) => {
+                console.error('Erro ao enviar a mensagem:', error);
+            });
+        } else {
+            console.error('Token não encontrado para o motoboy:', motoboy);
         }
     }
 });

@@ -13,7 +13,7 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
             let token = '';
 
             querySnapshot.forEach((doc) => {
-                if (doc.data().userId === motoboy) {
+                if (doc.data().uid === motoboy) {
                     token = doc.data().token;
                 }
             });

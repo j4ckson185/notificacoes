@@ -1,4 +1,4 @@
-import { app, messaging, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, ref, push, onChildAdded, remove } from './firebase-config.js';
+import { auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove } from './firebase-config.js';
 
 const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');

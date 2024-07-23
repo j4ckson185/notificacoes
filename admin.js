@@ -25,6 +25,35 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
             .then(() => {
                 console.log('Mensagem enviada com sucesso para o Realtime Database!');
                 document.getElementById('messageInput').value = '';
+
+                // Enviar notificação push usando FCM
+                fetch('https://fcm.googleapis.com/fcm/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'key=BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' // Substitua pela sua chave de servidor
+                    },
+                    body: JSON.stringify({
+                        to: token,
+                        notification: {
+                            title: 'Nova Mensagem',
+                            body: message,
+                            sound: 'notification.mp3'
+                        }
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`Erro do servidor: ${response.status} - ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Mensagem enviada com sucesso:', data);
+                })
+                .catch((error) => {
+                    console.error('Erro ao enviar a mensagem:', error);
+                });
             })
             .catch((error) => {
                 console.error('Erro ao enviar a mensagem para o Realtime Database:', error);

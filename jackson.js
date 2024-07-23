@@ -28,7 +28,7 @@ if ('serviceWorker' in navigator) {
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
+    const password = document.getElementId('loginPassword').value;
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
             loginForm.reset();

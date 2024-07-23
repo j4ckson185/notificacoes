@@ -1,4 +1,4 @@
-import { getDatabase, ref, onValue } from './firebase-config.js';
+import { getDatabase, ref, onValue, getMessaging, getToken, onMessage } from './firebase-config.js';
 
 const messagesContainer = document.getElementById('messages-container');
 
@@ -17,4 +17,24 @@ onValue(messagesRef, (snapshot) => {
         messageElement.textContent = messageData.text;
         messagesContainer.appendChild(messageElement);
     });
+});
+
+// Ouvir por mensagens FCM
+const messaging = getMessaging();
+onMessage(messaging, (payload) => {
+    const messageData = payload.data;
+    const messageElement = document.createElement('div');
+    messageElement.textContent = messageData.text;
+    messagesContainer.appendChild(messageElement);
+});
+
+// Obter o token FCM
+getToken(messaging).then((currentToken) => {
+    if (currentToken) {
+        // Enviar o token para o servidor para salvar no Realtime Database
+        // ...
+    } else {
+        // Mostrar uma mensagem de erro
+        console.error('Erro ao obter o token FCM.');
+    }
 });

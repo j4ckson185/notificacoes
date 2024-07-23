@@ -20,4 +20,4 @@ const auth = getAuth(app);
 const database = getDatabase(app);
 const firestore = getFirestore(app);
 
-export { app, messaging, getMessaging, getToken, auth, getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, set, database, getDatabase, ref, push, onChildAdded, remove, firestore, getFirestore, collection, getDocs, setDoc, doc, deleteDoc };
+export { app, messaging, getMessaging, getToken, auth, getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, set, database, getDatabase, ref, push, onChildAdded, remove, firestore, getFirestore, collection, getDocs, setDoc, doc, deleteDoc, onSnapshot }; // Export onSnapshot

@@ -1,6 +1,5 @@
-// Certifique-se de importar corretamente as funções e módulos necessários
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
+import { getMessaging, onMessage, getToken } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 import { getDatabase, ref, onChildAdded } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
@@ -41,24 +40,21 @@ onAuthStateChanged(auth, (user) => {
 
 navigator.serviceWorker.register('/firebase-messaging-sw.js')
     .then((registration) => {
-        messaging.useServiceWorker(registration);
-        messaging.getToken({ vapidKey: 'YOUR_PUBLIC_VAPID_KEY' })
-            .then((currentToken) => {
-                if (currentToken) {
-                    console.log('Token FCM:', currentToken);
-                } else {
-                    console.log('Nenhum token disponível.');
-                }
-            })
-            .catch((err) => {
-                console.error('Erro ao obter o token FCM:', err);
-            });
+        console.log('Service Worker registrado com sucesso:', registration);
+        return getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' });
+    })
+    .then((currentToken) => {
+        if (currentToken) {
+            console.log('Token FCM:', currentToken);
+        } else {
+            console.log('Nenhum token disponível.');
+        }
     })
     .catch((err) => {
-        console.error('Falha ao registrar o Service Worker:', err);
+        console.error('Erro ao registrar o Service Worker ou obter o token FCM:', err);
     });
 
-messaging.onMessage((payload) => {
+onMessage(messaging, (payload) => {
     console.log('Mensagem recebida em primeiro plano:', payload);
     showNotification(payload.notification);
 });

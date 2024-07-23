@@ -61,5 +61,6 @@ if (token) {
 } else {
     console.error('Token não encontrado para o motoboy:', motoboy);
 }
-
+    }
+});
 

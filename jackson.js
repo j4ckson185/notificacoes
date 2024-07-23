@@ -1,4 +1,4 @@
-import { auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove } from './firebase-config.js';
+import { messaging, getMessaging, getToken, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove, set } from './firebase-config.js';
 
 const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');
@@ -16,6 +16,7 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/firebase-messaging-sw.js')
         .then(registration => {
             console.log('Service Worker registrado com sucesso:', registration);
+            messaging.useServiceWorker(registration);
         })
         .catch(error => {
             console.log('Falha ao registrar o Service Worker:', error);
@@ -29,8 +30,20 @@ loginForm.addEventListener('submit', (e) => {
     const password = document.getElementById('loginPassword').value;
     signInWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
+            const user = userCredential.user;
+            getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' }).then((currentToken) => {
+                if (currentToken) {
+                    const tokensRef = ref(database, 'tokens/' + user.uid);
+                    set(tokensRef, {
+                        email: user.email,
+                        token: currentToken
+                    });
+                    console.log('Token FCM:', currentToken);
+                }
+            }).catch((err) => {
+                console.log('An error occurred while retrieving token. ', err);
+            });
             loginForm.reset();
-            requestNotificationPermission();
         })
         .catch((error) => {
             alert('Erro ao entrar: ' + error.message);
@@ -40,9 +53,9 @@ loginForm.addEventListener('submit', (e) => {
 // Lógica de Logout
 logoutButton.addEventListener('click', () => {
     signOut(auth).then(() => {
-        // Logout bem-sucedido
+        console.log('Logout bem-sucedido');
     }).catch((error) => {
-        alert('Erro ao sair: ' + error.message);
+        console.error('Erro ao sair:', error);
     });
 });
 

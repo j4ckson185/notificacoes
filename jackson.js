@@ -1,4 +1,16 @@
-import { auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, firestore, collection, doc, getToken, requestPermission } from './firebase-config.js';
+import { 
+    auth, 
+    signInWithEmailAndPassword, 
+    onAuthStateChanged, 
+    signOut, 
+    firestore, 
+    collection, 
+    doc, 
+    setDoc, 
+    deleteDoc, 
+    onSnapshot 
+} from './firebase-config.js';
+import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 
 const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');
@@ -6,6 +18,8 @@ const authDiv = document.getElementById('auth');
 const messagesSection = document.getElementById('messagesSection');
 const messagesDiv = document.getElementById('messages');
 const notificationSound = document.getElementById('notificationSound');
+
+const messaging = getMessaging();
 
 loginForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -79,11 +93,30 @@ window.addEventListener('load', () => {
     });
 });
 
+function requestPermission(userId) {
+    Notification.requestPermission().then((permission) => {
+        if (permission === 'granted') {
+            getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' }).then((currentToken) => {
+                if (currentToken) {
+                    console.log('Token gerado: ', currentToken);
+                    // Salve o token no Firestore
+                    setDoc(doc(firestore, 'tokens', userId), {
+                        uid: userId,
+                        token: currentToken
+                    });
+                } else {
+                    console.log('Nenhum token disponível. Solicite permissão para gerar um token.');
+                }
+            }).catch((err) => {
+                console.log('Erro ao recuperar o token: ', err);
+            });
+        } else {
+            console.log('Permissão de notificação negada.');
+        }
+    });
+}
+
 // Configuração para receber mensagens em segundo plano
-import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
-
-const messaging = getMessaging();
-
 onMessage(messaging, (payload) => {
     console.log('Mensagem recebida em segundo plano: ', payload);
     playNotificationSound();

@@ -1,4 +1,4 @@
-import { getDatabase, ref, onValue, getMessaging, getToken, onMessage, messaging } from './firebase-config.js'; 
+import { getDatabase, ref, onValue, getMessaging, getToken, onMessage, messaging } from './firebase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const messagesContainer = document.getElementById('messages-container');

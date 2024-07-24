@@ -2,12 +2,11 @@ import { getDatabase, ref, set } from './firebase-config.js';
 
 document.getElementById('sendMessageForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-
     const user = document.getElementById('userSelect').value;
     const message = document.getElementById('messageInput').value;
 
     if (message) {
-        // Send message to Realtime Database
+        // Enviar mensagem para o Realtime Database
         set(ref(getDatabase(), `messages/${user}`), {
             text: message
         })

@@ -51,7 +51,7 @@ onMessage(messaging, (payload) => {
     // Display the notification
     const messageData = payload.data;
     const messageElement = document.createElement('div');
-    messageElement.textContent = messageData.text;
+    messageElement.textContent = payload.notification.body;
     messagesContainer.appendChild(messageElement);
 });
 

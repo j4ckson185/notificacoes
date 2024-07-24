@@ -2,9 +2,8 @@ import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https:/
 import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
-const auth = getAuth();
-const messaging = getMessaging();
-const database = getDatabase();
+// Import Firebase services from firebase-config.js
+import { auth, messaging, database } from './firebase-config.js';
 
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();

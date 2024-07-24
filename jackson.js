@@ -55,4 +55,11 @@ getToken(messaging).then((currentToken) => {
         // Mostrar uma mensagem de erro
         console.error('Erro ao obter o token FCM.');
     }
+    }).catch((error) => {
+  if (error.code === 'messaging/token-unsubscribe-failed') {
+    // Try to get a new token or ignore the error
+    console.error('Error unsubscribing from FCM:', error);
+  } else {
+    console.error('Error getting FCM token:', error);
+  }
 });

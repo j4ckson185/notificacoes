@@ -1,7 +1,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
 import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
 import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
-import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, signInAnonymously } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 import { getDatabase, ref, push, onChildAdded, remove, set, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
 const firebaseConfig = {
@@ -28,9 +28,10 @@ export {
     onMessage,
     auth, 
     getAuth, 
-    signInAnonymously, 
+    signInWithEmailAndPassword, 
     onAuthStateChanged, 
-    signOut, 
+    signOut,
+    signInAnonymously,
     set, 
     database, 
     getDatabase, 

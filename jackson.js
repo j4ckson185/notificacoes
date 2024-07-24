@@ -36,6 +36,14 @@ if ('serviceWorker' in navigator) {
         });
 }
 
+// Preload audio element
+const audio = new Audio('/assets/notification.mp3');
+document.addEventListener('click', () => {
+    audio.play().catch((error) => {
+        console.error('Error playing notification sound:', error);
+    });
+}, { once: true });
+
 // Reference to the "messages/jackson" node in the Realtime Database
 const userMessagesRef = ref(database, 'messages/jackson');
 
@@ -60,13 +68,10 @@ onChildAdded(userMessagesRef, (snapshot) => {
     // Append the message element to the messages container
     messagesContainer.appendChild(messageElement);
 
-    // Request user interaction for playing sound
-    document.addEventListener('click', () => {
-        const audio = new Audio('/assets/notification.mp3');
-        audio.play().catch((error) => {
-            console.error('Error playing notification sound:', error);
-        });
-    }, { once: true });
+    // Play notification sound
+    audio.play().catch((error) => {
+        console.error('Error playing notification sound:', error);
+    });
 });
 
 // Listen for FCM messages when the page is in the foreground
@@ -81,7 +86,6 @@ onMessage(messaging, (payload) => {
     };
 
     // Play notification sound
-    const audio = new Audio('/assets/notification.mp3');
     audio.play().catch((error) => {
         console.error('Error playing notification sound:', error);
     });

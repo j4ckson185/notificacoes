@@ -1,9 +1,8 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
 import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
 import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+import { getAuth, signInAnonymously, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 import { getDatabase, ref, push, onChildAdded, remove, set, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
-import { signInAnonymously } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -29,8 +28,7 @@ export {
     onMessage,
     auth, 
     getAuth, 
-    signInAnonymously,
-    signInWithEmailAndPassword, 
+    signInAnonymously, 
     onAuthStateChanged, 
     signOut, 
     set, 

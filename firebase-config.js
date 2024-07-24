@@ -1,7 +1,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
+import { getDatabase, ref, set, push, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -14,13 +14,12 @@ const firebaseConfig = {
     measurementId: "G-96Y337GYT8"
 };
 
-// Initialize Firebase app
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
 // Get Firebase services after initialization
-const messaging = getMessaging(app);
-const auth = getAuth(app);
 const database = getDatabase(app);
+const auth = getAuth(app);
+const messaging = getMessaging(app);
 
-// Export the signOut function
-export { messaging, getToken, onMessage, auth, signInWithEmailAndPassword, onAuthStateChanged, database, getDatabase, ref, set, onValue, signOut };
+export { app, database, auth, messaging, ref, set, push, onValue, getToken, onMessage, signInWithEmailAndPassword, onAuthStateChanged, signOut };

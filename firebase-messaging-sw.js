@@ -20,7 +20,18 @@ messaging.onBackgroundMessage((payload) => {
     const notificationOptions = {
         body: payload.notification.body,
         icon: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png',
-        sound: '/assets/notification.mp3' // Certifique-se de que o caminho do som esteja correto
+        data: {
+            sound: '/assets/notification.mp3'
+        }
     };
     self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+self.addEventListener('notificationclick', function(event) {
+    if (event.notification.data && event.notification.data.sound) {
+        const audio = new Audio(event.notification.data.sound);
+        audio.play();
+    }
+    event.notification.close();
+    event.waitUntil(clients.openWindow('/jackson.html'));
 });

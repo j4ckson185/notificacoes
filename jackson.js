@@ -1,4 +1,4 @@
-import { getDatabase, ref, onValue, getMessaging, getToken, onMessage, getAuth } from './firebase-config.js';
+import { getDatabase, ref, onValue, getMessaging, getToken, onMessage, getAuth, signInWithEmailAndPassword, onTokenRefresh } from './firebase-config.js';
 
 const messagesContainer = document.getElementById('messages-container');
 
@@ -7,6 +7,7 @@ const messagesRef = ref(getDatabase(), 'messages');
 
 // Ouvir por mudanças no nó "messages"
 onValue(messagesRef, (snapshot) => {
+
     // Limpar o conteúdo do container de mensagens
     messagesContainer.innerHTML = '';
 

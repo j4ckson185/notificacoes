@@ -2,8 +2,7 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebas
 import { getFirestore, collection, getDocs, setDoc, doc, deleteDoc, onSnapshot } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
 import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getDatabase, ref, push, onChildAdded, remove, set } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
-import { onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js'; // Import onValue directly
+import { getDatabase, ref, push, onChildAdded, remove, set, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -47,5 +46,5 @@ export {
     doc, 
     deleteDoc, 
     onSnapshot,
-    onValue // Export onValue
+    onValue 
 };

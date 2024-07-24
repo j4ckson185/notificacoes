@@ -1,4 +1,5 @@
-import { getDatabase, ref, push } from './firebase-config.js';
+import { getDatabase, ref } from './firebase-config.js';
+import { push } from './firebase-config.js';
 
 document.getElementById('sendMessageForm').addEventListener('submit', async function(e) {
     e.preventDefault();

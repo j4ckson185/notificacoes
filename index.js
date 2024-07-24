@@ -9,4 +9,4 @@ loginForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('passwordInput').value;
 
     try {
-        const userCredential = await signInWithEmailAndPassword(getAuth(), email, password
+        const userCredential = await signInWithEmailAndPassword(getAuth(), email, password);

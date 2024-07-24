@@ -26,6 +26,10 @@ onMessage(messaging, (payload) => {
     const messageElement = document.createElement('div');
     messageElement.textContent = messageData.text;
     messagesContainer.appendChild(messageElement);
+
+    // Reproduzir o som personalizado
+    const audio = new Audio('assets/notification.mp3');
+    audio.play();
 });
 
 // Obter o token FCM

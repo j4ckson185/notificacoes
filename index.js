@@ -1,5 +1,5 @@
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
+import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
 // Import Firebase services from firebase-config.js
@@ -59,4 +59,24 @@ onAuthStateChanged(auth, (user) => {
         // User is signed out
         console.log('User is signed out');
     }
+});
+
+// Handle messages when the web page is in the foreground
+onMessage(messaging, (payload) => {
+    console.log('Message received. ', payload);
+    // Customize notification here
+    const notificationTitle = payload.notification.title;
+    const notificationOptions = {
+        body: payload.notification.body,
+        icon: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png'
+    };
+
+    // Play notification sound
+    const audio = new Audio('/assets/notification.mp3');
+    audio.play().catch((error) => {
+        console.error('Error playing notification sound:', error);
+    });
+
+    // Display the notification
+    new Notification(notificationTitle, notificationOptions);
 });

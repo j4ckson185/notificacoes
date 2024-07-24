@@ -9,21 +9,4 @@ loginForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('passwordInput').value;
 
     try {
-        const userCredential = await signInWithEmailAndPassword(getAuth(), email, password);
-        const user = userCredential.user;
-        console.log('Usuário logado:', user);
-
-        // Redirecionar para a página específica com base no email
-        if (email === 'jackson_division@hotmail.com') {
-            window.location.href = 'jackson.html';
-        } else {
-            // Redirecionar para outra página ou mostrar uma mensagem de erro
-            console.error('Email inválido ou página não encontrada.');
-        }
-
-    } catch (error) {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.error('Erro ao fazer login:', errorCode, errorMessage);
-    }
-});
+        const userCredential = await signInWithEmailAndPassword(getAuth(), email, password

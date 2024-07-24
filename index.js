@@ -16,7 +16,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         const user = userCredential.user;
 
         // Get FCM token
-        const currentToken = await getToken(messaging, { vapidKey: 'YOUR_PUBLIC_VAPID_KEY' }); // Replace with your actual VAPID key
+        const currentToken = await getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' }); // Replace with your actual VAPID key
         if (currentToken) {
             // Save token to database
             await set(ref(database, 'tokens/' + user.uid), {
@@ -43,4 +43,21 @@ function emailToPage(email) {
 // Register service worker
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/firebase-messaging-sw.js')
-        .
+        .then(registration => {
+            console.log('Service Worker registered successfully:', registration);
+        })
+        .catch(err => {
+            console.error('Error registering Service Worker:', err);
+        });
+}
+
+// Handle user authentication state changes
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // User is signed in
+        console.log('User is signed in:', user);
+    } else {
+        // User is signed out
+        console.log('User is signed out');
+    }
+});

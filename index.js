@@ -1,9 +1,16 @@
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
 // Import Firebase services from firebase-config.js
-import { auth, messaging, database } from './firebase-config.js';
+import { firebaseConfig } from './firebase-config.js';
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const messaging = getMessaging(app);
+const database = getDatabase(app);
 
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -34,7 +41,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
 function emailToPage(email) {
     const emailMap = {
-        'jackson_division@hotmail.com': 'jackson.html' // Add other users' emails and page names
+        'jackson_division@hotmail.com': 'jackson.html', // Add other users' emails and page names
+        // Add more email-to-page mappings here
     };
     return emailMap[email] || 'index.html'; // Default to index.html if no match
 }

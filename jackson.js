@@ -19,7 +19,7 @@ if ('serviceWorker' in navigator) {
 // Listen for changes in the Realtime Database
 onValue(messagesRef, (snapshot) => {
     if (messagesContainer) {
-        messagesContainer.innerHTML = '';
+        messagesContainer.innerHTML = ''; // Clear previous messages
         snapshot.forEach((childSnapshot) => {
             const messageData = childSnapshot.val();
             const messageElement = document.createElement('div');

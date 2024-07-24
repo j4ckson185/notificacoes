@@ -1,7 +1,7 @@
 import { getDatabase, ref, onValue, messaging, getToken, onMessage, auth, signOut } from './firebase-config.js';
 
 const messagesContainer = document.getElementById('messages-container');
-const messagesRef = ref(getDatabase(), 'messages');
+const messagesRef = ref(getDatabase(), 'messages/jackson');
 const clearMessagesButton = document.getElementById('clearMessagesButton');
 const logoutButton = document.getElementById('logoutButton');
 
@@ -25,6 +25,10 @@ onValue(messagesRef, (snapshot) => {
             const messageElement = document.createElement('div');
             messageElement.textContent = messageData.text;
             messagesContainer.appendChild(messageElement);
+
+            // Play notification sound
+            const audio = new Audio('/assets/notification.mp3');
+            audio.play();
         });
     }
 });
@@ -32,15 +36,22 @@ onValue(messagesRef, (snapshot) => {
 // Listen for FCM messages
 onMessage(messaging, (payload) => {
     console.log('Received FCM message:', payload);
-    // Handle the message (e.g., display a notification)
+
+    // Play notification sound
+    const audio = new Audio('/assets/notification.mp3');
+    audio.play();
+
+    // Display the notification
+    const notificationElement = document.createElement('div');
+    notificationElement.textContent = payload.notification.body;
+    messagesContainer.appendChild(notificationElement);
 });
 
 // Get FCM token
 getToken(messaging).then((currentToken) => {
     if (currentToken) {
-        // Send the token to your backend server
         console.log('FCM Token:', currentToken);
-        // ... your code to send the token to your server ...
+        // Send the token to your backend server
     } else {
         console.error('No registration token available.');
     }
@@ -57,12 +68,10 @@ clearMessagesButton.addEventListener('click', () => {
 logoutButton.addEventListener('click', () => {
     signOut(auth)
         .then(() => {
-            // Sign-out successful.
             console.log('Signed out');
-            window.location.href = 'index.html'; // Redirect to index.html
+            window.location.href = 'index.html';
         })
         .catch((error) => {
-            // An error happened.
             console.error('Error signing out:', error);
         });
 });

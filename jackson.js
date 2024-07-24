@@ -80,4 +80,33 @@ onMessage(messaging, (payload) => {
 
     // Customize notification here
     const notificationTitle = payload.notification.title;
-    const notificationOptions
+    const notificationOptions = {
+        body: payload.notification.body,
+        icon: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png'
+    };
+
+    // Play notification sound
+    audio.play().catch((error) => {
+        console.error('Error playing notification sound:', error);
+    });
+
+    // Display the notification
+    new Notification(notificationTitle, notificationOptions);
+});
+
+// Clear all messages
+clearMessagesButton.addEventListener('click', () => {
+    messagesContainer.innerHTML = '';
+});
+
+// Logout
+logoutButton.addEventListener('click', () => {
+    signOut(auth)
+        .then(() => {
+            console.log('Signed out');
+            window.location.href = 'index.html';
+        })
+        .catch((error) => {
+            console.error('Error signing out:', error);
+        });
+});

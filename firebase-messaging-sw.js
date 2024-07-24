@@ -21,17 +21,23 @@ messaging.onBackgroundMessage((payload) => {
         body: payload.notification.body,
         icon: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png',
         data: {
-            sound: '/assets/notification.mp3'
+            sound: '/assets/notification.mp3',
+            click_action: 'https://cabananotificacoes.netlify.app/jackson.html' // URL para abrir ao clicar na notificação
         }
     };
     self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
 self.addEventListener('notificationclick', function(event) {
-    if (event.notification.data && event.notification.data.sound) {
-        const audio = new Audio(event.notification.data.sound);
-        audio.play();
-    }
+    const sound = event.notification.data.sound;
     event.notification.close();
-    event.waitUntil(clients.openWindow('/jackson.html'));
+
+    // Open the URL when the user clicks on the notification
+    event.waitUntil(clients.openWindow(event.notification.data.click_action));
+
+    // Play sound
+    const audio = new Audio(sound);
+    audio.play().catch((error) => {
+        console.error('Error playing notification sound:', error);
+    });
 });

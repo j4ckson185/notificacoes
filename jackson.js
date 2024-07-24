@@ -1,4 +1,4 @@
-import { getDatabase, ref, onValue, getMessaging, getToken, onMessage, getAuth, signInWithEmailAndPassword } from './firebase-config.js';
+import { getDatabase, ref, onValue, getMessaging, getToken, onMessage } from './firebase-config.js';
 
 const messagesContainer = document.getElementById('messages-container');
 
@@ -7,7 +7,6 @@ const messagesRef = ref(getDatabase(), 'messages');
 
 // Ouvir por mudanças no nó "messages"
 onValue(messagesRef, (snapshot) => {
-
     // Limpar o conteúdo do container de mensagens
     messagesContainer.innerHTML = '';
 
@@ -23,14 +22,10 @@ onValue(messagesRef, (snapshot) => {
 // Ouvir por mensagens FCM
 const messaging = getMessaging();
 onMessage(messaging, (payload) => {
-  const messageData = payload.data;
-  const messageElement = document.createElement('div');
-  messageElement.textContent = messageData.text;
-  messagesContainer.appendChild(messageElement);
-
-  // Reproduzir o som personalizado
-  const audio = new Audio('assets/notification.mp3');
-  audio.play();
+    const messageData = payload.data;
+    const messageElement = document.createElement('div');
+    messageElement.textContent = messageData.text;
+    messagesContainer.appendChild(messageElement);
 });
 
 // Obter o token FCM
@@ -42,11 +37,36 @@ getToken(messaging).then((currentToken) => {
         // Mostrar uma mensagem de erro
         console.error('Erro ao obter o token FCM.');
     }
-    }).catch((error) => {
-  if (error.code === 'messaging/token-unsubscribe-failed') {
-    // Try to get a new token or ignore the error
-    console.error('Error unsubscribing from FCM:', error);
-  } else {
-    console.error('Error getting FCM token:', error);
-  }
 });
+
+firebase-messaging-sw.js
+
+importScripts('https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js');
+
+const firebaseConfig = {
+    apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
+    authDomain: "cabana-8d55e.firebaseapp.com",
+    databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
+    projectId: "cabana-8d55e",
+    storageBucket: "cabana-8d55e.appspot.com",
+    messagingSenderId: "706144237954",
+    appId: "1:706144237954:web:345c10370972486afc779b",
+    measurementId: "G-96Y337GYT8"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage((payload) => {
+    console.log('[firebase-messaging-sw.js] Received background message ', payload);
+    const notificationTitle = payload.notification.title;
+    const notificationOptions = {
+        body: payload.notification.body,
+        icon: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png'
+    };
+
+    self.registration.showNotification(notificationTitle, notificationOptions);
+});
+

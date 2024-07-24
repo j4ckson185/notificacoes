@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getDatabase, ref, set, push, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { getDatabase, ref, set, push, onValue, onChildAdded } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 
@@ -22,4 +22,4 @@ const database = getDatabase(app);
 const auth = getAuth(app);
 const messaging = getMessaging(app);
 
-export { app, database, auth, messaging, ref, set, push, onValue, getToken, onMessage, signInWithEmailAndPassword, onAuthStateChanged, signOut };
+export { app, database, auth, messaging, ref, set, push, onValue, onChildAdded, getToken, onMessage, signInWithEmailAndPassword, onAuthStateChanged, signOut };

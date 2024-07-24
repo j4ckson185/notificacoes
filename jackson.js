@@ -33,20 +33,6 @@ onMessage(messaging, (payload) => {
   audio.play();
 });
 
-// Listen for token refresh events
-messaging.onTokenRefresh(() => {
-  getToken(messaging).then((newToken) => {
-    if (newToken) {
-      // Send the new token to your server to update in the database
-      console.log('Token refreshed:', newToken);
-      // ... send newToken to your server
-    } else {
-      // Show an error message
-      console.error('Error refreshing token.');
-    }
-  });
-});
-
 // Obter o token FCM
 getToken(messaging).then((currentToken) => {
     if (currentToken) {

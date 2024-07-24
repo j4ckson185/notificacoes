@@ -60,11 +60,13 @@ onChildAdded(userMessagesRef, (snapshot) => {
     // Append the message element to the messages container
     messagesContainer.appendChild(messageElement);
 
-    // Play notification sound
-    const audio = new Audio('/assets/notification.mp3');
-    audio.play().catch((error) => {
-        console.error('Error playing notification sound:', error);
-    });
+    // Request user interaction for playing sound
+    document.addEventListener('click', () => {
+        const audio = new Audio('/assets/notification.mp3');
+        audio.play().catch((error) => {
+            console.error('Error playing notification sound:', error);
+        });
+    }, { once: true });
 });
 
 // Listen for FCM messages when the page is in the foreground

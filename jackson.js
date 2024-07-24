@@ -20,7 +20,6 @@ onValue(messagesRef, (snapshot) => {
 });
 
 // Ouvir por mensagens FCM
-const messaging = getMessaging();
 onMessage(messaging, (payload) => {
     const messageData = payload.data;
     const messageElement = document.createElement('div');

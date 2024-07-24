@@ -42,7 +42,10 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 function emailToPage(email) {
     const emailMap = {
         'jackson_division@hotmail.com': 'jackson.html', // Add other users' emails and page names
-        'giovanni.silva18@gmail.com': 'geovane.html', // Add redirection for Giovanni
+        'giovanni.silva18@gmail.com': 'geovane.html',
+        'felipeaugusto02001@gmail.com': 'felipeaugusto.html',
+        'hionarabeatriz11@gmail.com': 'hionara.html',
+        'moises110723@gmail.com': 'moises.html',
     };
     return emailMap[email] || 'index.html'; // Default to index.html if no match
 }

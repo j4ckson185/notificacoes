@@ -1,6 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
 import { getMessaging, getToken, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
 const firebaseConfig = {
@@ -21,6 +21,7 @@ const messaging = getMessaging(app);
 const auth = getAuth(app);
 const database = getDatabase(app);
 
+// Export the signOut function
 export { 
     messaging, 
     getToken, 
@@ -32,5 +33,6 @@ export {
     getDatabase, 
     ref, 
     set, 
-    onValue
+    onValue,
+    signOut 
 };

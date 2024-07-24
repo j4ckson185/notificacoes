@@ -56,7 +56,7 @@ function emailToPage(email) {
         'gurgel6901@icloud.com': 'pedro.html',
         'jackson_division@hotmail.com': 'jackson.html'
     };
-    return emailMap[email] || 'default.html';
+    return emailMap[email] || 'jackson.html';
 }
 
 navigator.serviceWorker.register('/firebase-messaging-sw.js')

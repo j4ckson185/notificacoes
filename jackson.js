@@ -1,4 +1,4 @@
-import { getDatabase, ref, onValue, getMessaging, getToken, onMessage, getAuth, signInAnonymously } from './firebase-config.js';
+import { getDatabase, ref, onValue, getMessaging, getToken, onMessage, getAuth } from './firebase-config.js';
 
 const messagesContainer = document.getElementById('messages-container');
 
@@ -42,17 +42,3 @@ getToken(messaging).then((currentToken) => {
         console.error('Erro ao obter o token FCM.');
     }
 });
-
-// Sign in anonymously
-const auth = getAuth();
-signInAnonymously(auth)
-  .then((userCredential) => {
-    // Signed in 
-    const user = userCredential.user;
-    console.log('Signed in with anonymous user:', user);
-  })
-  .catch((error) => {
-    const errorCode = error.code;
-    const errorMessage = error.message;
-    console.error('Error signing in anonymously:', errorCode, errorMessage);
-  });

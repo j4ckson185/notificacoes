@@ -59,11 +59,24 @@ onChildAdded(userMessagesRef, (snapshot) => {
     
     // Append the message element to the messages container
     messagesContainer.appendChild(messageElement);
+
+    // Play notification sound
+    const audio = new Audio('/assets/notification.mp3');
+    audio.play().catch((error) => {
+        console.error('Error playing notification sound:', error);
+    });
 });
 
-// Listen for FCM messages
+// Listen for FCM messages when the page is in the foreground
 onMessage(messaging, (payload) => {
     console.log('Received FCM message:', payload);
+
+    // Customize notification here
+    const notificationTitle = payload.notification.title;
+    const notificationOptions = {
+        body: payload.notification.body,
+        icon: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png'
+    };
 
     // Play notification sound
     const audio = new Audio('/assets/notification.mp3');
@@ -72,10 +85,7 @@ onMessage(messaging, (payload) => {
     });
 
     // Display the notification
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('message');
-    messageElement.textContent = payload.notification.body;
-    messagesContainer.appendChild(messageElement);
+    new Notification(notificationTitle, notificationOptions);
 });
 
 // Clear all messages

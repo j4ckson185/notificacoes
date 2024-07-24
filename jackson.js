@@ -28,7 +28,9 @@ onValue(messagesRef, (snapshot) => {
 
             // Play notification sound
             const audio = new Audio('/assets/notification.mp3');
-            audio.play();
+            audio.play().catch((error) => {
+                console.error('Error playing notification sound:', error);
+            });
         });
     }
 });
@@ -39,7 +41,9 @@ onMessage(messaging, (payload) => {
 
     // Play notification sound
     const audio = new Audio('/assets/notification.mp3');
-    audio.play();
+    audio.play().catch((error) => {
+        console.error('Error playing notification sound:', error);
+    });
 
     // Display the notification
     const notificationElement = document.createElement('div');

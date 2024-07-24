@@ -1,7 +1,4 @@
-import { ref } from './firebase-config.js';
-import { push } from './firebase-config.js';
-import { getDatabase } from './firebase-config.js';
-
+import { getDatabase, ref, set } from './firebase-config.js';
 
 document.getElementById('sendMessageForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -9,9 +6,8 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
     const message = document.getElementById('messageInput').value;
 
     if (message) {
-        // Enviar mensagem para o Realtime Database
-        const db = getDatabase();
-        push(ref(db, `messages/${user}`), {
+        // Send message to Realtime Database
+        set(ref(getDatabase(), `messages/${user}`), {
             text: message
         })
         .then(() => {

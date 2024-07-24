@@ -1,20 +1,20 @@
 {
-    "name": "Cabana Notificações",
-    "short_name": "Cabana",
-    "start_url": ".",
-    "display": "standalone",
-    "background_color": "#ffffff",
-    "description": "Receber notificações de pedidos para motoboys",
-    "icons": [
-        {
-            "src": "https://i.ibb.co/jZ6rbSp/logo-cabana.png",
-            "sizes": "192x192",
-            "type": "image/png"
-        },
-        {
-            "src": "https://i.ibb.co/jZ6rbSp/logo-cabana.png",
-            "sizes": "512x512",
-            "type": "image/png"
-        }
-    ]
+  "name": "Meu App",
+  "short_name": "App",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "/images/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }

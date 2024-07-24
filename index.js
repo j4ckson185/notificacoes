@@ -16,6 +16,8 @@ loginForm.addEventListener('submit', async (e) => {
         // Redirecionar para a página específica com base no email
         if (email === 'jackson_division@hotmail.com') {
             window.location.href = 'jackson.html';
+        if (email === 'musculacaoatual@gmail.com') {
+            window.location.href = 'jackson.html';    
         } else {
             // Redirecionar para outra página ou mostrar uma mensagem de erro
             console.error('Email inválido ou página não encontrada.');

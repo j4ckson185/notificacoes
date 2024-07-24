@@ -10,10 +10,10 @@
     <div class="container">
         <h1>Painel Administrativo - Enviar Notificações</h1>
         <form id="sendMessageForm">
-            <label for="motoboySelect">Selecionar Motoboy:</label>
-            <select id="motoboySelect">
-                <option value="1joqgVujrocrfP8bdyDYZHgdByv1">Jackson</option>
-                <!-- Adicione outras opções com UIDs -->
+            <label for="userSelect">Selecionar Usuário:</label>
+            <select id="userSelect">
+                <option value="jackson">Jackson</option>
+                <!-- Add other users as needed -->
             </select>
 
             <label for="messageInput">Mensagem:</label>
@@ -23,7 +23,8 @@
         </form>
     </div>
 
-    <script src="firebase-config.js" type="module"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <script src="admin.js" type="module"></script>
 </body>
 </html>

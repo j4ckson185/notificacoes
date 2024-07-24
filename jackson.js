@@ -44,6 +44,7 @@ onChildAdded(userMessagesRef, (snapshot) => {
     const messageData = snapshot.val();
     console.log('New message added:', messageData);  // Log message data for debugging
     const messageElement = document.createElement('div');
+    messageElement.classList.add('message');
     messageElement.textContent = messageData.text;
     messagesContainer.appendChild(messageElement);
 
@@ -66,6 +67,7 @@ onMessage(messaging, (payload) => {
 
     // Display the notification
     const messageElement = document.createElement('div');
+    messageElement.classList.add('message');
     messageElement.textContent = payload.notification.body;
     messagesContainer.appendChild(messageElement);
 });

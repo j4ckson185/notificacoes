@@ -42,7 +42,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 function emailToPage(email) {
     const emailMap = {
         'jackson_division@hotmail.com': 'jackson.html', // Add other users' emails and page names
-        // Add more email-to-page mappings here
+        'giovanni.silva18@gmail.com': 'geovane.html', // Add redirection for Giovanni
     };
     return emailMap[email] || 'index.html'; // Default to index.html if no match
 }

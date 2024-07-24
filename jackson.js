@@ -47,10 +47,15 @@ onChildAdded(userMessagesRef, (snapshot) => {
     // Create a new div element for the message
     const messageElement = document.createElement('div');
     messageElement.classList.add('message');
-    messageElement.textContent = messageData.text;
     
-    // Log the element to ensure it is created correctly
-    console.log('Message element:', messageElement);
+    // Check if messageData has text property
+    if (messageData && messageData.text) {
+        messageElement.textContent = messageData.text;
+        console.log('Message text:', messageData.text);  // Log message text for debugging
+    } else {
+        messageElement.textContent = 'Mensagem sem texto';
+        console.log('MessageData does not contain text property');  // Log missing text property
+    }
     
     // Append the message element to the messages container
     messagesContainer.appendChild(messageElement);

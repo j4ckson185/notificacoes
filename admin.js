@@ -34,4 +34,3 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
         }
     }
 });
-

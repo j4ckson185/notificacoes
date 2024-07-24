@@ -1,93 +1,151 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
-import { getAuth, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
+import { auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, database, ref, onChildAdded, remove, set, messaging, getToken, firestore, collection, getDocs, setDoc, doc, deleteDoc } from './firebase-config.js';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
-    authDomain: "cabana-8d55e.firebaseapp.com",
-    databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
-    projectId: "cabana-8d55e",
-    storageBucket: "cabana-8d55e.appspot.com",
-    messagingSenderId: "706144237954",
-    appId: "1:706144237954:web:345c10370972486afc779b",
-    measurementId: "G-96Y337GYT8"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
-const auth = getAuth(app);
-const messaging = getMessaging(app);
-
-// DOM elements
-const messagesContainer = document.getElementById('messages-container');
-const clearMessagesButton = document.getElementById('clearMessagesButton');
+const loginForm = document.getElementById('loginForm');
 const logoutButton = document.getElementById('logoutButton');
+const deleteAllButton = document.getElementById('deleteAllButton');
+const authDiv = document.getElementById('auth');
+const messagesSection = document.getElementById('messagesSection');
+const messagesDiv = document.getElementById('messages');
+const notificationSound = document.getElementById('notificationSound');
 
-// Register service worker
+// Nome do motoboy fixo para Jackson
+const motoboy = 'jackson';
+
+// Registrar o Service Worker
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/firebase-messaging-sw.js')
         .then(registration => {
-            console.log('Service Worker registered successfully:', registration);
+            console.log('Service Worker registrado com sucesso:', registration);
+            messaging.useServiceWorker(registration);
         })
-        .catch(err => {
-            console.error('Error registering Service Worker:', err);
+        .catch(error => {
+            console.log('Falha ao registrar o Service Worker:', error);
         });
 }
 
-// Reference to the "messages/jackson" node in the Realtime Database
-const userMessagesRef = ref(database, 'messages/jackson');
-
-// Listen for changes to the "messages/jackson" node
-onValue(userMessagesRef, (snapshot) => {
-    // Clear the message container
-    messagesContainer.innerHTML = '';
-
-    // Iterate over the children of the "messages/jackson" node
-    snapshot.forEach((childSnapshot) => {
-        const messageData = childSnapshot.val();
-        const messageElement = document.createElement('div');
-        messageElement.textContent = messageData.text;
-        messagesContainer.appendChild(messageElement);
-    });
-
-    // Play notification sound
-    const audio = new Audio('/assets/notification.mp3');
-    audio.play().catch((error) => {
-        console.error('Error playing notification sound:', error);
-    });
-});
-
-// Listen for FCM messages
-onMessage(messaging, (payload) => {
-    console.log('Received FCM message:', payload);
-
-    // Play notification sound
-    const audio = new Audio('/assets/notification.mp3');
-    audio.play().catch((error) => {
-        console.error('Error playing notification sound:', error);
-    });
-
-    // Display the notification
-    const messageElement = document.createElement('div');
-    messageElement.textContent = payload.notification.body;
-    messagesContainer.appendChild(messageElement);
-});
-
-// Clear all messages
-clearMessagesButton.addEventListener('click', () => {
-    messagesContainer.innerHTML = '';
-});
-
-// Logout
-logoutButton.addEventListener('click', () => {
-    signOut(auth)
-        .then(() => {
-            console.log('Signed out');
-            window.location.href = 'index.html';
+// Lógica de Login
+loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            loginForm.reset();
+            requestNotificationPermission();
         })
         .catch((error) => {
-            console.error('Error signing out:', error);
+            alert('Erro ao entrar: ' + error.message);
         });
+});
+
+// Lógica de Logout
+logoutButton.addEventListener('click', () => {
+    signOut(auth).then(() => {
+        // Logout bem-sucedido
+    }).catch((error) => {
+        alert('Erro ao sair: ' + error.message);
+    });
+});
+
+// Botão para apagar todas as mensagens
+deleteAllButton.addEventListener('click', () => {
+    if (confirm('Tem certeza que deseja apagar todas as mensagens?')) {
+        const messagesRef = ref(database, `messages/${motoboy}`);
+        remove(messagesRef).then(() => {
+            messagesDiv.innerHTML = '';
+        }).catch((error) => {
+            alert('Erro ao apagar mensagens: ' + error.message);
+        });
+    }
+});
+
+// Verifica o estado de autenticação do usuário
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        authDiv.style.display = 'none';
+        messagesSection.style.display = 'block';
+        loadMessages();
+    } else {
+        authDiv.style.display = 'block';
+        messagesSection.style.display = 'none';
+    }
+});
+
+// Função para carregar as mensagens
+function loadMessages() {
+    const messagesRef = ref(database, `messages/${motoboy}`);
+    messagesDiv.innerHTML = '';
+    onChildAdded(messagesRef, (data) => {
+        const message = data.val().text;
+        const messageElement = document.createElement('div');
+        messageElement.textContent = message;
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'X';
+        deleteButton.addEventListener('click', () => {
+            remove(ref(database, `messages/${motoboy}/${data.key}`));
+        });
+
+        messageElement.appendChild(deleteButton);
+        messagesDiv.appendChild(messageElement);
+
+        // Mostrar notificação e tocar som
+        showNotification(message);
+    });
+}
+
+// Função para tocar o som de notificação
+function playNotificationSound() {
+    notificationSound.currentTime = 0; // Rewind to start
+    const playPromise = notificationSound.play();
+    if (playPromise !== undefined) {
+        playPromise.catch(error => {
+            console.error('Erro ao reproduzir o som de notificação:', error);
+        });
+    }
+}
+
+// Solicitar permissão para notificações
+function requestNotificationPermission() {
+    if ('Notification' in window) {
+        Notification.requestPermission().then(permission => {
+            if (permission === 'granted') {
+                console.log('Permissão para notificações concedida.');
+                // Solicitar permissão para tocar som no iOS
+                requestAudioPermission();
+            }
+        });
+    }
+}
+
+// Solicitar permissão para tocar som no iOS
+function requestAudioPermission() {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    oscillator.connect(audioContext.destination);
+    oscillator.start(0);
+    oscillator.stop(0);
+}
+
+// Mostrar notificação e tocar som
+function showNotification(message) {
+    if ('Notification' in window && navigator.serviceWorker) {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.showNotification('Nova mensagem', {
+                body: message,
+                tag: 'new-message',
+                icon: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png'
+            });
+
+            // Tocar o som após mostrar a notificação
+            playNotificationSound();
+        });
+    }
+}
+
+// Preparar o som para tocar
+window.addEventListener('load', () => {
+    notificationSound.play().catch(error => {
+        console.log('Erro ao preparar o som de notificação:', error);
+    });
 });

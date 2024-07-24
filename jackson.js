@@ -1,7 +1,9 @@
-import { getDatabase, ref, onValue, messaging, getToken, onMessage } from './firebase-config.js';
+import { getDatabase, ref, onValue, messaging, getToken, onMessage, auth, signOut } from './firebase-config.js';
 
 const messagesContainer = document.getElementById('messages-container');
 const messagesRef = ref(getDatabase(), 'messages');
+const clearMessagesButton = document.getElementById('clearMessagesButton');
+const logoutButton = document.getElementById('logoutButton');
 
 // Register service worker
 if ('serviceWorker' in navigator) {
@@ -42,4 +44,25 @@ getToken(messaging).then((currentToken) => {
     } else {
         console.error('No registration token available.');
     }
-}).catch
+}).catch((err) => {
+    console.error('Error getting token:', err);
+});
+
+// Clear all messages
+clearMessagesButton.addEventListener('click', () => {
+    messagesContainer.innerHTML = '';
+});
+
+// Logout
+logoutButton.addEventListener('click', () => {
+    signOut(auth)
+        .then(() => {
+            // Sign-out successful.
+            console.log('Signed out');
+            window.location.href = 'index.html'; // Redirect to index.html
+        })
+        .catch((error) => {
+            // An error happened.
+            console.error('Error signing out:', error);
+        });
+});

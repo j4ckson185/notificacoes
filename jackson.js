@@ -22,10 +22,15 @@ onValue(messagesRef, (snapshot) => {
 // Ouvir por mensagens FCM
 const messaging = getMessaging();
 onMessage(messaging, (payload) => {
-    const messageData = payload.data;
-    const messageElement = document.createElement('div');
-    messageElement.textContent = messageData.text;
-    messagesContainer.appendChild(messageElement);
+  const messageData = payload.data;
+  const messageElement = document.createElement('div');
+  messageElement.textContent = messageData.text;
+  messagesContainer.appendChild(messageElement);
+
+  // Reproduzir o som personalizado
+  const audio = new Audio('assets/notification.mp3');
+  audio.play();
+});
 
 // Listen for token refresh events
 messaging.onTokenRefresh(() => {
@@ -39,11 +44,6 @@ messaging.onTokenRefresh(() => {
       console.error('Error refreshing token.');
     }
   });
-});
-    
-    // Reproduzir o som personalizado
-    const audio = new Audio('assets/notification.mp3');
-    audio.play();
 });
 
 // Obter o token FCM

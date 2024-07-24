@@ -43,16 +43,17 @@ const userMessagesRef = ref(database, 'messages/jackson');
 onChildAdded(userMessagesRef, (snapshot) => {
     const messageData = snapshot.val();
     console.log('New message added:', messageData);  // Log message data for debugging
+    
+    // Create a new div element for the message
     const messageElement = document.createElement('div');
     messageElement.classList.add('message');
     messageElement.textContent = messageData.text;
+    
+    // Log the element to ensure it is created correctly
+    console.log('Message element:', messageElement);
+    
+    // Append the message element to the messages container
     messagesContainer.appendChild(messageElement);
-
-    // Play notification sound
-    const audio = new Audio('/assets/notification.mp3');
-    audio.play().catch((error) => {
-        console.error('Error playing notification sound:', error);
-    });
 });
 
 // Listen for FCM messages

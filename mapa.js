@@ -4,13 +4,15 @@ let map;
 let markers = [];
 
 window.initMap = function() {
+    const storeLocation = { lat: -5.748178, lng: -35.256141 };
+
     map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: -23.5505, lng: -46.6333 },
-        zoom: 12
+        center: storeLocation,
+        zoom: 15
     });
 
     // Adiciona a localização da loja
-    addStoreMarker({ lat: -5.748178, lng: -35.256141 }, 'https://i.ibb.co/D766RTL/loja.png');
+    addStoreMarker(storeLocation, 'https://i.ibb.co/D766RTL/loja.png');
 
     const locationsRef = ref(database, 'locations');
     onValue(locationsRef, (snapshot) => {

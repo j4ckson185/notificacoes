@@ -51,7 +51,8 @@ function addUserMarker(location, userId) {
     const userRef = ref(database, 'users/' + userId); // Assume que os dados dos usuários estão armazenados na árvore 'users'
     onValue(userRef, (snapshot) => {
         const user = snapshot.val();
-        const nameOrEmail = user.name || user.email || 'Usuário';
+        const nameOrEmail = user ? (user.name || user.email || 'Usuário') : 'Usuário Desconhecido';
+        const address = location.address || 'Endereço não disponível';
 
         const marker = new google.maps.Marker({
             position: { lat: location.latitude, lng: location.longitude },
@@ -60,11 +61,11 @@ function addUserMarker(location, userId) {
                 url: 'https://i.ibb.co/FHdgjcK/capacete.png',
                 scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone ajustado
             },
-            title: `${nameOrEmail}\n${location.address || 'Endereço não disponível'}`
+            title: `${nameOrEmail}\n${address}`
         });
 
         const infowindow = new google.maps.InfoWindow({
-            content: `${nameOrEmail}<br>${location.address || 'Endereço não disponível'}`
+            content: `${nameOrEmail}<br>${address}`
         });
 
         marker.addListener('mouseover', () => {
@@ -76,6 +77,8 @@ function addUserMarker(location, userId) {
         });
 
         markers.push(marker);
+    }, (error) => {
+        console.error('Erro ao obter informações do usuário:', error);
     });
 }
 

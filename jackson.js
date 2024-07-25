@@ -1,4 +1,4 @@
-import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { getDatabase, ref, onValue, remove } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 import { getAuth, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 import { firebaseConfig } from './firebase-config.js';
@@ -48,7 +48,12 @@ onMessage(messaging, (payload) => {
 
 // Clear all messages
 clearMessagesButton.addEventListener('click', () => {
-    messagesContainer.innerHTML = '';
+    remove(messagesRef).then(() => {
+        messagesContainer.innerHTML = '';
+        console.log('All messages cleared.');
+    }).catch((error) => {
+        console.error('Error clearing messages:', error);
+    });
 });
 
 // Logout

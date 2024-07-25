@@ -1,6 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getDatabase, ref, push, set, onValue, update, get } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { getDatabase, ref, push, set, onValue, update, get, query, orderByChild, startAt, endAt } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -84,6 +84,7 @@ form.addEventListener('submit', (e) => {
     const reportData = {
         name: document.getElementById('motoboyName').value,
         dayOfWeek: document.getElementById('dayOfWeek').value,
+        date: document.getElementById('date').value,
         deliveryCount: document.getElementById('deliveryCount').value,
         sameHouseCount: document.getElementById('sameHouseCount').value,
         receivedAmount: parseFloat(document.getElementById('receivedAmount').value),
@@ -119,39 +120,116 @@ document.getElementById('backToForm').addEventListener('click', () => {
     form.style.display = 'block';
 });
 
+document.getElementById('applyFilter').addEventListener('click', () => {
+    const filterValue = document.getElementById('reportFilter').value;
+    filterReports(filterValue);
+});
+
 function loadReports() {
     reportsContainer.innerHTML = '';
     const sanitizedEmail = sanitizeEmail(currentUserEmail);
     const reportsRef = ref(database, `reports/${sanitizedEmail}`);
     onValue(reportsRef, (snapshot) => {
-        snapshot.forEach((childSnapshot) => {
-            const reportData = childSnapshot.val();
-            const reportKey = childSnapshot.key;
+        if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+                const reportData = childSnapshot.val();
+                const reportKey = childSnapshot.key;
 
-            const reportDiv = document.createElement('div');
-            reportDiv.classList.add('report');
+                const reportDiv = document.createElement('div');
+                reportDiv.classList.add('report');
 
-            reportDiv.innerHTML = `
-                <p><strong>Nome:</strong> ${reportData.name}</p>
-                <p><strong>Dia da Semana:</strong> ${reportData.dayOfWeek}</p>
-                <p><strong>Quantidade de Entregas:</strong> ${reportData.deliveryCount}</p>
-                <p><strong>Entregas na mesma casa:</strong> ${reportData.sameHouseCount}</p>
-                <p><strong>Valor dentro (já recebido):</strong> ${reportData.receivedAmount.toFixed(2)}</p>
-                <p><strong>PIX:</strong> ${reportData.pixKey}</p>
-                <p><strong>Total a Receber:</strong> ${reportData.totalAmount.toFixed(2)}</p>
-                <p><strong>Status do Pagamento:</strong> ${reportData.paymentStatus}</p>
-                <button class="editReport" data-key="${reportKey}">Editar Formulário</button>
-            `;
+                reportDiv.innerHTML = `
+                    <p><strong>Nome:</strong> ${reportData.name}</p>
+                    <p><strong>Dia da Semana:</strong> ${reportData.dayOfWeek}</p>
+                    <p><strong>Data:</strong> ${reportData.date}</p>
+                    <p><strong>Quantidade de Entregas:</strong> ${reportData.deliveryCount}</p>
+                    <p><strong>Entregas na mesma casa:</strong> ${reportData.sameHouseCount}</p>
+                    <p><strong>Valor dentro (já recebido):</strong> ${reportData.receivedAmount.toFixed(2)}</p>
+                    <p><strong>PIX:</strong> ${reportData.pixKey}</p>
+                    <p><strong>Total a Receber:</strong> ${reportData.totalAmount.toFixed(2)}</p>
+                    <p><strong>Status do Pagamento:</strong> ${reportData.paymentStatus}</p>
+                    <button class="editReport" data-key="${reportKey}">Editar Formulário</button>
+                `;
 
-            reportsContainer.appendChild(reportDiv);
-        });
-
-        document.querySelectorAll('.editReport').forEach((button) => {
-            button.addEventListener('click', (e) => {
-                const reportKey = e.target.getAttribute('data-key');
-                editReport(reportKey);
+                reportsContainer.appendChild(reportDiv);
             });
-        });
+
+            document.querySelectorAll('.editReport').forEach((button) => {
+                button.addEventListener('click', (e) => {
+                    const reportKey = e.target.getAttribute('data-key');
+                    editReport(reportKey);
+                });
+            });
+        } else {
+            reportsContainer.innerHTML = '<p>Você ainda não enviou nenhum relatório.</p>';
+        }
+    });
+}
+
+function filterReports(filterValue) {
+    reportsContainer.innerHTML = '';
+    const sanitizedEmail = sanitizeEmail(currentUserEmail);
+    const reportsRef = ref(database, `reports/${sanitizedEmail}`);
+    let startDate, endDate;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (filterValue === 'today') {
+        startDate = today;
+        endDate = new Date(today);
+        endDate.setDate(today.getDate() + 1);
+    } else if (filterValue === 'yesterday') {
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 1);
+        endDate = new Date(today);
+    } else if (filterValue === 'last7days') {
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 7);
+        endDate = new Date(today);
+        endDate.setDate(today.getDate() + 1);
+    } else if (filterValue === 'last30days') {
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 30);
+        endDate = new Date(today);
+        endDate.setDate(today.getDate() + 1);
+    }
+
+    const filteredReportsQuery = query(reportsRef, orderByChild('date'), startAt(startDate.toISOString()), endAt(endDate.toISOString()));
+    onValue(filteredReportsQuery, (snapshot) => {
+        if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+                const reportData = childSnapshot.val();
+                const reportKey = childSnapshot.key;
+
+                const reportDiv = document.createElement('div');
+                reportDiv.classList.add('report');
+
+                reportDiv.innerHTML = `
+                    <p><strong>Nome:</strong> ${reportData.name}</p>
+                    <p><strong>Dia da Semana:</strong> ${reportData.dayOfWeek}</p>
+                    <p><strong>Data:</strong> ${reportData.date}</p>
+                    <p><strong>Quantidade de Entregas:</strong> ${reportData.deliveryCount}</p>
+                    <p><strong>Entregas na mesma casa:</strong> ${reportData.sameHouseCount}</p>
+                    <p><strong>Valor dentro (já recebido):</strong> ${reportData.receivedAmount.toFixed(2)}</p>
+                    <p><strong>PIX:</strong> ${reportData.pixKey}</p>
+                    <p><strong>Total a Receber:</strong> ${reportData.totalAmount.toFixed(2)}</p>
+                    <p><strong>Status do Pagamento:</strong> ${reportData.paymentStatus}</p>
+                    <button class="editReport" data-key="${reportKey}">Editar Formulário</button>
+                `;
+
+                reportsContainer.appendChild(reportDiv);
+            });
+
+            document.querySelectorAll('.editReport').forEach((button) => {
+                button.addEventListener('click', (e) => {
+                    const reportKey = e.target.getAttribute('data-key');
+                    editReport(reportKey);
+                });
+            });
+        } else {
+            reportsContainer.innerHTML = '<p>Você ainda não enviou nenhum relatório.</p>';
+        }
     });
 }
 
@@ -164,6 +242,7 @@ function editReport(reportKey) {
 
             document.getElementById('motoboyName').value = reportData.name;
             document.getElementById('dayOfWeek').value = reportData.dayOfWeek;
+            document.getElementById('date').value = reportData.date;
             document.getElementById('deliveryCount').value = reportData.deliveryCount;
             document.getElementById('sameHouseCount').value = reportData.sameHouseCount;
             document.getElementById('receivedAmount').value = reportData.receivedAmount;
@@ -190,6 +269,7 @@ function updateReport(e, reportKey) {
     const reportData = {
         name: document.getElementById('motoboyName').value,
         dayOfWeek: document.getElementById('dayOfWeek').value,
+        date: document.getElementById('date').value,
         deliveryCount: document.getElementById('deliveryCount').value,
         sameHouseCount: document.getElementById('sameHouseCount').value,
         receivedAmount: parseFloat(document.getElementById('receivedAmount').value),
@@ -216,6 +296,7 @@ function submitNewReport(e) {
     const reportData = {
         name: document.getElementById('motoboyName').value,
         dayOfWeek: document.getElementById('dayOfWeek').value,
+        date: document.getElementById('date').value,
         deliveryCount: document.getElementById('deliveryCount').value,
         sameHouseCount: document.getElementById('sameHouseCount').value,
         receivedAmount: parseFloat(document.getElementById('receivedAmount').value),

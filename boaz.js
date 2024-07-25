@@ -52,11 +52,9 @@ onChildAdded(userMessagesRef, (snapshot) => {
     const messageData = snapshot.val();
     console.log('New message added:', messageData);  // Log message data for debugging
     
-    // Create a new div element for the message
     const messageElement = document.createElement('div');
     messageElement.classList.add('message');
     
-    // Check if messageData has text property
     if (messageData && messageData.text) {
         messageElement.textContent = messageData.text;
         console.log('Message text:', messageData.text);  // Log message text for debugging
@@ -65,10 +63,8 @@ onChildAdded(userMessagesRef, (snapshot) => {
         console.log('MessageData does not contain text property');  // Log missing text property
     }
     
-    // Append the message element to the messages container
     messagesContainer.appendChild(messageElement);
 
-    // Play notification sound
     audio.play().catch((error) => {
         console.error('Error playing notification sound:', error);
     });
@@ -78,19 +74,16 @@ onChildAdded(userMessagesRef, (snapshot) => {
 onMessage(messaging, (payload) => {
     console.log('Received FCM message:', payload);
 
-    // Customize notification here
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
         body: payload.notification.body,
         icon: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png'
     };
 
-    // Play notification sound
     audio.play().catch((error) => {
         console.error('Error playing notification sound:', error);
     });
 
-    // Display the notification
     new Notification(notificationTitle, notificationOptions);
 });
 

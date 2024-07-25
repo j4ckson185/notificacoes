@@ -41,45 +41,41 @@ window.initMap = function() {
             clearMarkers();
             for (const key in locations) {
                 const location = locations[key];
-                addUserMarker(location, key);
+                if (location) {
+                    addUserMarker(location, key);
+                }
             }
         }
     });
 };
 
 function addUserMarker(location, userId) {
-    const userRef = ref(database, 'users/' + userId); // Assume que os dados dos usuários estão armazenados na árvore 'users'
-    onValue(userRef, (snapshot) => {
-        const user = snapshot.val();
-        const nameOrEmail = user ? (user.name || user.email || 'Usuário') : 'Usuário Desconhecido';
-        const address = location.address || 'Endereço não disponível';
+    const nameOrEmail = location.email || 'Email não disponível';
+    const address = location.address || 'Endereço não disponível';
 
-        const marker = new google.maps.Marker({
-            position: { lat: location.latitude, lng: location.longitude },
-            map: map,
-            icon: {
-                url: 'https://i.ibb.co/FHdgjcK/capacete.png',
-                scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone ajustado
-            },
-            title: `${nameOrEmail}\n${address}`
-        });
-
-        const infowindow = new google.maps.InfoWindow({
-            content: `${nameOrEmail}<br>${address}`
-        });
-
-        marker.addListener('mouseover', () => {
-            infowindow.open(map, marker);
-        });
-
-        marker.addListener('mouseout', () => {
-            infowindow.close();
-        });
-
-        markers.push(marker);
-    }, (error) => {
-        console.error('Erro ao obter informações do usuário:', error);
+    const marker = new google.maps.Marker({
+        position: { lat: location.latitude, lng: location.longitude },
+        map: map,
+        icon: {
+            url: 'https://i.ibb.co/FHdgjcK/capacete.png',
+            scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone ajustado
+        },
+        title: `${nameOrEmail}\n${address}`
     });
+
+    const infowindow = new google.maps.InfoWindow({
+        content: `${nameOrEmail}<br>${address}`
+    });
+
+    marker.addListener('mouseover', () => {
+        infowindow.open(map, marker);
+    });
+
+    marker.addListener('mouseout', () => {
+        infowindow.close();
+    });
+
+    markers.push(marker);
 }
 
 function clearMarkers() {

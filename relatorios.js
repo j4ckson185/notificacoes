@@ -1,6 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
 import { getAuth, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getDatabase, ref, query, orderByChild, startAt, endAt, get } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { getDatabase, ref, query, orderByChild, startAt, endAt, get, remove } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -51,6 +51,7 @@ document.getElementById('applyFilter').addEventListener('click', async () => {
             if (snapshot.exists()) {
                 snapshot.forEach((childSnapshot) => {
                     const reportData = childSnapshot.val();
+                    const reportKey = childSnapshot.key;
 
                     const reportDiv = document.createElement('div');
                     reportDiv.classList.add('report');
@@ -64,9 +65,24 @@ document.getElementById('applyFilter').addEventListener('click', async () => {
                         <p><strong>PIX:</strong> ${reportData.pixKey}</p>
                         <p><strong>Total a Receber:</strong> ${reportData.totalAmount.toFixed(2)}</p>
                         <p><strong>Status do Pagamento:</strong> ${reportData.paymentStatus}</p>
+                        <button class="deleteReport" data-key="${reportKey}">Remover Relatório</button>
                     `;
 
                     reportsContainer.appendChild(reportDiv);
+                });
+
+                document.querySelectorAll('.deleteReport').forEach((button) => {
+                    button.addEventListener('click', async (e) => {
+                        const reportKey = e.target.getAttribute('data-key');
+                        const sanitizedEmail = sanitizeEmail(email);
+                        const reportRef = ref(database, `reports/${sanitizedEmail}/${reportKey}`);
+                        try {
+                            await remove(reportRef);
+                            e.target.parentElement.remove();
+                        } catch (error) {
+                            console.error('Erro ao remover relatório:', error);
+                        }
+                    });
                 });
             } else {
                 reportsContainer.innerHTML = '<p>Nenhum relatório encontrado para a data selecionada.</p>';

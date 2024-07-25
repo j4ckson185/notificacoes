@@ -31,7 +31,7 @@ function addMotoboyMarker(location, name) {
         map: map,
         icon: {
             url: 'https://i.ibb.co/FHdgjcK/capacete.png', // URL do ícone
-            scaledSize: new google.maps.Size(20, 20) // Tamanho reduzido do ícone
+            scaledSize: new google.maps.Size(30, 30) // Tamanho reduzido do ícone
         },
         title: name
     });

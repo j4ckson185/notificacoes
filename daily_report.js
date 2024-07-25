@@ -47,7 +47,7 @@ function populateSelectOptions() {
         deliveryCountSelect.appendChild(option);
     }
 
-    for (let i = 1; i <= 15; i++) {
+    for (let i = 0; i <= 15; i++) { // Incluir 0 também
         const option = document.createElement('option');
         option.value = i;
         option.textContent = i;

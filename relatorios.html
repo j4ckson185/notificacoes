@@ -9,40 +9,17 @@
 <body>
     <div class="container">
         <h1>Relatórios</h1>
-        <form id="loginForm">
-            <label for="password">Senha:</label>
-            <input type="password" id="password" required>
-            <button type="submit">Entrar</button>
-        </form>
-        
-        <div id="reportSection" style="display:none;">
-            <label for="motoboySelect">Selecione o Motoboy:</label>
-            <select id="motoboySelect" required>
-                <option value="" disabled selected>Selecione</option>
-                <option value="boazd3@gmail.com">Boaz</option>
-                <option value="fellipeirineu90@gmail.com">Fellipe Matheus</option>
-                <option value="giovanni.silva18@gmail.com">Giovanni</option>
-                <option value="moises110723@gmail.com">Moisés</option>
-                <option value="jackson_division@hotmail.com">Jackson Maciel</option>
-            </select>
+        <label for="motoboyEmail">Email do Motoboy:</label>
+        <input type="email" id="motoboyEmail" required>
 
-            <label for="dateSelect">Data:</label>
-            <input type="date" id="dateSelect" required>
+        <label for="reportDate">Data:</label>
+        <input type="date" id="reportDate" required>
 
-            <button id="fetchReport">Buscar Relatório</button>
+        <button id="applyFilter">Aplicar Filtro</button>
 
-            <div id="reportDisplay" style="display:none;">
-                <h2>Relatório</h2>
-                <p><strong>Nome:</strong> <span id="displayMotoboyName"></span></p>
-                <p><strong>Data:</strong> <span id="displayDate"></span></p>
-                <p><strong>Quantidade de Entregas:</strong> <span id="displayDeliveryCount"></span></p>
-                <p><strong>Entregas na mesma casa:</strong> <span id="displaySameHouseCount"></span></p>
-                <p><strong>Valor dentro (já recebido):</strong> <span id="displayReceivedAmount"></span></p>
-                <p><strong>PIX:</strong> <span id="displayPixKey"></span></p>
-                <p><strong>Total a Receber:</strong> <span id="displayTotalAmount"></span></p>
-                <p><strong>Status do Pagamento:</strong> <span id="displayPaymentStatus"></span></p>
-            </div>
-        </div>
+        <div id="reportsContainer"></div>
+
+        <button id="logoutButton">Sair da Conta</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
@@ -51,18 +28,25 @@
     <script src="relatorios.js" type="module"></script>
     <style>
         .container {
-            max-width: 600px;
+            max-width: 100%;
             margin: 0 auto;
             padding: 20px;
             box-sizing: border-box;
+            height: 100vh;
+            overflow-y: auto;
         }
-        form, div {
-            margin-bottom: 15px;
+        label, input, button, div {
+            margin-bottom: 10px;
             width: 100%;
             box-sizing: border-box;
         }
         button {
             align-self: flex-start;
+        }
+        @media (min-width: 768px) {
+            .container {
+                max-width: 600px;
+            }
         }
     </style>
 </body>

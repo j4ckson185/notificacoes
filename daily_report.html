@@ -58,16 +58,16 @@
             <button type="submit">Enviar Relatório</button>
         </form>
 
-        <div id="reportDisplay" style="display:none;">
-            <h2>Relatório Enviado</h2>
-            <p><strong>Nome:</strong> <span id="displayMotoboyName"></span></p>
-            <p><strong>Dia da Semana:</strong> <span id="displayDayOfWeek"></span></p>
-            <p><strong>Quantidade de Entregas:</strong> <span id="displayDeliveryCount"></span></p>
-            <p><strong>Entregas na mesma casa:</strong> <span id="displaySameHouseCount"></span></p>
-            <p><strong>Valor dentro (já recebido):</strong> <span id="displayReceivedAmount"></span></p>
-            <p><strong>PIX:</strong> <span id="displayPixKey"></span></p>
-            <p><strong>Total a Receber:</strong> <span id="displayTotalAmount"></span></p>
-            <p><strong>Status do Pagamento:</strong> <span id="displayPaymentStatus"></span></p>
+        <div id="confirmationMessage" style="display:none;">
+            <h2>Relatório enviado</h2>
+            <button id="viewReports">Ver meus Relatórios</button>
+            <button id="addNewReport">Adicionar novo Relatório</button>
+        </div>
+
+        <div id="reportsList" style="display:none;">
+            <h2>Meus Relatórios</h2>
+            <div id="reportsContainer"></div>
+            <button id="backToForm">Voltar ao Formulário</button>
         </div>
     </div>
 
@@ -84,11 +84,11 @@
             height: 100vh;
             overflow-y: auto;
         }
-        form {
+        form, #confirmationMessage, #reportsList {
             display: flex;
             flex-direction: column;
-            height: 100%;
             justify-content: space-between;
+            height: 100%;
         }
         label, select, input, div {
             margin-bottom: 10px;

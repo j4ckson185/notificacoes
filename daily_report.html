@@ -58,13 +58,8 @@
 
         <div id="reportsList" style="display:none;">
             <h2>Filtrar Relatórios</h2>
-            <label for="reportFilter">Filtrar por data:</label>
-            <select id="reportFilter">
-                <option value="today">Hoje</option>
-                <option value="yesterday">Ontem</option>
-                <option value="last7days">Últimos 7 dias</option>
-                <option value="last30days">Últimos 30 dias</option>
-            </select>
+            <label for="reportDate">Data:</label>
+            <input type="date" id="reportDate" required>
             <button id="applyFilter">Aplicar Filtro</button>
             <div id="reportsContainer"></div>
             <button id="backToForm">Voltar ao Formulário</button>

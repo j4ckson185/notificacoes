@@ -11,7 +11,19 @@
         <h1>Controle Financeiro</h1>
         <form id="dailyReportForm">
             <label for="motoboyName">Nome:</label>
-            <input type="text" id="motoboyName" required>
+            <input type="text" id="motoboyName" readonly>
+
+            <label for="dayOfWeek">Dia da Semana:</label>
+            <select id="dayOfWeek" required>
+                <option value="" disabled selected>Selecione</option>
+                <option value="Segunda-feira">Segunda-feira</option>
+                <option value="Terça-feira">Terça-feira</option>
+                <option value="Quarta-feira">Quarta-feira</option>
+                <option value="Quinta-feira">Quinta-feira</option>
+                <option value="Sexta-feira">Sexta-feira</option>
+                <option value="Sábado">Sábado</option>
+                <option value="Domingo">Domingo</option>
+            </select>
 
             <label for="deliveryCount">Quantidade de Entregas:</label>
             <select id="deliveryCount" required>
@@ -34,18 +46,28 @@
             <label>Total a Receber:</label>
             <div id="totalAmount">0</div>
 
-            <label>Selecione o status do pagamento:</label>
-            <div id="paymentStatus">
-                <input type="radio" id="pending" name="status" value="Pendente">
-                <label for="pending">Pendente <span class="status-icon red"></span></label>
-                <input type="radio" id="partial" name="status" value="Pago uma parte">
-                <label for="partial">Pago uma parte <span class="status-icon yellow"></span></label>
-                <input type="radio" id="paid" name="status" value="Quitado">
-                <label for="paid">Quitado <span class="status-icon green"></span></label>
-            </div>
+            <label for="paymentStatus">Selecione o status do pagamento:</label>
+            <select id="paymentStatus" required>
+                <option value="" disabled selected>Selecione</option>
+                <option value="Pendente">Pendente</option>
+                <option value="Pago uma parte">Pago uma parte</option>
+                <option value="Quitado">Quitado</option>
+            </select>
 
             <button type="submit">Enviar Relatório</button>
         </form>
+
+        <div id="reportDisplay" style="display:none;">
+            <h2>Relatório Enviado</h2>
+            <p><strong>Nome:</strong> <span id="displayMotoboyName"></span></p>
+            <p><strong>Dia da Semana:</strong> <span id="displayDayOfWeek"></span></p>
+            <p><strong>Quantidade de Entregas:</strong> <span id="displayDeliveryCount"></span></p>
+            <p><strong>Entregas na mesma casa:</strong> <span id="displaySameHouseCount"></span></p>
+            <p><strong>Valor dentro (já recebido):</strong> <span id="displayReceivedAmount"></span></p>
+            <p><strong>PIX:</strong> <span id="displayPixKey"></span></p>
+            <p><strong>Total a Receber:</strong> <span id="displayTotalAmount"></span></p>
+            <p><strong>Status do Pagamento:</strong> <span id="displayPaymentStatus"></span></p>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
@@ -53,6 +75,11 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
     <script src="daily_report.js" type="module"></script>
     <style>
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
         .status-icon {
             display: inline-block;
             width: 10px;

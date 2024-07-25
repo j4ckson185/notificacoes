@@ -15,7 +15,13 @@ const logoutButton = document.getElementById('logoutButton');
 
 function displayMessage(data) {
     const messageElement = document.createElement('div');
-    messageElement.textContent = data.text || 'Mensagem sem texto';
+    if (data.text) {
+        messageElement.textContent = data.text;
+    } else if (data.notification && data.notification.body) {
+        messageElement.textContent = data.notification.body;
+    } else {
+        messageElement.textContent = 'Mensagem sem texto';
+    }
     messagesContainer.appendChild(messageElement);
 }
 

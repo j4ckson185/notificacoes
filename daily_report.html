@@ -28,13 +28,15 @@
             <label for="deliveryCount">Quantidade de Entregas:</label>
             <select id="deliveryCount" required>
                 <option value="" disabled selected>Selecione</option>
-                ${Array.from({ length: 100 }, (_, i) => i + 1).map(i => `<option value="${i}">${numberToWords(i)}</option>`).join('')}
+                <!-- Here is the fix to show the numbers correctly -->
+                ${Array.from({ length: 100 }, (_, i) => i + 1).map(i => `<option value="${i}">${i}</option>`).join('')}
             </select>
 
             <label for="sameHouseCount">Entregas na mesma casa:</label>
             <select id="sameHouseCount" required>
                 <option value="" disabled selected>Selecione</option>
-                ${Array.from({ length: 15 }, (_, i) => i + 1).map(i => `<option value="${i}">${numberToWords(i)}</option>`).join('')}
+                <!-- Here is the fix to show the numbers correctly -->
+                ${Array.from({ length: 15 }, (_, i) => i + 1).map(i => `<option value="${i}">${i}</option>`).join('')}
             </select>
 
             <label for="receivedAmount">Valor dentro (já recebido):</label>
@@ -98,20 +100,5 @@
         .yellow { background-color: yellow; }
         .green { background-color: green; }
     </style>
-    <script>
-        function numberToWords(num) {
-            const ones = ["", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove", "dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"];
-            const tens = ["", "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa"];
-            const hundreds = ["", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seiscentos", "setecentos", "oitocentos", "novecentos"];
-            
-            if (num === 100) return "cem";
-            if (num === 0) return "zero";
-            if (num < 20) return ones[num];
-            if (num < 100) return tens[Math.floor(num / 10)] + (num % 10 !== 0 ? " e " + ones[num % 10] : "");
-            if (num < 1000) return hundreds[Math.floor(num / 100)] + (num % 100 !== 0 ? " e " + numberToWords(num % 100) : "");
-            
-            return "";
-        }
-    </script>
 </body>
 </html>

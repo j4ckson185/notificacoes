@@ -1,3 +1,4 @@
+// index.js
 import { auth, messaging, database, ref, set, getToken, signInWithEmailAndPassword, onAuthStateChanged } from './firebase-config.js';
 
 document.getElementById('loginForm').addEventListener('submit', async (e) => {

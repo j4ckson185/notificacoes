@@ -1,5 +1,5 @@
 // geolocation.js
-import { auth, database, ref } from './firebase-config.js';
+import { auth, database, ref, set } from './firebase-config.js';
 
 function updateLocation() {
     if (navigator.geolocation) {

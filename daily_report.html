@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Financeiro</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Controle Financeiro</h1>
+        <form id="dailyReportForm">
+            <label for="motoboyName">Nome:</label>
+            <input type="text" id="motoboyName" required>
+
+            <label for="deliveryCount">Quantidade de Entregas:</label>
+            <select id="deliveryCount" required>
+                <option value="" disabled selected>Selecione</option>
+                ${[...Array(101).keys()].map(i => `<option value="${i}">${i}</option>`).join('')}
+            </select>
+
+            <label for="sameHouseCount">Entregas na mesma casa:</label>
+            <select id="sameHouseCount" required>
+                <option value="" disabled selected>Selecione</option>
+                ${[...Array(16).keys()].map(i => `<option value="${i}">${i}</option>`).join('')}
+            </select>
+
+            <label for="receivedAmount">Valor dentro (já recebido):</label>
+            <input type="number" id="receivedAmount" step="0.01" required>
+
+            <label for="pixKey">PIX:</label>
+            <input type="text" id="pixKey" required>
+
+            <label>Total a Receber:</label>
+            <div id="totalAmount">0</div>
+
+            <label>Selecione o status do pagamento:</label>
+            <div id="paymentStatus">
+                <input type="radio" id="pending" name="status" value="Pendente">
+                <label for="pending">Pendente <span class="status-icon red"></span></label>
+                <input type="radio" id="partial" name="status" value="Pago uma parte">
+                <label for="partial">Pago uma parte <span class="status-icon yellow"></span></label>
+                <input type="radio" id="paid" name="status" value="Quitado">
+                <label for="paid">Quitado <span class="status-icon green"></span></label>
+            </div>
+
+            <button type="submit">Enviar Relatório</button>
+        </form>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script src="daily_report.js" type="module"></script>
+    <style>
+        .status-icon {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 5px;
+        }
+        .red { background-color: red; }
+        .yellow { background-color: yellow; }
+        .green { background-color: green; }
+    </style>
+</body>
+</html>

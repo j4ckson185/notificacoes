@@ -1,25 +1,18 @@
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
-import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
-
-// Import Firebase services from firebase-config.js
-import { auth, messaging, database } from './firebase-config.js';
-
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
 
     try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
         // Solicitar permissão para geolocalização
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
                 const userId = user.uid;
-                const userRef = ref(database, 'locations/' + userId);
-                set(userRef, {
+                const userRef = firebase.database().ref('locations/' + userId);
+                userRef.set({
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude
                 });
@@ -29,8 +22,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
             navigator.geolocation.watchPosition((position) => {
                 const userId = user.uid;
-                const userRef = ref(database, 'locations/' + userId);
-                set(userRef, {
+                const userRef = firebase.database().ref('locations/' + userId);
+                userRef.set({
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude
                 });
@@ -42,10 +35,10 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         }
 
         // Get FCM token
-        const currentToken = await getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' }); // Replace with your actual VAPID key
+        const currentToken = await firebase.messaging().getToken({ vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' }); // Replace with your actual VAPID key
         if (currentToken) {
             // Save token to database
-            await set(ref(database, 'tokens/' + user.uid), {
+            await firebase.database().ref('tokens/' + user.uid).set({
                 token: currentToken
             });
 
@@ -84,7 +77,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // Handle user authentication state changes
-onAuthStateChanged(auth, (user) => {
+firebase.auth().onAuthStateChanged((user) => {
     if (user) {
         // User is signed in
         console.log('User is signed in:', user);

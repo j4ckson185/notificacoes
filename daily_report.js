@@ -43,6 +43,10 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
+function sanitizeEmail(email) {
+    return email.replace(/[\.\#\$\[\]]/g, '_');
+}
+
 function populateSelectOptions() {
     const deliveryCountSelect = document.getElementById('deliveryCount');
     const sameHouseCountSelect = document.getElementById('sameHouseCount');
@@ -88,8 +92,8 @@ form.addEventListener('submit', (e) => {
         paymentStatus: document.getElementById('paymentStatus').value
     };
 
-    const encodedEmail = encodeURIComponent(currentUserEmail);
-    const reportRef = ref(database, `reports/${encodedEmail}`);
+    const sanitizedEmail = sanitizeEmail(currentUserEmail);
+    const reportRef = ref(database, `reports/${sanitizedEmail}`);
     push(reportRef, reportData)
         .then(() => {
             form.style.display = 'none';
@@ -117,8 +121,8 @@ document.getElementById('backToForm').addEventListener('click', () => {
 
 function loadReports() {
     reportsContainer.innerHTML = '';
-    const encodedEmail = encodeURIComponent(currentUserEmail);
-    const reportsRef = ref(database, `reports/${encodedEmail}`);
+    const sanitizedEmail = sanitizeEmail(currentUserEmail);
+    const reportsRef = ref(database, `reports/${sanitizedEmail}`);
     onValue(reportsRef, (snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const reportData = childSnapshot.val();
@@ -152,8 +156,8 @@ function loadReports() {
 }
 
 function editReport(reportKey) {
-    const encodedEmail = encodeURIComponent(currentUserEmail);
-    const reportRef = ref(database, `reports/${encodedEmail}/${reportKey}`);
+    const sanitizedEmail = sanitizeEmail(currentUserEmail);
+    const reportRef = ref(database, `reports/${sanitizedEmail}/${reportKey}`);
     get(reportRef).then((snapshot) => {
         if (snapshot.exists()) {
             const reportData = snapshot.val();
@@ -194,8 +198,8 @@ function updateReport(e, reportKey) {
         paymentStatus: document.getElementById('paymentStatus').value
     };
 
-    const encodedEmail = encodeURIComponent(currentUserEmail);
-    const reportRef = ref(database, `reports/${encodedEmail}/${reportKey}`);
+    const sanitizedEmail = sanitizeEmail(currentUserEmail);
+    const reportRef = ref(database, `reports/${sanitizedEmail}/${reportKey}`);
     update(reportRef, reportData)
         .then(() => {
             form.style.display = 'none';
@@ -220,8 +224,8 @@ function submitNewReport(e) {
         paymentStatus: document.getElementById('paymentStatus').value
     };
 
-    const encodedEmail = encodeURIComponent(currentUserEmail);
-    const reportRef = ref(database, `reports/${encodedEmail}`);
+    const sanitizedEmail = sanitizeEmail(currentUserEmail);
+    const reportRef = ref(database, `reports/${sanitizedEmail}`);
     push(reportRef, reportData)
         .then(() => {
             form.style.display = 'none';

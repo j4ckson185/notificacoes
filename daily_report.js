@@ -70,7 +70,7 @@ populateSelectOptions();
 
 document.getElementById('date').addEventListener('change', () => {
     const date = new Date(document.getElementById('date').value);
-    const options = { weekday: 'long' };
+    const options = { weekday: 'long', timeZone: 'America/Sao_Paulo' }; // Set timezone to Brazil
     const dayOfWeek = new Intl.DateTimeFormat('pt-BR', options).format(date);
     document.getElementById('dayOfWeek').value = dayOfWeek;
 });
@@ -190,7 +190,7 @@ function filterReports(filterValue) {
     const reportsRef = ref(database, `reports/${sanitizedEmail}`);
     let startDate, endDate;
 
-    const today = new Date();
+    const today = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
     today.setHours(0, 0, 0, 0);
 
     if (filterValue === 'today') {

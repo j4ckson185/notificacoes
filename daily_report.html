@@ -1,108 +1,356 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle Financeiro</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Controle Financeiro</h1>
-        <form id="dailyReportForm">
-            <label for="motoboyName">Nome:</label>
-            <input type="text" id="motoboyName" readonly>
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+import { getDatabase, ref, push, set, onValue, update, get, query, orderByChild, startAt, endAt } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
-            <label for="date">Data:</label>
-            <input type="date" id="date" required>
-            <input type="text" id="dayOfWeek" readonly hidden>
+const firebaseConfig = {
+    apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
+    authDomain: "cabana-8d55e.firebaseapp.com",
+    databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
+    projectId: "cabana-8d55e",
+    storageBucket: "cabana-8d55e.appspot.com",
+    messagingSenderId: "706144237954",
+    appId: "1:706144237954:web:345c10370972486afc779b",
+    measurementId: "G-96Y337GYT8"
+};
 
-            <label for="deliveryCount">Quantidade de Entregas:</label>
-            <select id="deliveryCount" required></select>
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const database = getDatabase(app);
 
-            <label for="sameHouseCount">Entregas na mesma casa:</label>
-            <select id="sameHouseCount" required></select>
+const form = document.getElementById('dailyReportForm');
+const totalAmountDiv = document.getElementById('totalAmount');
+const confirmationMessage = document.getElementById('confirmationMessage');
+const reportsList = document.getElementById('reportsList');
+const reportsContainer = document.getElementById('reportsContainer');
+const reportDisplay = document.getElementById('reportDisplay');
 
-            <label for="receivedAmount">Valor dentro (já recebido):</label>
-            <input type="number" id="receivedAmount" step="0.01" required>
+const nameMap = {
+    'boazd3@gmail.com': 'Boaz',
+    'fellipeirineu90@gmail.com': 'Fellipe Matheus',
+    'giovanni.silva18@gmail.com': 'Giovanni',
+    'moises110723@gmail.com': 'Moisés',
+    'jackson_division@hotmail.com': 'Jackson Maciel'
+};
 
-            <label for="shiftType">Um ou dois turnos?</label>
-            <select id="shiftType" required>
-                <option value="" disabled selected>Selecione</option>
-                <option value="35">Um turno (R$ 35,00)</option>
-                <option value="70">Dois turnos (R$ 70,00)</option>
-            </select>
+let currentUserEmail = '';
 
-            <label for="pixKey">PIX:</label>
-            <input type="text" id="pixKey" required>
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUserEmail = user.email;
+        document.getElementById('motoboyName').value = nameMap[user.email] || 'Usuário';
+    } else {
+        console.error('Usuário não autenticado');
+    }
+});
 
-            <label>Total a Receber:</label>
-            <div id="totalAmount">0</div>
+function sanitizeEmail(email) {
+    return email.replace(/[\.\#\$\[\]]/g, '_');
+}
 
-            <label for="paymentStatus">Selecione o status do pagamento:</label>
-            <select id="paymentStatus" required>
-                <option value="" disabled selected>Selecione</option>
-                <option value="Pendente">Pendente</option>
-                <option value="Pago uma parte">Pago uma parte</option>
-                <option value="Quitado">Quitado</option>
-            </select>
+function populateSelectOptions() {
+    const deliveryCountSelect = document.getElementById('deliveryCount');
+    const sameHouseCountSelect = document.getElementById('sameHouseCount');
 
-            <button type="submit">Enviar Relatório</button>
-        </form>
+    for (let i = 1; i <= 100; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        deliveryCountSelect.appendChild(option);
+    }
 
-        <div id="confirmationMessage" style="display:none;">
-            <h2>Relatório enviado</h2>
-            <button id="viewReports">Ver meus Relatórios</button>
-            <button id="addNewReport">Adicionar novo Relatório</button>
-        </div>
+    for (let i = 0; i <= 15; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        sameHouseCountSelect.appendChild(option);
+    }
+}
 
-        <div id="reportsList" style="display:none;">
-            <h2>Filtrar Relatórios</h2>
-            <label for="reportFilter">Filtrar por data:</label>
-            <select id="reportFilter">
-                <option value="today">Hoje</option>
-                <option value="yesterday">Ontem</option>
-                <option value="last7days">Últimos 7 dias</option>
-                <option value="last30days">Últimos 30 dias</option>
-            </select>
-            <button id="applyFilter">Aplicar Filtro</button>
-            <div id="reportsContainer"></div>
-            <button id="backToForm">Voltar ao Formulário</button>
-        </div>
-    </div>
+populateSelectOptions();
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-    <script src="daily_report.js" type="module"></script>
-    <style>
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 20px;
-            box-sizing: border-box;
-            height: 100vh;
-            overflow-y: auto;
+document.getElementById('date').addEventListener('change', () => {
+    const date = new Date(document.getElementById('date').value);
+    const options = { weekday: 'long' };
+    const dayOfWeek = new Intl.DateTimeFormat('pt-BR', options).format(date);
+    document.getElementById('dayOfWeek').value = dayOfWeek;
+});
+
+form.addEventListener('input', () => {
+    const deliveryCount = parseInt(document.getElementById('deliveryCount').value) || 0;
+    const sameHouseCount = parseInt(document.getElementById('sameHouseCount').value) || 0;
+    const receivedAmount = parseFloat(document.getElementById('receivedAmount').value) || 0;
+    const shiftValue = parseFloat(document.getElementById('shiftType').value) || 0;
+
+    let totalAmount = (deliveryCount * 3) - (sameHouseCount * 3) - receivedAmount + shiftValue;
+    if (sameHouseCount === 0) {
+        totalAmount += sameHouseCount * 3;
+    }
+
+    totalAmountDiv.textContent = totalAmount.toFixed(2);
+});
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const reportData = {
+        name: document.getElementById('motoboyName').value,
+        dayOfWeek: document.getElementById('dayOfWeek').value,
+        date: document.getElementById('date').value,
+        deliveryCount: document.getElementById('deliveryCount').value,
+        sameHouseCount: document.getElementById('sameHouseCount').value,
+        receivedAmount: parseFloat(document.getElementById('receivedAmount').value),
+        pixKey: document.getElementById('pixKey').value,
+        totalAmount: parseFloat(totalAmountDiv.textContent),
+        paymentStatus: document.getElementById('paymentStatus').value
+    };
+
+    const sanitizedEmail = sanitizeEmail(currentUserEmail);
+    const reportRef = ref(database, `reports/${sanitizedEmail}`);
+    push(reportRef, reportData)
+        .then(() => {
+            form.style.display = 'none';
+            confirmationMessage.style.display = 'block';
+        })
+        .catch((error) => {
+            console.error('Erro ao enviar relatório:', error);
+        });
+});
+
+document.getElementById('viewReports').addEventListener('click', () => {
+    confirmationMessage.style.display = 'none';
+    reportsList.style.display = 'block';
+});
+
+document.getElementById('addNewReport').addEventListener('click', () => {
+    location.reload();
+});
+
+document.getElementById('backToForm').addEventListener('click', () => {
+    reportsList.style.display = 'none';
+    form.style.display = 'block';
+});
+
+document.getElementById('applyFilter').addEventListener('click', () => {
+    const filterValue = document.getElementById('reportFilter').value;
+    filterReports(filterValue);
+});
+
+function loadReports() {
+    reportsContainer.innerHTML = '';
+    const sanitizedEmail = sanitizeEmail(currentUserEmail);
+    const reportsRef = ref(database, `reports/${sanitizedEmail}`);
+    onValue(reportsRef, (snapshot) => {
+        if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+                const reportData = childSnapshot.val();
+                const reportKey = childSnapshot.key;
+
+                const reportDiv = document.createElement('div');
+                reportDiv.classList.add('report');
+
+                reportDiv.innerHTML = `
+                    <p><strong>Nome:</strong> ${reportData.name}</p>
+                    <p><strong>Dia da Semana:</strong> ${reportData.dayOfWeek}</p>
+                    <p><strong>Data:</strong> ${reportData.date}</p>
+                    <p><strong>Quantidade de Entregas:</strong> ${reportData.deliveryCount}</p>
+                    <p><strong>Entregas na mesma casa:</strong> ${reportData.sameHouseCount}</p>
+                    <p><strong>Valor dentro (já recebido):</strong> ${reportData.receivedAmount.toFixed(2)}</p>
+                    <p><strong>PIX:</strong> ${reportData.pixKey}</p>
+                    <p><strong>Total a Receber:</strong> ${reportData.totalAmount.toFixed(2)}</p>
+                    <p><strong>Status do Pagamento:</strong> ${reportData.paymentStatus}</p>
+                    <button class="editReport" data-key="${reportKey}">Editar Formulário</button>
+                    <button class="deleteReport" data-key="${reportKey}">Remover Formulário</button>
+                `;
+
+                reportsContainer.appendChild(reportDiv);
+            });
+
+            document.querySelectorAll('.editReport').forEach((button) => {
+                button.addEventListener('click', (e) => {
+                    const reportKey = e.target.getAttribute('data-key');
+                    editReport(reportKey);
+                });
+            });
+
+            document.querySelectorAll('.deleteReport').forEach((button) => {
+                button.addEventListener('click', (e) => {
+                    const reportKey = e.target.getAttribute('data-key');
+                    deleteReport(reportKey);
+                });
+            });
+        } else {
+            reportsContainer.innerHTML = '<p>Você ainda não enviou nenhum relatório.</p>';
         }
-        form, #confirmationMessage, #reportsList {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
+    });
+}
+
+function filterReports(filterValue) {
+    reportsContainer.innerHTML = '';
+    const sanitizedEmail = sanitizeEmail(currentUserEmail);
+    const reportsRef = ref(database, `reports/${sanitizedEmail}`);
+    let startDate, endDate;
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (filterValue === 'today') {
+        startDate = today;
+        endDate = new Date(today);
+        endDate.setDate(today.getDate() + 1);
+    } else if (filterValue === 'yesterday') {
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 1);
+        endDate = new Date(today);
+    } else if (filterValue === 'last7days') {
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 7);
+        endDate = new Date(today);
+        endDate.setDate(today.getDate() + 1);
+    } else if (filterValue === 'last30days') {
+        startDate = new Date(today);
+        startDate.setDate(today.getDate() - 30);
+        endDate = new Date(today);
+        endDate.setDate(today.getDate() + 1);
+    }
+
+    const filteredReportsQuery = query(reportsRef, orderByChild('date'), startAt(startDate.toISOString()), endAt(endDate.toISOString()));
+    onValue(filteredReportsQuery, (snapshot) => {
+        if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+                const reportData = childSnapshot.val();
+                const reportKey = childSnapshot.key;
+
+                const reportDiv = document.createElement('div');
+                reportDiv.classList.add('report');
+
+                reportDiv.innerHTML = `
+                    <p><strong>Nome:</strong> ${reportData.name}</p>
+                    <p><strong>Dia da Semana:</strong> ${reportData.dayOfWeek}</p>
+                    <p><strong>Data:</strong> ${reportData.date}</p>
+                    <p><strong>Quantidade de Entregas:</strong> ${reportData.deliveryCount}</p>
+                    <p><strong>Entregas na mesma casa:</strong> ${reportData.sameHouseCount}</p>
+                    <p><strong>Valor dentro (já recebido):</strong> ${reportData.receivedAmount.toFixed(2)}</p>
+                    <p><strong>PIX:</strong> ${reportData.pixKey}</p>
+                    <p><strong>Total a Receber:</strong> ${reportData.totalAmount.toFixed(2)}</p>
+                    <p><strong>Status do Pagamento:</strong> ${reportData.paymentStatus}</p>
+                    <button class="editReport" data-key="${reportKey}">Editar Formulário</button>
+                    <button class="deleteReport" data-key="${reportKey}">Remover Formulário</button>
+                `;
+
+                reportsContainer.appendChild(reportDiv);
+            });
+
+            document.querySelectorAll('.editReport').forEach((button) => {
+                button.addEventListener('click', (e) => {
+                    const reportKey = e.target.getAttribute('data-key');
+                    editReport(reportKey);
+                });
+            });
+
+            document.querySelectorAll('.deleteReport').forEach((button) => {
+                button.addEventListener('click', (e) => {
+                    const reportKey = e.target.getAttribute('data-key');
+                    deleteReport(reportKey);
+                });
+            });
+        } else {
+            reportsContainer.innerHTML = '<p>Você ainda não enviou nenhum relatório.</p>';
         }
-        label, select, input, div {
-            margin-bottom: 10px;
-            width: 100%;
-            box-sizing: border-box;
+    });
+}
+
+function editReport(reportKey) {
+    const sanitizedEmail = sanitizeEmail(currentUserEmail);
+    const reportRef = ref(database, `reports/${sanitizedEmail}/${reportKey}`);
+    get(reportRef).then((snapshot) => {
+        if (snapshot.exists()) {
+            const reportData = snapshot.val();
+
+            document.getElementById('motoboyName').value = reportData.name;
+            document.getElementById('dayOfWeek').value = reportData.dayOfWeek;
+            document.getElementById('date').value = reportData.date;
+            document.getElementById('deliveryCount').value = reportData.deliveryCount;
+            document.getElementById('sameHouseCount').value = reportData.sameHouseCount;
+            document.getElementById('receivedAmount').value = reportData.receivedAmount;
+            document.getElementById('pixKey').value = reportData.pixKey;
+            document.getElementById('totalAmount').textContent = reportData.totalAmount.toFixed(2);
+            document.getElementById('paymentStatus').value = reportData.paymentStatus;
+
+            form.removeEventListener('submit', submitNewReport);
+            form.addEventListener('submit', (e) => updateReport(e, reportKey));
+
+            form.style.display = 'block';
+            reportsList.style.display = 'none';
+        } else {
+            console.error('Relatório não encontrado');
         }
-        button {
-            align-self: flex-start;
-        }
-        @media (min-width: 768px) {
-            .container {
-                max-width: 600px;
-            }
-        }
-    </style>
-</body>
-</html>
+    }).catch((error) => {
+        console.error('Erro ao buscar relatório:', error);
+    });
+}
+
+function updateReport(e, reportKey) {
+    e.preventDefault();
+
+    const reportData = {
+        name: document.getElementById('motoboyName').value,
+        dayOfWeek: document.getElementById('dayOfWeek').value,
+        date: document.getElementById('date').value,
+        deliveryCount: document.getElementById('deliveryCount').value,
+        sameHouseCount: document.getElementById('sameHouseCount').value,
+        receivedAmount: parseFloat(document.getElementById('receivedAmount').value),
+        pixKey: document.getElementById('pixKey').value,
+        totalAmount: parseFloat(totalAmountDiv.textContent),
+        paymentStatus: document.getElementById('paymentStatus').value
+    };
+
+    const sanitizedEmail = sanitizeEmail(currentUserEmail);
+    const reportRef = ref(database, `reports/${sanitizedEmail}/${reportKey}`);
+    update(reportRef, reportData)
+        .then(() => {
+            form.style.display = 'none';
+            confirmationMessage.style.display = 'block';
+        })
+        .catch((error) => {
+            console.error('Erro ao atualizar relatório:', error);
+        });
+}
+
+function deleteReport(reportKey) {
+    const sanitizedEmail = sanitizeEmail(currentUserEmail);
+    const reportRef = ref(database, `reports/${sanitizedEmail}/${reportKey}`);
+    set(reportRef, null)
+        .then(() => {
+            loadReports();
+        })
+        .catch((error) => {
+            console.error('Erro ao remover relatório:', error);
+        });
+}
+
+function submitNewReport(e) {
+    e.preventDefault();
+
+    const reportData = {
+        name: document.getElementById('motoboyName').value,
+        dayOfWeek: document.getElementById('dayOfWeek').value,
+        date: document.getElementById('date').value,
+        deliveryCount: document.getElementById('deliveryCount').value,
+        sameHouseCount: document.getElementById('sameHouseCount').value,
+        receivedAmount: parseFloat(document.getElementById('receivedAmount').value),
+        pixKey: document.getElementById('pixKey').value,
+        totalAmount: parseFloat(totalAmountDiv.textContent),
+        paymentStatus: document.getElementById('paymentStatus').value
+    };
+
+    const sanitizedEmail = sanitizeEmail(currentUserEmail);
+    const reportRef = ref(database, `reports/${sanitizedEmail}`);
+    push(reportRef, reportData)
+        .then(() => {
+            form.style.display = 'none';
+            confirmationMessage.style.display = 'block';
+        })
+        .catch((error) => {
+            console.error('Erro ao enviar relatório:', error);
+        });
+}

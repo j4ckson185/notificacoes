@@ -36,6 +36,27 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
+function populateSelectOptions() {
+    const deliveryCountSelect = document.getElementById('deliveryCount');
+    const sameHouseCountSelect = document.getElementById('sameHouseCount');
+
+    for (let i = 1; i <= 100; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        deliveryCountSelect.appendChild(option);
+    }
+
+    for (let i = 1; i <= 15; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        sameHouseCountSelect.appendChild(option);
+    }
+}
+
+populateSelectOptions();
+
 form.addEventListener('input', () => {
     const deliveryCount = parseInt(document.getElementById('deliveryCount').value) || 0;
     const sameHouseCount = parseInt(document.getElementById('sameHouseCount').value) || 0;

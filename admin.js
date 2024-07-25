@@ -1,4 +1,4 @@
-import { getDatabase, ref, set } from './firebase-config.js';
+import { getDatabase, ref, push } from './firebase-config.js';
 
 document.getElementById('sendMessageForm').addEventListener('submit', async function(e) {
     e.preventDefault();
@@ -7,7 +7,7 @@ document.getElementById('sendMessageForm').addEventListener('submit', async func
 
     if (message) {
         // Send message to Realtime Database
-        set(ref(getDatabase(), `messages/${user}`), {
+        push(ref(getDatabase(), `messages/${user}`), {
             text: message
         })
         .then(() => {

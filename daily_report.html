@@ -28,17 +28,24 @@
             <label for="deliveryCount">Quantidade de Entregas:</label>
             <select id="deliveryCount" required>
                 <option value="" disabled selected>Selecione</option>
-                ${[...Array(101).keys()].map(i => `<option value="${i}">${i}</option>`).join('')}
+                ${[...Array(101).keys()].slice(1).map(i => `<option value="${i}">${i}</option>`).join('')}
             </select>
 
             <label for="sameHouseCount">Entregas na mesma casa:</label>
             <select id="sameHouseCount" required>
                 <option value="" disabled selected>Selecione</option>
-                ${[...Array(16).keys()].map(i => `<option value="${i}">${i}</option>`).join('')}
+                ${[...Array(16).keys()].slice(1).map(i => `<option value="${i}">${i}</option>`).join('')}
             </select>
 
             <label for="receivedAmount">Valor dentro (já recebido):</label>
             <input type="number" id="receivedAmount" step="0.01" required>
+
+            <label for="shiftType">Um ou dois turnos?</label>
+            <select id="shiftType" required>
+                <option value="" disabled selected>Selecione</option>
+                <option value="35">Um turno (R$ 35,00)</option>
+                <option value="70">Dois turnos (R$ 70,00)</option>
+            </select>
 
             <label for="pixKey">PIX:</label>
             <input type="text" id="pixKey" required>

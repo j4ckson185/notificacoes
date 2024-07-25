@@ -1,6 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -15,7 +14,6 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const database = getDatabase(app);
 
 const form = document.getElementById('dailyReportForm');
 const totalAmountDiv = document.getElementById('totalAmount');
@@ -42,8 +40,9 @@ form.addEventListener('input', () => {
     const deliveryCount = parseInt(document.getElementById('deliveryCount').value) || 0;
     const sameHouseCount = parseInt(document.getElementById('sameHouseCount').value) || 0;
     const receivedAmount = parseFloat(document.getElementById('receivedAmount').value) || 0;
+    const shiftValue = parseFloat(document.getElementById('shiftType').value) || 0;
 
-    const totalAmount = deliveryCount - sameHouseCount - receivedAmount;
+    const totalAmount = (deliveryCount * 3) - (sameHouseCount * 3) - receivedAmount + shiftValue;
     totalAmountDiv.textContent = totalAmount.toFixed(2);
 });
 

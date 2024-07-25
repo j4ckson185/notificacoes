@@ -28,7 +28,7 @@ function addMarker(location) {
     const marker = new google.maps.Marker({
         position: { lat: location.latitude, lng: location.longitude },
         map: map,
-        icon: 'path_to_helmet_icon.png' // Substitua pelo caminho do ícone do capacete
+        icon: 'https://i.ibb.co/FHdgjcK/capacete.png' // Substitua pelo caminho do ícone do capacete
     });
     markers.push(marker);
 }

@@ -1,6 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
 import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getDatabase, ref, push, set, onValue, update } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { getDatabase, ref, push, set, onValue, update, get } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -54,7 +54,7 @@ function populateSelectOptions() {
         deliveryCountSelect.appendChild(option);
     }
 
-    for (let i = 0; i <= 15; i++) {
+    for (let i = 0; i <= 15; i++) { // Incluir 0 também
         const option = document.createElement('option');
         option.value = i;
         option.textContent = i;
@@ -88,7 +88,8 @@ form.addEventListener('submit', (e) => {
         paymentStatus: document.getElementById('paymentStatus').value
     };
 
-    const reportRef = ref(database, `reports/${currentUserEmail}`);
+    const encodedEmail = encodeURIComponent(currentUserEmail);
+    const reportRef = ref(database, `reports/${encodedEmail}`);
     push(reportRef, reportData)
         .then(() => {
             form.style.display = 'none';
@@ -116,7 +117,8 @@ document.getElementById('backToForm').addEventListener('click', () => {
 
 function loadReports() {
     reportsContainer.innerHTML = '';
-    const reportsRef = ref(database, `reports/${currentUserEmail}`);
+    const encodedEmail = encodeURIComponent(currentUserEmail);
+    const reportsRef = ref(database, `reports/${encodedEmail}`);
     onValue(reportsRef, (snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const reportData = childSnapshot.val();
@@ -150,7 +152,8 @@ function loadReports() {
 }
 
 function editReport(reportKey) {
-    const reportRef = ref(database, `reports/${currentUserEmail}/${reportKey}`);
+    const encodedEmail = encodeURIComponent(currentUserEmail);
+    const reportRef = ref(database, `reports/${encodedEmail}/${reportKey}`);
     get(reportRef).then((snapshot) => {
         if (snapshot.exists()) {
             const reportData = snapshot.val();
@@ -191,7 +194,8 @@ function updateReport(e, reportKey) {
         paymentStatus: document.getElementById('paymentStatus').value
     };
 
-    const reportRef = ref(database, `reports/${currentUserEmail}/${reportKey}`);
+    const encodedEmail = encodeURIComponent(currentUserEmail);
+    const reportRef = ref(database, `reports/${encodedEmail}/${reportKey}`);
     update(reportRef, reportData)
         .then(() => {
             form.style.display = 'none';
@@ -216,7 +220,8 @@ function submitNewReport(e) {
         paymentStatus: document.getElementById('paymentStatus').value
     };
 
-    const reportRef = ref(database, `reports/${currentUserEmail}`);
+    const encodedEmail = encodeURIComponent(currentUserEmail);
+    const reportRef = ref(database, `reports/${encodedEmail}`);
     push(reportRef, reportData)
         .then(() => {
             form.style.display = 'none';

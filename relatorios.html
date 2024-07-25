@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Relatórios</h1>
+        <form id="loginForm">
+            <label for="password">Senha:</label>
+            <input type="password" id="password" required>
+            <button type="submit">Entrar</button>
+        </form>
+        
+        <div id="reportSection" style="display:none;">
+            <label for="motoboySelect">Selecione o Motoboy:</label>
+            <select id="motoboySelect" required>
+                <option value="" disabled selected>Selecione</option>
+                <option value="boazd3@gmail.com">Boaz</option>
+                <option value="fellipeirineu90@gmail.com">Fellipe Matheus</option>
+                <option value="giovanni.silva18@gmail.com">Giovanni</option>
+                <option value="moises110723@gmail.com">Moisés</option>
+                <option value="jackson_division@hotmail.com">Jackson Maciel</option>
+            </select>
+
+            <label for="dayOfWeekSelect">Dia da Semana:</label>
+            <select id="dayOfWeekSelect" required>
+                <option value="" disabled selected>Selecione</option>
+                <option value="Segunda-feira">Segunda-feira</option>
+                <option value="Terça-feira">Terça-feira</option>
+                <option value="Quarta-feira">Quarta-feira</option>
+                <option value="Quinta-feira">Quinta-feira</option>
+                <option value="Sexta-feira">Sexta-feira</option>
+                <option value="Sábado">Sábado</option>
+                <option value="Domingo">Domingo</option>
+            </select>
+
+            <button id="fetchReport">Buscar Relatório</button>
+
+            <div id="reportDisplay" style="display:none;">
+                <h2>Relatório</h2>
+                <p><strong>Nome:</strong> <span id="displayMotoboyName"></span></p>
+                <p><strong>Dia da Semana:</strong> <span id="displayDayOfWeek"></span></p>
+                <p><strong>Quantidade de Entregas:</strong> <span id="displayDeliveryCount"></span></p>
+                <p><strong>Entregas na mesma casa:</strong> <span id="displaySameHouseCount"></span></p>
+                <p><strong>Valor dentro (já recebido):</strong> <span id="displayReceivedAmount"></span></p>
+                <p><strong>PIX:</strong> <span id="displayPixKey"></span></p>
+                <p><strong>Total a Receber:</strong> <span id="displayTotalAmount"></span></p>
+                <p><strong>Status do Pagamento:</strong> <span id="displayPaymentStatus"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script src="relatorios.js" type="module"></script>
+    <style>
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        form, div {
+            margin-bottom: 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            align-self: flex-start;
+        }
+    </style>
+</body>
+</html>

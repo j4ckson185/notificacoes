@@ -22,7 +22,6 @@ const totalAmountDiv = document.getElementById('totalAmount');
 const confirmationMessage = document.getElementById('confirmationMessage');
 const reportsList = document.getElementById('reportsList');
 const reportsContainer = document.getElementById('reportsContainer');
-const reportDisplay = document.getElementById('reportDisplay');
 
 const nameMap = {
     'boazd3@gmail.com': 'Boaz',
@@ -131,8 +130,12 @@ document.getElementById('backToForm').addEventListener('click', () => {
 });
 
 document.getElementById('applyFilter').addEventListener('click', () => {
-    const filterValue = document.getElementById('reportFilter').value;
-    filterReports(filterValue);
+    const filterDate = document.getElementById('reportDate').value;
+    if (filterDate) {
+        filterReports(filterDate);
+    } else {
+        alert('Por favor, selecione uma data.');
+    }
 });
 
 function loadReports() {
@@ -184,34 +187,13 @@ function loadReports() {
     });
 }
 
-function filterReports(filterValue) {
+function filterReports(filterDate) {
     reportsContainer.innerHTML = '';
     const sanitizedEmail = sanitizeEmail(currentUserEmail);
     const reportsRef = ref(database, `reports/${sanitizedEmail}`);
-    let startDate, endDate;
-
-    const today = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
-    today.setHours(0, 0, 0, 0);
-
-    if (filterValue === 'today') {
-        startDate = today;
-        endDate = new Date(today);
-        endDate.setDate(today.getDate() + 1);
-    } else if (filterValue === 'yesterday') {
-        startDate = new Date(today);
-        startDate.setDate(today.getDate() - 1);
-        endDate = new Date(today);
-    } else if (filterValue === 'last7days') {
-        startDate = new Date(today);
-        startDate.setDate(today.getDate() - 7);
-        endDate = new Date(today);
-        endDate.setDate(today.getDate() + 1);
-    } else if (filterValue === 'last30days') {
-        startDate = new Date(today);
-        startDate.setDate(today.getDate() - 30);
-        endDate = new Date(today);
-        endDate.setDate(today.getDate() + 1);
-    }
+    const startDate = new Date(filterDate);
+    const endDate = new Date(filterDate);
+    endDate.setDate(endDate.getDate() + 1);
 
     const filteredReportsQuery = query(reportsRef, orderByChild('date'), startAt(startDate.toISOString()), endAt(endDate.toISOString()));
     onValue(filteredReportsQuery, (snapshot) => {

@@ -159,6 +159,7 @@ function loadReports() {
                     <p><strong>Total a Receber:</strong> ${reportData.totalAmount.toFixed(2)}</p>
                     <p><strong>Status do Pagamento:</strong> ${reportData.paymentStatus}</p>
                     <button class="editReport" data-key="${reportKey}">Editar Formulário</button>
+                    <button class="deleteReport" data-key="${reportKey}">Remover Formulário</button>
                 `;
 
                 reportsContainer.appendChild(reportDiv);
@@ -168,6 +169,13 @@ function loadReports() {
                 button.addEventListener('click', (e) => {
                     const reportKey = e.target.getAttribute('data-key');
                     editReport(reportKey);
+                });
+            });
+
+            document.querySelectorAll('.deleteReport').forEach((button) => {
+                button.addEventListener('click', (e) => {
+                    const reportKey = e.target.getAttribute('data-key');
+                    deleteReport(reportKey);
                 });
             });
         } else {
@@ -226,6 +234,7 @@ function filterReports(filterValue) {
                     <p><strong>Total a Receber:</strong> ${reportData.totalAmount.toFixed(2)}</p>
                     <p><strong>Status do Pagamento:</strong> ${reportData.paymentStatus}</p>
                     <button class="editReport" data-key="${reportKey}">Editar Formulário</button>
+                    <button class="deleteReport" data-key="${reportKey}">Remover Formulário</button>
                 `;
 
                 reportsContainer.appendChild(reportDiv);
@@ -235,6 +244,13 @@ function filterReports(filterValue) {
                 button.addEventListener('click', (e) => {
                     const reportKey = e.target.getAttribute('data-key');
                     editReport(reportKey);
+                });
+            });
+
+            document.querySelectorAll('.deleteReport').forEach((button) => {
+                button.addEventListener('click', (e) => {
+                    const reportKey = e.target.getAttribute('data-key');
+                    deleteReport(reportKey);
                 });
             });
         } else {
@@ -297,6 +313,18 @@ function updateReport(e, reportKey) {
         })
         .catch((error) => {
             console.error('Erro ao atualizar relatório:', error);
+        });
+}
+
+function deleteReport(reportKey) {
+    const sanitizedEmail = sanitizeEmail(currentUserEmail);
+    const reportRef = ref(database, `reports/${sanitizedEmail}/${reportKey}`);
+    set(reportRef, null)
+        .then(() => {
+            loadReports();
+        })
+        .catch((error) => {
+            console.error('Erro ao remover relatório:', error);
         });
 }
 

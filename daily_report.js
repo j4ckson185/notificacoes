@@ -93,7 +93,6 @@ form.addEventListener('submit', (e) => {
 
     const reportData = {
         name: document.getElementById('motoboyName').value,
-        dayOfWeek: document.getElementById('dayOfWeek').value,
         date: document.getElementById('date').value,
         deliveryCount: document.getElementById('deliveryCount').value,
         sameHouseCount: document.getElementById('sameHouseCount').value,
@@ -164,7 +163,6 @@ function loadReports() {
 
                 reportDiv.innerHTML = `
                     <p><strong>Nome:</strong> ${reportData.name}</p>
-                    <p><strong>Dia da Semana:</strong> ${reportData.dayOfWeek}</p>
                     <p><strong>Data:</strong> ${reportData.date}</p>
                     <p><strong>Quantidade de Entregas:</strong> ${reportData.deliveryCount}</p>
                     <p><strong>Entregas na mesma casa:</strong> ${reportData.sameHouseCount}</p>
@@ -221,7 +219,6 @@ function filterReports(filterDate) {
 
                 reportDiv.innerHTML = `
                     <p><strong>Nome:</strong> ${reportData.name}</p>
-                    <p><strong>Dia da Semana:</strong> ${reportData.dayOfWeek}</p>
                     <p><strong>Data:</strong> ${reportData.date}</p>
                     <p><strong>Quantidade de Entregas:</strong> ${reportData.deliveryCount}</p>
                     <p><strong>Entregas na mesma casa:</strong> ${reportData.sameHouseCount}</p>
@@ -263,7 +260,6 @@ function editReport(reportKey) {
             const reportData = snapshot.val();
 
             document.getElementById('motoboyName').value = reportData.name;
-            document.getElementById('dayOfWeek').value = reportData.dayOfWeek;
             document.getElementById('date').value = reportData.date;
             document.getElementById('deliveryCount').value = reportData.deliveryCount;
             document.getElementById('sameHouseCount').value = reportData.sameHouseCount;
@@ -290,7 +286,6 @@ function updateReport(e, reportKey) {
 
     const reportData = {
         name: document.getElementById('motoboyName').value,
-        dayOfWeek: document.getElementById('dayOfWeek').value,
         date: document.getElementById('date').value,
         deliveryCount: document.getElementById('deliveryCount').value,
         sameHouseCount: document.getElementById('sameHouseCount').value,
@@ -329,7 +324,6 @@ function submitNewReport(e) {
 
     const reportData = {
         name: document.getElementById('motoboyName').value,
-        dayOfWeek: document.getElementById('dayOfWeek').value,
         date: document.getElementById('date').value,
         deliveryCount: document.getElementById('deliveryCount').value,
         sameHouseCount: document.getElementById('sameHouseCount').value,

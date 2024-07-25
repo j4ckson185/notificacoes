@@ -1,3 +1,4 @@
+// mapa.js
 import { database, ref, onValue } from './firebase-config.js';
 
 let map;

@@ -1,4 +1,3 @@
-// index.js
 import { auth, messaging, database, ref, set, getToken, signInWithEmailAndPassword, onAuthStateChanged } from './firebase-config.js';
 
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
@@ -12,7 +11,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
         // Solicitar permissão para geolocalização
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((position) => {
+            navigator.geolocation.watchPosition((position) => {
                 const userId = user.uid;
                 const userRef = ref(database, 'locations/' + userId);
                 set(userRef, {
@@ -22,23 +21,12 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             }, (error) => {
                 console.error('Erro ao obter localização:', error);
             });
-
-            navigator.geolocation.watchPosition((position) => {
-                const userId = user.uid;
-                const userRef = ref(database, 'locations/' + userId);
-                set(userRef, {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude
-                });
-            }, (error) => {
-                console.error('Erro ao atualizar localização:', error);
-            });
         } else {
             console.error('Geolocalização não é suportada pelo navegador.');
         }
 
         // Get FCM token
-        const currentToken = await getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' }); // Replace with your actual VAPID key
+        const currentToken = await getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' });
         if (currentToken) {
             // Save token to database
             await set(ref(database, 'tokens/' + user.uid), {

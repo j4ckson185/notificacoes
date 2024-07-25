@@ -1,4 +1,6 @@
 // mapa.js
+import { database, ref, onValue } from './firebase-config.js';
+
 let map;
 let markers = [];
 
@@ -11,8 +13,8 @@ window.initMap = function() {
         zoom: 15
     });
 
-    const locationsRef = firebase.database().ref('locations');
-    locationsRef.on('value', (snapshot) => {
+    const locationsRef = ref(database, 'locations');
+    onValue(locationsRef, (snapshot) => {
         const locations = snapshot.val();
         if (locations) {
             clearMarkers();

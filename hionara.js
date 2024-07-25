@@ -6,7 +6,7 @@ import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
     authDomain: "cabana-8d55e.firebaseapp.com",
-    databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
+    databaseURL: "https://cabana-8d55e-default.rtdb.firebaseio.com",
     projectId: "cabana-8d55e",
     storageBucket: "cabana-8d55e.appspot.com",
     messagingSenderId: "706144237954",

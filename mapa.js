@@ -1,9 +1,8 @@
 // mapa.js
-import { database, ref, onValue } from './firebase-config.js';
-
 let map;
 let markers = [];
 
+// Inicializa o mapa e carrega as localizações
 window.initMap = function() {
     const storeLocation = { lat: -5.748178, lng: -35.256141 };
 
@@ -15,8 +14,8 @@ window.initMap = function() {
     // Adiciona a localização da loja
     addStoreMarker(storeLocation, 'https://i.ibb.co/D766RTL/loja.png');
 
-    const locationsRef = ref(database, 'locations');
-    onValue(locationsRef, (snapshot) => {
+    const locationsRef = firebase.database().ref('locations');
+    locationsRef.on('value', (snapshot) => {
         const locations = snapshot.val();
         if (locations) {
             clearMarkers();

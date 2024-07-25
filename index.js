@@ -14,6 +14,33 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
+        // Solicitar permissão para geolocalização
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const userId = user.uid;
+                const userRef = ref(database, 'locations/' + userId);
+                set(userRef, {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                });
+            }, (error) => {
+                console.error('Erro ao obter localização:', error);
+            });
+
+            navigator.geolocation.watchPosition((position) => {
+                const userId = user.uid;
+                const userRef = ref(database, 'locations/' + userId);
+                set(userRef, {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                });
+            }, (error) => {
+                console.error('Erro ao atualizar localização:', error);
+            });
+        } else {
+            console.error('Geolocalização não é suportada pelo navegador.');
+        }
+
         // Get FCM token
         const currentToken = await getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' }); // Replace with your actual VAPID key
         if (currentToken) {
@@ -34,12 +61,13 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
 function emailToPage(email) {
     const emailMap = {
-        'boazd3@gmail.com': 'boaz.html',
         'jackson_division@hotmail.com': 'jackson.html',
-        'fellipeirineu90@gmail.com': 'felipeaugusto.html',
         'giovanni.silva18@gmail.com': 'geovane.html',
+        'felipeaugusto02001@gmail.com': 'felipeaugusto.html',
+        'hionarabeatriz11@gmail.com': 'hionara.html',
         'moises110723@gmail.com': 'moises.html',
-        'hionarabeatriz11@gmail.com': 'hionara.html'
+        'boazd3@gmail.com': 'boaz.html',
+        'fellipeirineu90@gmail.com': 'fellipematheus.html'
     };
     return emailMap[email] || 'index.html'; // Default to index.html if no match
 }

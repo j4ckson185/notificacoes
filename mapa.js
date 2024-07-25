@@ -11,9 +11,6 @@ window.initMap = function() {
         zoom: 15
     });
 
-    // Adiciona a localização da loja
-    addStoreMarker(storeLocation, 'https://i.ibb.co/D766RTL/loja.png');
-
     const locationsRef = firebase.database().ref('locations');
     locationsRef.on('value', (snapshot) => {
         const locations = snapshot.val();
@@ -24,15 +21,6 @@ window.initMap = function() {
                 addMotoboyMarker(location, key);
             }
         }
-    });
-}
-
-function addStoreMarker(position, iconUrl) {
-    new google.maps.Marker({
-        position: position,
-        map: map,
-        icon: iconUrl,
-        title: 'Loja'
     });
 }
 

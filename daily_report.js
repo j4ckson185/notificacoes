@@ -58,7 +58,7 @@ function populateSelectOptions() {
         deliveryCountSelect.appendChild(option);
     }
 
-    for (let i = 0; i <= 15; i++) { // Incluir 0 também
+    for (let i = 0; i <= 15; i++) {
         const option = document.createElement('option');
         option.value = i;
         option.textContent = i;
@@ -67,6 +67,13 @@ function populateSelectOptions() {
 }
 
 populateSelectOptions();
+
+document.getElementById('date').addEventListener('change', () => {
+    const date = new Date(document.getElementById('date').value);
+    const options = { weekday: 'long' };
+    const dayOfWeek = new Intl.DateTimeFormat('pt-BR', options).format(date);
+    document.getElementById('dayOfWeek').value = dayOfWeek;
+});
 
 form.addEventListener('input', () => {
     const deliveryCount = parseInt(document.getElementById('deliveryCount').value) || 0;
@@ -111,11 +118,6 @@ form.addEventListener('submit', (e) => {
 
 document.getElementById('viewReports').addEventListener('click', () => {
     confirmationMessage.style.display = 'none';
-    reportsList.style.display = 'block';
-});
-
-document.getElementById('viewReportsButton').addEventListener('click', () => {
-    form.style.display = 'none';
     reportsList.style.display = 'block';
 });
 

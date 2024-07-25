@@ -16,7 +16,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
                 const userRef = ref(database, 'locations/' + userId);
                 set(userRef, {
                     latitude: position.coords.latitude,
-                    longitude: position.coords.longitude
+                    longitude: position.coords.longitude,
+                    address: 'Endereço não disponível' // Substitua isso com o endereço real se disponível
                 });
             }, (error) => {
                 console.error('Erro ao obter localização:', error);
@@ -31,6 +32,12 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             // Save token to database
             await set(ref(database, 'tokens/' + user.uid), {
                 token: currentToken
+            });
+
+            // Save user details
+            await set(ref(database, 'users/' + user.uid), {
+                email: user.email,
+                name: user.displayName || 'Nome não disponível' // Use o displayName se disponível
             });
 
             // Redirect to the specific page

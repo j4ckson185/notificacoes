@@ -9,8 +9,15 @@
 <body>
     <div class="container">
         <h1>Relatórios</h1>
-        <label for="motoboyEmail">Email do Motoboy:</label>
-        <input type="email" id="motoboyEmail" required>
+        <label for="motoboyName">Nome do Motoboy:</label>
+        <select id="motoboyName" required>
+            <option value="" disabled selected>Selecione o motoboy</option>
+            <option value="boazd3@gmail.com">Boaz</option>
+            <option value="fellipeirineu90@gmail.com">Fellipe Matheus</option>
+            <option value="giovanni.silva18@gmail.com">Giovanni</option>
+            <option value="moises110723@gmail.com">Moisés</option>
+            <option value="jackson_division@hotmail.com">Jackson Maciel</option>
+        </select>
 
         <label for="reportDate">Data:</label>
         <input type="date" id="reportDate" required>
@@ -35,7 +42,7 @@
             height: 100vh;
             overflow-y: auto;
         }
-        label, input, button, div {
+        label, select, input, button, div {
             margin-bottom: 10px;
             width: 100%;
             box-sizing: border-box;

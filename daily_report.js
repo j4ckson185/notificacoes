@@ -74,7 +74,11 @@ form.addEventListener('input', () => {
     const receivedAmount = parseFloat(document.getElementById('receivedAmount').value) || 0;
     const shiftValue = parseFloat(document.getElementById('shiftType').value) || 0;
 
-    const totalAmount = (deliveryCount * 3) - (sameHouseCount * 3) - receivedAmount + shiftValue;
+    let totalAmount = (deliveryCount * 3) - (sameHouseCount * 3) - receivedAmount + shiftValue;
+    if (sameHouseCount === 0) {
+        totalAmount += sameHouseCount * 3;
+    }
+
     totalAmountDiv.textContent = totalAmount.toFixed(2);
 });
 
@@ -108,7 +112,11 @@ form.addEventListener('submit', (e) => {
 document.getElementById('viewReports').addEventListener('click', () => {
     confirmationMessage.style.display = 'none';
     reportsList.style.display = 'block';
-    loadReports();
+});
+
+document.getElementById('viewReportsButton').addEventListener('click', () => {
+    form.style.display = 'none';
+    reportsList.style.display = 'block';
 });
 
 document.getElementById('addNewReport').addEventListener('click', () => {

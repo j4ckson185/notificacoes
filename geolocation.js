@@ -1,14 +1,12 @@
 // geolocation.js
-import { auth, database, ref, set } from './firebase-config.js';
-
 function updateLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.watchPosition((position) => {
-            const user = auth.currentUser;
+            const user = firebase.auth().currentUser;
             if (user) {
                 const userId = user.uid;
-                const userRef = ref(database, 'locations/' + userId);
-                set(userRef, {
+                const userRef = firebase.database().ref('locations/' + userId);
+                userRef.set({
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude
                 });
@@ -22,7 +20,7 @@ function updateLocation() {
 }
 
 // Chamar a função após o login do usuário
-auth.onAuthStateChanged((user) => {
+firebase.auth().onAuthStateChanged((user) => {
     if (user) {
         updateLocation();
     }

@@ -1,4 +1,4 @@
-import { database, ref, onValue } from './firebase-config.js';
+import { database, ref, onValue, auth } from './firebase-config.js';
 
 let map;
 let markers = [];
@@ -12,6 +12,28 @@ window.initMap = function() {
         zoom: 15
     });
 
+    // Adicionar localização própria do usuário
+    if (auth.currentUser) {
+        navigator.geolocation.getCurrentPosition((position) => {
+            const userLocation = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            };
+            new google.maps.Marker({
+                position: userLocation,
+                map: map,
+                icon: {
+                    url: 'https://i.ibb.co/FHdgjcK/capacete.png',
+                    scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone ajustado
+                },
+                title: 'Sua Localização'
+            });
+            map.setCenter(userLocation);
+        }, (error) => {
+            console.error('Erro ao obter localização do usuário:', error);
+        });
+    }
+
     const locationsRef = ref(database, 'locations');
     onValue(locationsRef, (snapshot) => {
         const locations = snapshot.val();
@@ -19,36 +41,42 @@ window.initMap = function() {
             clearMarkers();
             for (const key in locations) {
                 const location = locations[key];
-                addMotoboyMarker(location, key);
+                addUserMarker(location, key);
             }
         }
     });
 };
 
-function addMotoboyMarker(location, name) {
-    const marker = new google.maps.Marker({
-        position: { lat: location.latitude, lng: location.longitude },
-        map: map,
-        icon: {
-            url: 'https://i.ibb.co/FHdgjcK/capacete.png', // URL do ícone
-            scaledSize: new google.maps.Size(30, 30) // Tamanho reduzido do ícone
-        },
-        title: name
-    });
+function addUserMarker(location, userId) {
+    const userRef = ref(database, 'users/' + userId); // Assume que os dados dos usuários estão armazenados na árvore 'users'
+    onValue(userRef, (snapshot) => {
+        const user = snapshot.val();
+        const nameOrEmail = user.name || user.email || 'Usuário';
 
-    const infowindow = new google.maps.InfoWindow({
-        content: name
-    });
+        const marker = new google.maps.Marker({
+            position: { lat: location.latitude, lng: location.longitude },
+            map: map,
+            icon: {
+                url: 'https://i.ibb.co/FHdgjcK/capacete.png',
+                scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone ajustado
+            },
+            title: `${nameOrEmail}\n${location.address || 'Endereço não disponível'}`
+        });
 
-    marker.addListener('mouseover', () => {
-        infowindow.open(map, marker);
-    });
+        const infowindow = new google.maps.InfoWindow({
+            content: `${nameOrEmail}<br>${location.address || 'Endereço não disponível'}`
+        });
 
-    marker.addListener('mouseout', () => {
-        infowindow.close();
-    });
+        marker.addListener('mouseover', () => {
+            infowindow.open(map, marker);
+        });
 
-    markers.push(marker);
+        marker.addListener('mouseout', () => {
+            infowindow.close();
+        });
+
+        markers.push(marker);
+    });
 }
 
 function clearMarkers() {

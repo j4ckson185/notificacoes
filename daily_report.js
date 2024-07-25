@@ -19,6 +19,24 @@ const database = getDatabase(app);
 
 const form = document.getElementById('dailyReportForm');
 const totalAmountDiv = document.getElementById('totalAmount');
+const reportDisplay = document.getElementById('reportDisplay');
+
+const nameMap = {
+    'boazd3@gmail.com': 'Boaz',
+    'fellipeirineu90@gmail.com': 'Fellipe Matheus',
+    'giovanni.silva18@gmail.com': 'Giovanni',
+    'moises110723@gmail.com': 'Moisés',
+    'jackson_division@hotmail.com': 'Jackson Maciel'
+};
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        const userEmail = user.email;
+        document.getElementById('motoboyName').value = nameMap[userEmail] || 'Usuário';
+    } else {
+        console.error('Usuário não autenticado');
+    }
+});
 
 form.addEventListener('input', () => {
     const deliveryCount = parseInt(document.getElementById('deliveryCount').value) || 0;
@@ -32,30 +50,25 @@ form.addEventListener('input', () => {
 form.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            const userId = user.uid;
-            const userRef = ref(database, 'reports/' + userId + '/' + new Date().toISOString().split('T')[0]);
+    const reportData = {
+        name: document.getElementById('motoboyName').value,
+        dayOfWeek: document.getElementById('dayOfWeek').value,
+        deliveryCount: parseInt(document.getElementById('deliveryCount').value),
+        sameHouseCount: parseInt(document.getElementById('sameHouseCount').value),
+        receivedAmount: parseFloat(document.getElementById('receivedAmount').value),
+        pixKey: document.getElementById('pixKey').value,
+        totalAmount: parseFloat(totalAmountDiv.textContent),
+        paymentStatus: document.getElementById('paymentStatus').value
+    };
 
-            const reportData = {
-                name: document.getElementById('motoboyName').value,
-                deliveryCount: parseInt(document.getElementById('deliveryCount').value),
-                sameHouseCount: parseInt(document.getElementById('sameHouseCount').value),
-                receivedAmount: parseFloat(document.getElementById('receivedAmount').value),
-                pixKey: document.getElementById('pixKey').value,
-                totalAmount: parseFloat(totalAmountDiv.textContent),
-                paymentStatus: document.querySelector('input[name="status"]:checked').value
-            };
+    document.getElementById('displayMotoboyName').textContent = reportData.name;
+    document.getElementById('displayDayOfWeek').textContent = reportData.dayOfWeek;
+    document.getElementById('displayDeliveryCount').textContent = reportData.deliveryCount;
+    document.getElementById('displaySameHouseCount').textContent = reportData.sameHouseCount;
+    document.getElementById('displayReceivedAmount').textContent = reportData.receivedAmount.toFixed(2);
+    document.getElementById('displayPixKey').textContent = reportData.pixKey;
+    document.getElementById('displayTotalAmount').textContent = reportData.totalAmount.toFixed(2);
+    document.getElementById('displayPaymentStatus').textContent = reportData.paymentStatus;
 
-            set(userRef, reportData).then(() => {
-                alert('Relatório enviado com sucesso!');
-                form.reset();
-                totalAmountDiv.textContent = '0';
-            }).catch((error) => {
-                console.error('Erro ao enviar relatório:', error);
-            });
-        } else {
-            console.error('Usuário não autenticado');
-        }
-    });
+    reportDisplay.style.display = 'block';
 });

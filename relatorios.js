@@ -1,5 +1,5 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getDatabase, ref, get } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { getDatabase, ref, get, query, orderByChild, startAt, endAt } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -29,17 +29,19 @@ document.getElementById('loginForm').addEventListener('submit', (e) => {
 document.getElementById('fetchReport').addEventListener('click', async (e) => {
     e.preventDefault();
     const motoboyEmail = document.getElementById('motoboySelect').value;
-    const dayOfWeek = document.getElementById('dayOfWeekSelect').value;
+    const date = document.getElementById('dateSelect').value;
 
-    if (motoboyEmail && dayOfWeek) {
+    if (motoboyEmail && date) {
         const sanitizedEmail = sanitizeEmail(motoboyEmail);
-        const reportRef = ref(database, `reports/${sanitizedEmail}/${dayOfWeek}`);
+        const reportRef = query(ref(database, `reports/${sanitizedEmail}`), orderByChild('date'), equalTo(date));
         const snapshot = await get(reportRef);
 
         if (snapshot.exists()) {
-            const reportData = snapshot.val();
+            const reports = snapshot.val();
+            const reportData = Object.values(reports)[0]; // Considering the first match
+
             document.getElementById('displayMotoboyName').textContent = reportData.name;
-            document.getElementById('displayDayOfWeek').textContent = reportData.dayOfWeek;
+            document.getElementById('displayDate').textContent = reportData.date;
             document.getElementById('displayDeliveryCount').textContent = reportData.deliveryCount;
             document.getElementById('displaySameHouseCount').textContent = reportData.sameHouseCount;
             document.getElementById('displayReceivedAmount').textContent = reportData.receivedAmount.toFixed(2);
@@ -49,10 +51,10 @@ document.getElementById('fetchReport').addEventListener('click', async (e) => {
 
             document.getElementById('reportDisplay').style.display = 'block';
         } else {
-            alert('Relatório não encontrado para este motoboy e dia da semana.');
+            alert('Relatório não encontrado para este motoboy e data.');
         }
     } else {
-        alert('Por favor, selecione um motoboy e um dia da semana.');
+        alert('Por favor, selecione um motoboy e uma data.');
     }
 });
 

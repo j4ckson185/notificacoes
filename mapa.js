@@ -39,3 +39,5 @@ function clearMarkers() {
     }
     markers = [];
 }
+
+window.initMap = initMap;

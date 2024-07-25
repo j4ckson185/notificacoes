@@ -1,18 +1,20 @@
+import { auth, messaging, database, ref, set, getToken, signInWithEmailAndPassword, onAuthStateChanged } from './firebase-config.js';
+
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
 
     try {
-        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
         // Solicitar permissão para geolocalização
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition((position) => {
                 const userId = user.uid;
-                const userRef = firebase.database().ref('locations/' + userId);
-                userRef.set({
+                const userRef = ref(database, 'locations/' + userId);
+                set(userRef, {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude
                 });
@@ -22,8 +24,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
             navigator.geolocation.watchPosition((position) => {
                 const userId = user.uid;
-                const userRef = firebase.database().ref('locations/' + userId);
-                userRef.set({
+                const userRef = ref(database, 'locations/' + userId);
+                set(userRef, {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude
                 });
@@ -35,10 +37,10 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         }
 
         // Get FCM token
-        const currentToken = await firebase.messaging().getToken({ vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' }); // Replace with your actual VAPID key
+        const currentToken = await getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' }); // Replace with your actual VAPID key
         if (currentToken) {
             // Save token to database
-            await firebase.database().ref('tokens/' + user.uid).set({
+            await set(ref(database, 'tokens/' + user.uid), {
                 token: currentToken
             });
 
@@ -77,7 +79,7 @@ if ('serviceWorker' in navigator) {
 }
 
 // Handle user authentication state changes
-firebase.auth().onAuthStateChanged((user) => {
+onAuthStateChanged(auth, (user) => {
     if (user) {
         // User is signed in
         console.log('User is signed in:', user);

@@ -52,8 +52,8 @@ form.addEventListener('submit', (e) => {
     const reportData = {
         name: document.getElementById('motoboyName').value,
         dayOfWeek: document.getElementById('dayOfWeek').value,
-        deliveryCount: parseInt(document.getElementById('deliveryCount').value),
-        sameHouseCount: parseInt(document.getElementById('sameHouseCount').value),
+        deliveryCount: document.getElementById('deliveryCount').value,
+        sameHouseCount: document.getElementById('sameHouseCount').value,
         receivedAmount: parseFloat(document.getElementById('receivedAmount').value),
         pixKey: document.getElementById('pixKey').value,
         totalAmount: parseFloat(totalAmountDiv.textContent),

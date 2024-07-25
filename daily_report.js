@@ -37,8 +37,8 @@ onAuthStateChanged(auth, (user) => {
 });
 
 form.addEventListener('input', () => {
-    const deliveryCount = parseInt(document.getElementById('deliveryCount').value) || 0;
-    const sameHouseCount = parseInt(document.getElementById('sameHouseCount').value) || 0;
+    const deliveryCount = parseFloat(document.getElementById('deliveryCount').value) || 0;
+    const sameHouseCount = parseFloat(document.getElementById('sameHouseCount').value) || 0;
     const receivedAmount = parseFloat(document.getElementById('receivedAmount').value) || 0;
     const shiftValue = parseFloat(document.getElementById('shiftType').value) || 0;
 

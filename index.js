@@ -1,16 +1,9 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 import { getMessaging, getToken } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
 // Import Firebase services from firebase-config.js
-import { firebaseConfig } from './firebase-config.js';
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const messaging = getMessaging(app);
-const database = getDatabase(app);
+import { auth, messaging, database } from './firebase-config.js';
 
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -41,11 +34,12 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
 function emailToPage(email) {
     const emailMap = {
-        'jackson_division@hotmail.com': 'jackson.html', // Add other users' emails and page names
+        'boazd3@gmail.com': 'boaz.html',
+        'jackson_division@hotmail.com': 'jackson.html',
+        'fellipeirineu90@gmail.com': 'felipeaugusto.html',
         'giovanni.silva18@gmail.com': 'geovane.html',
-        'felipeaugusto02001@gmail.com': 'felipeaugusto.html',
-        'hionarabeatriz11@gmail.com': 'hionara.html',
         'moises110723@gmail.com': 'moises.html',
+        'hionarabeatriz11@gmail.com': 'hionara.html'
     };
     return emailMap[email] || 'index.html'; // Default to index.html if no match
 }

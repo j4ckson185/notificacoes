@@ -2,7 +2,7 @@
 import { database, ref, onValue } from './firebase-config.js';
 
 let map;
-function initMap() {
+window.initMap = function() {
     map = new google.maps.Map(document.getElementById('map'), {
         center: { lat: -23.5505, lng: -46.6333 },
         zoom: 12
@@ -28,7 +28,7 @@ function addMarker(location) {
     const marker = new google.maps.Marker({
         position: { lat: location.latitude, lng: location.longitude },
         map: map,
-        icon: 'https://i.ibb.co/FHdgjcK/capacete.png' // Substitua pelo caminho do ícone do capacete
+        icon: 'path_to_helmet_icon.png' // Substitua pelo caminho do ícone do capacete
     });
     markers.push(marker);
 }
@@ -39,5 +39,3 @@ function clearMarkers() {
     }
     markers = [];
 }
-
-window.initMap = initMap;

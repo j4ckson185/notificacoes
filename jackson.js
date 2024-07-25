@@ -15,10 +15,13 @@ const logoutButton = document.getElementById('logoutButton');
 
 function displayMessage(data) {
     const messageElement = document.createElement('div');
+    // Check for different structures of the payload
     if (data.text) {
         messageElement.textContent = data.text;
     } else if (data.notification && data.notification.body) {
         messageElement.textContent = data.notification.body;
+    } else if (data.message) {
+        messageElement.textContent = data.message;
     } else {
         messageElement.textContent = 'Mensagem sem texto';
     }
@@ -49,7 +52,7 @@ onValue(messagesRef, (snapshot) => {
 // Listen for FCM messages
 onMessage(messaging, (payload) => {
     console.log('Received FCM message:', payload);
-    displayMessage(payload.data);
+    displayMessage(payload.notification || payload.data || payload);
 });
 
 // Clear all messages

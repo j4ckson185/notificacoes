@@ -1,3 +1,4 @@
+// admin.js
 import { getDatabase, ref, push } from './firebase-config.js';
 
 document.getElementById('sendMessageForm').addEventListener('submit', async function(e) {

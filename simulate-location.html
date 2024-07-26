@@ -4,9 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Simulação de Localização</title>
+    <style>
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-    <h1>Simulação de Localização</h1>
-    <script type="module" src="simulate-location.js"></script>
+    <div id="map"></div>
+    <!-- Carregar o Google Maps API com a sua chave -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
+    <script src="simulacao.js"></script>
 </body>
 </html>

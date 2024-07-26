@@ -1,7 +1,7 @@
 // firebase-config.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
 import { getDatabase } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
 import { getMessaging } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js";
 
 const firebaseConfig = {

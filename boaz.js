@@ -89,7 +89,12 @@ onMessage(messaging, (payload) => {
 
 // Clear all messages
 clearMessagesButton.addEventListener('click', () => {
-    messagesContainer.innerHTML = '';
+    remove(messagesRef).then(() => {
+        messagesContainer.innerHTML = '';
+        console.log('All messages cleared.');
+    }).catch((error) => {
+        console.error('Error clearing messages:', error);
+    });
 });
 
 // Logout

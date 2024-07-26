@@ -1,27 +1,32 @@
 // jackson.js
-import { getDatabase } from './firebase-config.js';
-import { ref, onValue, remove } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
-import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
-import { getAuth } from './firebase-config.js';
+import { database, auth, messaging } from './firebase-config.js';
+import { ref, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 
+// Espera o DOM carregar
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM carregado');
-
     const messagesContainer = document.getElementById('messages-container');
     const clearMessagesButton = document.getElementById('clearMessagesButton');
     const logoutButton = document.getElementById('logoutButton');
 
-    if (!messagesContainer || !clearMessagesButton || !logoutButton) {
-        console.error('Um ou mais elementos não foram encontrados no DOM.');
+    // Verifica se os serviços do Firebase foram inicializados corretamente
+    if (!database || !auth) {
+        console.error('Firebase services not initialized.');
         return;
     }
 
-    // Initialize Firebase services
-    const database = getDatabase();
-    const messaging = getMessaging();
-    const auth = getAuth();
+    // Registrar o Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/firebase-messaging-sw.js')
+            .then(registration => {
+                console.log('Service Worker registrado com sucesso:', registration);
+            })
+            .catch(err => {
+                console.error('Erro ao registrar Service Worker:', err);
+            });
+    }
 
-    // Listen for changes in the Realtime Database
+    // Escuta alterações no banco de dados em tempo real
     onValue(ref(database, 'messages'), (snapshot) => {
         if (messagesContainer) {
             messagesContainer.innerHTML = '';
@@ -34,10 +39,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Listen for FCM messages
+    // Escuta mensagens do FCM
     if (messaging) {
         onMessage(messaging, (payload) => {
-            console.log('Received FCM message:', payload);
+            console.log('Mensagem recebida do FCM:', payload);
             const messageData = payload.data;
             const messageElement = document.createElement('div');
             messageElement.textContent = messageData.text || 'Mensagem sem texto';
@@ -45,28 +50,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Clear all messages
+    // Limpa todas as mensagens
     clearMessagesButton.addEventListener('click', () => {
-        const messagesRef = ref(database, 'messages');
-        remove(messagesRef)
-            .then(() => {
-                console.log('All messages removed.');
-                messagesContainer.innerHTML = '';
-            })
-            .catch((error) => {
-                console.error('Error removing messages:', error);
-            });
+        remove(ref(database, 'messages'));
+        messagesContainer.innerHTML = '';
     });
 
     // Logout
     logoutButton.addEventListener('click', () => {
-        auth.signOut()
+        signOut(auth)
             .then(() => {
-                console.log('Signed out');
+                console.log('Desconectado');
                 window.location.href = 'index.html';
             })
             .catch((error) => {
-                console.error('Error signing out:', error);
+                console.error('Erro ao desconectar:', error);
             });
     });
 });

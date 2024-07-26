@@ -32,6 +32,20 @@ function populateSelectOptions(selectElement, start, end) {
     }
 }
 
+// Função para calcular o valor total a receber
+function calculateTotalAmountToReceive() {
+    const deliveries = parseInt(document.getElementById('deliveries').value) || 0;
+    const sameHouseDeliveries = parseInt(document.getElementById('sameHouseDeliveries').value) || 0;
+    const amountReceived = parseFloat(document.getElementById('amountReceived').value) || 0;
+    const totalAmountPending = parseFloat(document.getElementById('totalAmountPending').value) || 0;
+
+    const deliveryValue = deliveries * 3;
+    const sameHouseDeliveryValue = sameHouseDeliveries * 3;
+    const totalAmount = (deliveryValue + sameHouseDeliveryValue + totalAmountPending) - amountReceived;
+
+    document.getElementById('totalAmountToReceive').value = totalAmount.toFixed(2);
+}
+
 // Preencher as opções de seleção
 document.addEventListener('DOMContentLoaded', () => {
     const deliveriesSelect = document.getElementById('deliveries');
@@ -40,6 +54,12 @@ document.addEventListener('DOMContentLoaded', () => {
     populateSelectOptions(sameHouseDeliveriesSelect, 0, 15);
     setUserName();
 });
+
+// Adicionar eventos para calcular o valor total a receber
+document.getElementById('deliveries').addEventListener('change', calculateTotalAmountToReceive);
+document.getElementById('sameHouseDeliveries').addEventListener('change', calculateTotalAmountToReceive);
+document.getElementById('amountReceived').addEventListener('input', calculateTotalAmountToReceive);
+document.getElementById('totalAmountPending').addEventListener('input', calculateTotalAmountToReceive);
 
 // Adicionar evento de envio do formulário
 document.getElementById('dailyReportForm').addEventListener('submit', async (e) => {
@@ -60,6 +80,7 @@ document.getElementById('dailyReportForm').addEventListener('submit', async (e) 
         pix: document.getElementById('pix').value,
         status: document.getElementById('status').value,
         date: document.getElementById('date').value,
+        totalAmountToReceive: document.getElementById('totalAmountToReceive').value,
         timestamp: new Date().toISOString()
     };
 
@@ -91,6 +112,7 @@ async function displayReports(userId) {
                 <p>Pix: ${report.pix}</p>
                 <p>Status: ${report.status}</p>
                 <p>Data: ${report.date}</p>
+                <p>Valor Total a Receber: ${report.totalAmountToReceive}</p>
                 <p>Timestamp: ${report.timestamp}</p>
                 <button onclick="editReport('${childSnapshot.key}')">Editar</button>
                 <button onclick="deleteReport('${childSnapshot.key}')">Remover</button>

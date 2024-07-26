@@ -23,48 +23,39 @@ window.initMap = function() {
 
 // Atualiza os marcadores no mapa
 function updateMarkers(locations) {
-    clearMarkers();
     for (const key in locations) {
         const location = locations[key];
-        addMotoboyMarker(location, key);
+        if (markers[key]) {
+            markers[key].setPosition(new google.maps.LatLng(location.latitude, location.longitude));
+        } else {
+            addMotoboyMarker(location, key);
+        }
     }
 }
 
 // Adiciona ou atualiza um marcador para um motoboy
 function addMotoboyMarker(location, name) {
-    if (markers[name]) {
-        markers[name].setPosition(new google.maps.LatLng(location.latitude, location.longitude));
-    } else {
-        const marker = new google.maps.Marker({
-            position: { lat: location.latitude, lng: location.longitude },
-            map: map,
-            icon: {
-                url: 'https://i.ibb.co/FHdgjcK/capacete.png',
-                scaledSize: new google.maps.Size(50, 50)
-            },
-            title: name
-        });
+    const marker = new google.maps.Marker({
+        position: { lat: location.latitude, lng: location.longitude },
+        map: map,
+        icon: {
+            url: 'https://i.ibb.co/FHdgjcK/capacete.png',
+            scaledSize: new google.maps.Size(50, 50)
+        },
+        title: name
+    });
 
-        const infowindow = new google.maps.InfoWindow({
-            content: name
-        });
+    const infowindow = new google.maps.InfoWindow({
+        content: name
+    });
 
-        marker.addListener('mouseover', () => {
-            infowindow.open(map, marker);
-        });
+    marker.addListener('mouseover', () => {
+        infowindow.open(map, marker);
+    });
 
-        marker.addListener('mouseout', () => {
-            infowindow.close();
-        });
+    marker.addListener('mouseout', () => {
+        infowindow.close();
+    });
 
-        markers[name] = marker;
-    }
-}
-
-// Limpa todos os marcadores
-function clearMarkers() {
-    for (const key in markers) {
-        markers[key].setMap(null);
-    }
-    markers = {};
+    markers[name] = marker;
 }

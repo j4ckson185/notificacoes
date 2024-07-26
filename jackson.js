@@ -4,6 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const clearMessagesButton = document.getElementById('clearMessagesButton');
     const logoutButton = document.getElementById('logoutButton');
 
+    // Verificar se as variáveis globais estão disponíveis
+    if (!window.firebaseDatabase || !window.firebaseAuth) {
+        console.error('Firebase services not initialized.');
+        return;
+    }
+
     // Register service worker
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/firebase-messaging-sw.js')

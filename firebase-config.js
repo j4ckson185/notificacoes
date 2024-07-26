@@ -17,4 +17,5 @@ firebase.initializeApp(firebaseConfig);
 // Get Firebase services after initialization
 const database = firebase.database();
 const auth = firebase.auth();
-const messaging = firebase.messaging();
+
+export { database, auth };

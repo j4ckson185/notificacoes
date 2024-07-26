@@ -1,5 +1,5 @@
 // daily_report.js
-import { auth, database, ref, push, set, onValue } from './firebase-config.js';
+import { auth, database, ref, push, onValue } from './firebase-config.js';
 
 document.getElementById('dailyReportForm').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -26,7 +26,6 @@ document.getElementById('dailyReportForm').addEventListener('submit', async (e) 
         const reportsRef = ref(database, 'reports/' + user.uid);
         await push(reportsRef, reportData);
         alert('Relatório enviado com sucesso');
-        // Lógica para exibir o relatório enviado na mesma página
         displayReports(user.uid);
     } catch (error) {
         console.error('Erro ao enviar relatório:', error);

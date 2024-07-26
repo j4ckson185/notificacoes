@@ -1,29 +1,23 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getDatabase, ref, onChildAdded } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
-import { getAuth, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+import { getDatabase, ref, onValue, remove } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
+import { getAuth, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+import { firebaseConfig } from './firebase-config.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
-    authDomain: "cabana-8d55e.firebaseapp.com",
-    databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
-    projectId: "cabana-8d55e",
-    storageBucket: "cabana-8d55e.appspot.com",
-    messagingSenderId: "706144237954",
-    appId: "1:706144237954:web:345c10370972486afc779b",
-    measurementId: "G-96Y337GYT8"
-};
-
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
 const auth = getAuth(app);
+const database = getDatabase(app);
 const messaging = getMessaging(app);
 
-// DOM elements
 const messagesContainer = document.getElementById('messages-container');
 const clearMessagesButton = document.getElementById('clearMessagesButton');
 const logoutButton = document.getElementById('logoutButton');
+
+function displayMessage(data) {
+    const messageElement = document.createElement('div');
+    messageElement.textContent = data.text || 'Mensagem sem texto';
+    messagesContainer.appendChild(messageElement);
+}
 
 // Register service worker
 if ('serviceWorker' in navigator) {
@@ -36,55 +30,20 @@ if ('serviceWorker' in navigator) {
         });
 }
 
-// Preload audio element
-const audio = new Audio('/assets/notification.mp3');
-document.addEventListener('click', () => {
-    audio.play().catch((error) => {
-        console.error('Error playing notification sound:', error);
-    });
-}, { once: true });
-
-// Reference to the "messages/boaz" node in the Realtime Database
-const userMessagesRef = ref(database, 'messages/boaz');
-
-// Listen for new messages added to "messages/boaz"
-onChildAdded(userMessagesRef, (snapshot) => {
-    const messageData = snapshot.val();
-    console.log('New message added:', messageData);  // Log message data for debugging
-    
-    const messageElement = document.createElement('div');
-    messageElement.classList.add('message');
-    
-    if (messageData && messageData.text) {
-        messageElement.textContent = messageData.text;
-        console.log('Message text:', messageData.text);  // Log message text for debugging
-    } else {
-        messageElement.textContent = 'Mensagem sem texto';
-        console.log('MessageData does not contain text property');  // Log missing text property
-    }
-    
-    messagesContainer.appendChild(messageElement);
-
-    audio.play().catch((error) => {
-        console.error('Error playing notification sound:', error);
+// Listen for changes in the Realtime Database
+const messagesRef = ref(database, 'messages/boaz');
+onValue(messagesRef, (snapshot) => {
+    messagesContainer.innerHTML = '';
+    snapshot.forEach((childSnapshot) => {
+        const messageData = childSnapshot.val();
+        displayMessage(messageData);
     });
 });
 
-// Listen for FCM messages when the page is in the foreground
+// Listen for FCM messages
 onMessage(messaging, (payload) => {
     console.log('Received FCM message:', payload);
-
-    const notificationTitle = payload.notification.title;
-    const notificationOptions = {
-        body: payload.notification.body,
-        icon: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png'
-    };
-
-    audio.play().catch((error) => {
-        console.error('Error playing notification sound:', error);
-    });
-
-    new Notification(notificationTitle, notificationOptions);
+    displayMessage(payload.data);
 });
 
 // Clear all messages
@@ -101,7 +60,6 @@ clearMessagesButton.addEventListener('click', () => {
 logoutButton.addEventListener('click', () => {
     signOut(auth)
         .then(() => {
-            console.log('Signed out');
             window.location.href = 'index.html';
         })
         .catch((error) => {

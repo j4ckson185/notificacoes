@@ -12,7 +12,7 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         const user = userCredential.user;
         console.log('Usuário logado:', user);
         // Redirecionar para a página principal após o login
-        window.location.href = 'principal.html';
+        window.location.href = 'mapa.html';
     } catch (error) {
         console.error('Erro ao fazer login:', error);
         // Exibir mensagem de erro para o usuário

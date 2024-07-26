@@ -1,6 +1,28 @@
 // daily_report.js
 import { auth, database, ref, push, onValue } from './firebase-config.js';
 
+// Mapear emails para nomes
+const emailToNameMap = {
+    'jackson_division@hotmail.com': 'Jackson Maciel',
+    'giovanni.silva18@gmail.com': 'Giovanni',
+    'felipeaugusto02001@gmail.com': 'Felipe Augusto',
+    'hionarabeatriz11@gmail.com': 'Hionara',
+    'moises110723@gmail.com': 'Moisés',
+    'boazd3@gmail.com': 'Boaz',
+    'fellipeirineu90@gmail.com': 'Fellipe Matheus'
+};
+
+// Função para preencher o nome do usuário autenticado
+function setUserName() {
+    const user = auth.currentUser;
+    if (user) {
+        const email = user.email;
+        const userName = emailToNameMap[email] || 'Usuário';
+        document.getElementById('name').value = userName;
+    }
+}
+
+// Adicionar evento de envio do formulário
 document.getElementById('dailyReportForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
@@ -32,6 +54,7 @@ document.getElementById('dailyReportForm').addEventListener('submit', async (e) 
     }
 });
 
+// Função para exibir relatórios
 async function displayReports(userId) {
     const reportsRef = ref(database, 'reports/' + userId);
     onValue(reportsRef, (snapshot) => {
@@ -79,9 +102,10 @@ window.deleteReport = function(reportId) {
         });
 };
 
-// Carrega os relatórios ao inicializar a página
+// Carregar relatórios ao inicializar a página e definir o nome do usuário
 auth.onAuthStateChanged((user) => {
     if (user) {
+        setUserName();
         displayReports(user.uid);
     }
 });

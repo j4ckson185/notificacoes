@@ -8,7 +8,7 @@ document.getElementById('applyFilter').addEventListener('click', () => {
         return;
     }
 
-    const reportsRef = database.ref('reports/' + motoboyEmail.replace(/\./g, '_'));
+    const reportsRef = firebase.database().ref('reports/' + motoboyEmail.replace(/\./g, '_'));
 
     // Query to get reports by selected date
     const reportsQuery = reportsRef.orderByChild('date').equalTo(selectedDate);
@@ -51,7 +51,7 @@ window.editReport = function(reportId) {
 
 window.deleteReport = function(reportId) {
     const motoboyEmail = document.getElementById('motoboy').value;
-    const reportRef = database.ref('reports/' + motoboyEmail.replace(/\./g, '_') + '/' + reportId);
+    const reportRef = firebase.database().ref('reports/' + motoboyEmail.replace(/\./g, '_') + '/' + reportId);
     reportRef.remove()
         .then(() => {
             alert('Relatório removido com sucesso');

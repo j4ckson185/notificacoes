@@ -4,6 +4,7 @@ import { auth, messaging, database, ref, set, getToken, signInWithEmailAndPasswo
 // Verificar se o usuário está autenticado ao carregar a página
 onAuthStateChanged(auth, (user) => {
     if (user) {
+        console.log('Usuário autenticado:', user.email);
         // Usuário está autenticado, redirecionar para a página específica
         const email = user.email;
         window.location.href = emailToPage(email);

@@ -1,61 +1,70 @@
-import { database, ref, onValue } from './firebase-config.js';
-
+// mapa.js
 let map;
-let markers = {};
 
-// Inicializa o mapa e carrega as localizações
-window.initMap = function() {
-    const storeLocation = { lat: -5.748178, lng: -35.256141 };
-
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: storeLocation,
+function initMap() {
+    map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat: -5.748178, lng: -35.256141 }, // Coordenadas da loja
         zoom: 15
     });
 
-    const locationsRef = ref(database, 'locations');
-    onValue(locationsRef, (snapshot) => {
-        const locations = snapshot.val();
-        if (locations) {
-            updateMarkers(locations);
-        }
-    });
-};
+    // Solicitar permissão de localização
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                };
 
-// Atualiza os marcadores no mapa
-function updateMarkers(locations) {
-    for (const key in locations) {
-        const location = locations[key];
-        if (markers[key]) {
-            markers[key].setPosition(new google.maps.LatLng(location.latitude, location.longitude));
-        } else {
-            addMotoboyMarker(location, key);
-        }
+                new google.maps.Marker({
+                    position: pos,
+                    map,
+                    icon: "https://i.ibb.co/FHdgjcK/capacete.png", // Ícone do capacete
+                    title: "Minha localização",
+                });
+
+                map.setCenter(pos);
+            },
+            () => {
+                handleLocationError(true, map.getCenter());
+            }
+        );
+    } else {
+        // Browser doesn't support Geolocation
+        handleLocationError(false, map.getCenter());
     }
+
+    // Adicionar localização da loja
+    new google.maps.Marker({
+        position: { lat: -5.748178, lng: -35.256141 },
+        map,
+        icon: "https://i.ibb.co/D766RTL/loja.png",
+        title: "Localização da Loja",
+    });
+
+    // Atualizar localização dos motoboys
+    firebaseDatabase.ref('locations').on('value', (snapshot) => {
+        snapshot.forEach((childSnapshot) => {
+            const data = childSnapshot.val();
+            new google.maps.Marker({
+                position: { lat: data.lat, lng: data.lng },
+                map,
+                icon: "https://i.ibb.co/FHdgjcK/capacete.png",
+                title: data.name,
+                label: data.name,
+            });
+        });
+    });
 }
 
-// Adiciona ou atualiza um marcador para um motoboy
-function addMotoboyMarker(location, name) {
-    const marker = new google.maps.Marker({
-        position: { lat: location.latitude, lng: location.longitude },
-        map: map,
-        icon: {
-            url: 'https://i.ibb.co/FHdgjcK/capacete.png',
-            scaledSize: new google.maps.Size(50, 50)
-        },
-        title: name
+function handleLocationError(browserHasGeolocation, pos) {
+    const infoWindow = new google.maps.InfoWindow({
+        position: pos,
     });
-
-    const infowindow = new google.maps.InfoWindow({
-        content: name
-    });
-
-    marker.addListener('mouseover', () => {
-        infowindow.open(map, marker);
-    });
-
-    marker.addListener('mouseout', () => {
-        infowindow.close();
-    });
-
-    markers[name] = marker;
+    infoWindow.setContent(
+        browserHasGeolocation
+            ? "Error: The Geolocation service failed."
+            : "Error: Your browser doesn't support geolocation."
+    );
+    infoWindow.open(map);
 }

@@ -1,29 +1,30 @@
 // admin.js
+console.log('Iniciando admin.js');
+
 import { database, ref, push } from './firebase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Verifique a existência dos elementos DOM
+    console.log('DOM carregado');
+
     const sendMessageForm = document.getElementById('sendMessageForm');
     const userSelect = document.getElementById('userSelect');
     const messageInput = document.getElementById('messageInput');
 
-    // Verifique se todos os elementos foram encontrados
+    console.log('sendMessageForm:', sendMessageForm);
+    console.log('userSelect:', userSelect);
+    console.log('messageInput:', messageInput);
+
     if (!sendMessageForm || !userSelect || !messageInput) {
         console.error('Um ou mais elementos não foram encontrados no DOM.');
-        console.log('sendMessageForm:', sendMessageForm);
-        console.log('userSelect:', userSelect);
-        console.log('messageInput:', messageInput);
         return;
     }
 
-    // Adicione o event listener ao formulário
     sendMessageForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         const user = userSelect.value;
         const message = messageInput.value;
 
         if (message) {
-            // Enviar mensagem para o Realtime Database
             push(ref(database, `messages/${user}`), {
                 text: message
             })

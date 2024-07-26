@@ -1,6 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
 import { getAuth, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getDatabase, ref, query, orderByChild, equalTo, get } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { getDatabase, ref, query, orderByChild, startAt, endAt, get } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -28,7 +28,7 @@ document.getElementById('logoutButton').addEventListener('click', () => {
 });
 
 document.getElementById('applyFilter').addEventListener('click', async () => {
-    const email = document.getElementById('motoboyEmail').value;
+    const email = document.getElementById('motoboyName').value;
     const filterDate = document.getElementById('reportDate').value;
 
     if (email && filterDate) {
@@ -75,7 +75,7 @@ document.getElementById('applyFilter').addEventListener('click', async () => {
             console.error('Erro ao buscar relatórios:', error);
         }
     } else {
-        alert('Por favor, selecione um email e uma data.');
+        alert('Por favor, selecione um nome e uma data.');
     }
 });
 

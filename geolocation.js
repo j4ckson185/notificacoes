@@ -2,23 +2,29 @@ import { auth, database, ref, set } from './firebase-config.js';
 
 function updateLocation() {
     if (navigator.geolocation) {
-        navigator.geolocation.watchPosition((position) => {
-            const user = auth.currentUser;
-            if (user) {
-                const userId = user.uid;
-                const userRef = ref(database, 'locations/' + userId);
-                set(userRef, {
-                    latitude: position.coords.latitude,
-                    longitude: position.coords.longitude
-                });
+        navigator.geolocation.watchPosition(
+            (position) => {
+                const user = auth.currentUser;
+                if (user) {
+                    const userId = user.uid;
+                    const userRef = ref(database, 'locations/' + userId);
+                    set(userRef, {
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude
+                    }).catch((error) => {
+                        console.error('Erro ao atualizar localização:', error);
+                    });
+                }
+            },
+            (error) => {
+                console.error('Erro ao obter localização:', error);
+            },
+            {
+                enableHighAccuracy: true,
+                timeout: 5000,
+                maximumAge: 1000
             }
-        }, (error) => {
-            console.error('Erro ao obter localização:', error);
-        }, {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0
-        });
+        );
     } else {
         console.error('Geolocalização não é suportada pelo navegador.');
     }

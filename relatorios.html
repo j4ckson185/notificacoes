@@ -5,57 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatórios</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        label, select, button {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+        }
+        #reportsContainer {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
         <h1>Relatórios</h1>
-        <label for="motoboyName">Nome do Motoboy:</label>
-        <select id="motoboyName" required>
-            <option value="" disabled selected>Selecione o motoboy</option>
+        <label for="motoboy">Selecione o Motoboy:</label>
+        <select id="motoboy">
+            <option value="jackson_division@hotmail.com">Jackson Maciel</option>
+            <option value="giovanni.silva18@gmail.com">Giovanni</option>
+            <option value="felipeaugusto02001@gmail.com">Felipe Augusto</option>
+            <option value="hionarabeatriz11@gmail.com">Hionara</option>
+            <option value="moises110723@gmail.com">Moisés</option>
             <option value="boazd3@gmail.com">Boaz</option>
             <option value="fellipeirineu90@gmail.com">Fellipe Matheus</option>
-            <option value="giovanni.silva18@gmail.com">Giovanni</option>
-            <option value="moises110723@gmail.com">Moisés</option>
-            <option value="jackson_division@hotmail.com">Jackson Maciel</option>
-            <option value="felipeaugusto02001@gmail.com">Felipe Augusto</option>
         </select>
 
-        <label for="reportDate">Data:</label>
-        <input type="date" id="reportDate" required>
+        <label for="date">Selecione a Data:</label>
+        <input type="date" id="date">
 
         <button id="applyFilter">Aplicar Filtro</button>
 
         <div id="reportsContainer"></div>
-
-        <button id="logoutButton">Sair da Conta</button>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
+    <script src="firebase-config.js" type="module"></script>
     <script src="relatorios.js" type="module"></script>
-    <style>
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 20px;
-            box-sizing: border-box;
-            height: 100vh;
-            overflow-y: auto;
-        }
-        label, select, input, button, div {
-            margin-bottom: 10px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        button {
-            align-self: flex-start;
-        }
-        @media (min-width: 768px) {
-            .container {
-                max-width: 600px;
-            }
-        }
-    </style>
 </body>
 </html>

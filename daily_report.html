@@ -3,101 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle Financeiro</title>
+    <title>Relatório Diário</title>
     <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label, input, select, button {
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px;
+            font-size: 16px;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Controle Financeiro</h1>
+        <h1>Relatório Diário</h1>
         <form id="dailyReportForm">
-            <label for="motoboyName">Nome:</label>
-            <input type="text" id="motoboyName" readonly>
-
-            <label for="date">Data:</label>
-            <input type="date" id="date" required>
-
-            <label for="deliveryCount">Quantidade de Entregas:</label>
-            <select id="deliveryCount" required></select>
-
-            <label for="sameHouseCount">Entregas na mesma casa:</label>
-            <select id="sameHouseCount" required></select>
-
-            <label for="receivedAmount">Valor dentro (já recebido):</label>
-            <input type="number" id="receivedAmount" step="0.01" required>
-
-            <label for="shiftType">Um ou dois turnos?</label>
-            <select id="shiftType" required>
-                <option value="" disabled selected>Selecione</option>
-                <option value="35">Um turno (R$ 35,00)</option>
-                <option value="70">Dois turnos (R$ 70,00)</option>
+            <label for="name">Nome:</label>
+            <input type="text" id="name" name="name" readonly>
+            
+            <label for="deliveries">Quantidade de Entregas:</label>
+            <select id="deliveries" name="deliveries">
+                ${Array.from({length: 100}, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('')}
             </select>
-
-            <label for="pixKey">PIX:</label>
-            <input type="text" id="pixKey" required>
-
-            <label>Total a Receber:</label>
-            <div id="totalAmount">0</div>
-
-            <label for="paymentStatus">Selecione o status do pagamento:</label>
-            <select id="paymentStatus" required>
-                <option value="" disabled selected>Selecione</option>
+            
+            <label for="sameHouseDeliveries">Entregas na Mesma Casa:</label>
+            <select id="sameHouseDeliveries" name="sameHouseDeliveries">
+                ${Array.from({length: 16}, (_, i) => `<option value="${i}">${i}</option>`).join('')}
+            </select>
+            
+            <label for="amountReceived">Valor Recebido:</label>
+            <input type="number" id="amountReceived" name="amountReceived">
+            
+            <label for="totalAmountPending">Valor Total Pendente:</label>
+            <input type="number" id="totalAmountPending" name="totalAmountPending">
+            
+            <label for="pix">Pix:</label>
+            <input type="text" id="pix" name="pix">
+            
+            <label for="status">Status:</label>
+            <select id="status" name="status">
                 <option value="Pendente">Pendente</option>
                 <option value="Pago uma parte">Pago uma parte</option>
                 <option value="Quitado">Quitado</option>
             </select>
-
+            
+            <label for="date">Data:</label>
+            <input type="date" id="date" name="date">
+            
             <button type="submit">Enviar Relatório</button>
         </form>
-
-        <div id="confirmationMessage" style="display:none;">
-            <h2>Relatório enviado</h2>
-            <button id="viewReports">Ver meus Relatórios</button>
-            <button id="addNewReport">Adicionar novo Relatório</button>
-        </div>
-
-        <div id="reportsList" style="display:none;">
-            <h2>Filtrar Relatórios</h2>
-            <label for="reportDate">Data:</label>
-            <input type="date" id="reportDate" required>
-            <button id="applyFilter">Aplicar Filtro</button>
-            <div id="reportsContainer"></div>
-            <button id="backToForm">Voltar ao Formulário</button>
-            <button id="logoutButton">Sair da Conta</button>
-        </div>
+        <div id="reportsContainer"></div>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
+    <script src="firebase-config.js" type="module"></script>
     <script src="daily_report.js" type="module"></script>
-    <style>
-        .container {
-            max-width: 100%;
-            margin: 0 auto;
-            padding: 20px;
-            box-sizing: border-box;
-            height: 100vh;
-            overflow-y: auto;
-        }
-        form, #confirmationMessage, #reportsList {
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            height: 100%;
-        }
-        label, select, input, div {
-            margin-bottom: 10px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        button {
-            align-self: flex-start;
-        }
-        @media (min-width: 768px) {
-            .container {
-                max-width: 600px;
-            }
-        }
-    </style>
 </body>
 </html>

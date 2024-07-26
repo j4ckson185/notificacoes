@@ -29,5 +29,9 @@ if (firebase.messaging.isSupported()) {
     console.warn("Firebase messaging is not supported on this browser.");
 }
 
-// Export the initialized services for compat API
-export { database as getDatabase, firebase.database().ref as ref, firebase.database().push as push };
+// Expose the initialized services globally
+window.firebaseDatabase = database;
+window.firebaseAuth = auth;
+if (messaging) {
+    window.firebaseMessaging = messaging;
+}

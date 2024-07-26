@@ -29,7 +29,10 @@ function addMotoboyMarker(location, name) {
     const marker = new google.maps.Marker({
         position: { lat: location.latitude, lng: location.longitude },
         map: map,
-        icon: 'https://i.ibb.co/FHdgjcK/capacete.png', // Caminho do ícone atualizado
+        icon: {
+            url: 'https://i.ibb.co/FHdgjcK/capacete.png', // URL do ícone
+            scaledSize: new google.maps.Size(50, 50) // Tamanho reduzido do ícone
+        },
         title: name
     });
 

@@ -1,5 +1,8 @@
 // firebase-config.js
-// Firebase Configuration
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+import { getDatabase, ref, push } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
     authDomain: "cabana-8d55e.firebaseapp.com",
@@ -12,26 +15,9 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+const auth = getAuth(app);
 
-// Get Firebase services after initialization
-const database = firebase.database();
-const auth = firebase.auth();
-let messaging;
-
-if (firebase.messaging.isSupported()) {
-    try {
-        messaging = firebase.messaging();
-    } catch (error) {
-        console.error("Firebase messaging is not available:", error);
-    }
-} else {
-    console.warn("Firebase messaging is not supported on this browser.");
-}
-
-// Expose the initialized services globally
-window.firebaseDatabase = database;
-window.firebaseAuth = auth;
-if (messaging) {
-    window.firebaseMessaging = messaging;
-}
+// Export the initialized services
+export { database, ref, push, auth };

@@ -29,7 +29,7 @@ function simulateLocation() {
         lng += (Math.random() - 0.5) * 0.01;
 
         // Atualizar o Firebase com a nova localização
-        const userId = "testUser"; // Substitua pelo ID do usuário de teste
+        const userId = "1joqgVujrocrfP8bdyDYZHgdByv1"; // Substitua pelo ID do usuário de teste
         const userRef = ref(database, 'locations/' + userId);
         set(userRef, {
             latitude: lat,

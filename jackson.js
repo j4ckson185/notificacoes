@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Listen for changes in the Realtime Database
-    firebaseDatabase.ref('messages').on('value', (snapshot) => {
+    window.firebaseDatabase.ref('messages').on('value', (snapshot) => {
         if (messagesContainer) {
             messagesContainer.innerHTML = '';
             snapshot.forEach((childSnapshot) => {
@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Listen for FCM messages
     if (window.firebaseMessaging) {
-        firebaseMessaging.onMessage((payload) => {
+        window.firebaseMessaging.onMessage((payload) => {
             console.log('Received FCM message:', payload);
             const messageData = payload.data;
             const messageElement = document.createElement('div');
@@ -41,13 +41,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Clear all messages
     clearMessagesButton.addEventListener('click', () => {
-        firebaseDatabase.ref('messages').remove();
+        window.firebaseDatabase.ref('messages').remove();
         messagesContainer.innerHTML = '';
     });
 
     // Logout
     logoutButton.addEventListener('click', () => {
-        firebaseAuth.signOut()
+        window.firebaseAuth.signOut()
             .then(() => {
                 console.log('Signed out');
                 window.location.href = 'index.html';

@@ -34,25 +34,19 @@ function initMap() {
         handleLocationError(false, map.getCenter());
     }
 
-    // Adicionar localização da loja
-    new google.maps.Marker({
-        position: { lat: -5.748178, lng: -35.256141 },
-        map,
-        icon: "https://i.ibb.co/D766RTL/loja.png",
-        title: "Localização da Loja",
-    });
-
     // Atualizar localização dos motoboys
     firebaseDatabase.ref('locations').on('value', (snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const data = childSnapshot.val();
-            new google.maps.Marker({
-                position: { lat: data.lat, lng: data.lng },
-                map,
-                icon: "https://i.ibb.co/FHdgjcK/capacete.png",
-                title: data.name,
-                label: data.name,
-            });
+            if (typeof data.lat === 'number' && typeof data.lng === 'number') {
+                new google.maps.Marker({
+                    position: { lat: data.lat, lng: data.lng },
+                    map,
+                    icon: "https://i.ibb.co/FHdgjcK/capacete.png",
+                    title: data.name,
+                    label: data.name,
+                });
+            }
         });
     });
 }
@@ -68,3 +62,6 @@ function handleLocationError(browserHasGeolocation, pos) {
     );
     infoWindow.open(map);
 }
+
+// Expor initMap para ser chamado pela API do Google Maps
+window.initMap = initMap;

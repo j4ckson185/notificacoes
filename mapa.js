@@ -12,7 +12,10 @@ window.initMap = function() {
         zoom: 15
     });
 
+    // Referência para o caminho de localizações no Firebase
     const locationsRef = ref(database, 'locations');
+    
+    // Ouça as mudanças no banco de dados em tempo real
     onValue(locationsRef, (snapshot) => {
         const locations = snapshot.val();
         if (locations) {
@@ -26,14 +29,16 @@ function updateMarkers(locations) {
     for (const key in locations) {
         const location = locations[key];
         if (markers[key]) {
+            // Atualiza a posição do marcador existente
             markers[key].setPosition(new google.maps.LatLng(location.latitude, location.longitude));
         } else {
+            // Adiciona um novo marcador
             addMotoboyMarker(location, key);
         }
     }
 }
 
-// Adiciona ou atualiza um marcador para um motoboy
+// Adiciona um marcador para um motoboy
 function addMotoboyMarker(location, name) {
     const marker = new google.maps.Marker({
         position: { lat: location.latitude, lng: location.longitude },

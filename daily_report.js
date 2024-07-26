@@ -37,11 +37,10 @@ function calculateTotalAmountToReceive() {
     const deliveries = parseInt(document.getElementById('deliveries').value) || 0;
     const sameHouseDeliveries = parseInt(document.getElementById('sameHouseDeliveries').value) || 0;
     const amountReceived = parseFloat(document.getElementById('amountReceived').value) || 0;
-    const totalAmountPending = parseFloat(document.getElementById('totalAmountPending').value) || 0;
 
     const deliveryValue = deliveries * 3;
     const sameHouseDeliveryValue = sameHouseDeliveries * 3;
-    const totalAmount = (deliveryValue + sameHouseDeliveryValue + totalAmountPending) - amountReceived;
+    const totalAmount = (deliveryValue + sameHouseDeliveryValue) - amountReceived;
 
     document.getElementById('totalAmountToReceive').value = totalAmount.toFixed(2);
 }
@@ -59,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('deliveries').addEventListener('change', calculateTotalAmountToReceive);
 document.getElementById('sameHouseDeliveries').addEventListener('change', calculateTotalAmountToReceive);
 document.getElementById('amountReceived').addEventListener('input', calculateTotalAmountToReceive);
-document.getElementById('totalAmountPending').addEventListener('input', calculateTotalAmountToReceive);
 
 // Adicionar evento de envio do formulário
 document.getElementById('dailyReportForm').addEventListener('submit', async (e) => {
@@ -76,7 +74,6 @@ document.getElementById('dailyReportForm').addEventListener('submit', async (e) 
         deliveries: document.getElementById('deliveries').value,
         sameHouseDeliveries: document.getElementById('sameHouseDeliveries').value,
         amountReceived: document.getElementById('amountReceived').value,
-        totalAmountPending: document.getElementById('totalAmountPending').value,
         pix: document.getElementById('pix').value,
         status: document.getElementById('status').value,
         date: document.getElementById('date').value,
@@ -108,7 +105,6 @@ async function displayReports(userId) {
                 <p>Quantidade de Entregas: ${report.deliveries}</p>
                 <p>Entregas na Mesma Casa: ${report.sameHouseDeliveries}</p>
                 <p>Valor Recebido: ${report.amountReceived}</p>
-                <p>Valor Total Pendente: ${report.totalAmountPending}</p>
                 <p>Pix: ${report.pix}</p>
                 <p>Status: ${report.status}</p>
                 <p>Data: ${report.date}</p>

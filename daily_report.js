@@ -1,5 +1,5 @@
 // daily_report.js
-import { auth, database, ref, push, set } from './firebase-config.js';
+import { auth, database, ref, push, set, onValue } from './firebase-config.js';
 
 document.getElementById('dailyReportForm').addEventListener('submit', async (e) => {
     e.preventDefault();

@@ -1,5 +1,3 @@
-import { auth, database, ref, set } from './firebase-config.js';
-
 function updateLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.watchPosition((position) => {

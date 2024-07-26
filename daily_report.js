@@ -1,61 +1,94 @@
-// daily_report.js
-document.addEventListener('DOMContentLoaded', () => {
-    const auth = window.firebaseAuth;
-    const database = window.firebaseDatabase;
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            // Preencha o campo "Nome" automaticamente com base no email do usuário
-            const nameField = document.getElementById('name');
-            const email = user.email;
-            const nameMap = {
-                'jackson_division@hotmail.com': 'Jackson Maciel',
-                'giovanni.silva18@gmail.com': 'Giovanni',
-                'felipeaugusto02001@gmail.com': 'Felipe Augusto',
-                'hionarabeatriz11@gmail.com': 'Hionara',
-                'moises110723@gmail.com': 'Moisés',
-                'boazd3@gmail.com': 'Boaz',
-                'fellipeirineu90@gmail.com': 'Fellipe Matheus'
-            };
-            nameField.value = nameMap[email] || '';
+const firebaseConfig = {
+    apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
+    authDomain: "cabana-8d55e.firebaseapp.com",
+    databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
+    projectId: "cabana-8d55e",
+    storageBucket: "cabana-8d55e.appspot.com",
+    messagingSenderId: "706144237954",
+    appId: "1:706144237954:web:345c10370972486afc779b",
+    measurementId: "G-96Y337GYT8"
+};
 
-            // Adicionar event listener ao formulário
-            document.getElementById('reportForm').addEventListener('submit', async (e) => {
-                e.preventDefault();
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-                const date = document.getElementById('date').value;
-                const deliveries = document.getElementById('deliveries').value;
-                const sameHouseDeliveries = document.getElementById('sameHouseDeliveries').value;
-                const amountReceived = document.getElementById('amountReceived').value;
-                const pix = document.getElementById('pix').value;
-                const shift = document.getElementById('shift').value;
+const form = document.getElementById('dailyReportForm');
+const totalAmountDiv = document.getElementById('totalAmount');
+const reportDisplay = document.getElementById('reportDisplay');
 
-                // Calcular valor total a receber
-                const totalAmountToReceive = (deliveries * 3) - (sameHouseDeliveries * 3) - amountReceived + parseFloat(shift);
+const nameMap = {
+    'boazd3@gmail.com': 'Boaz',
+    'fellipeirineu90@gmail.com': 'Fellipe Matheus',
+    'giovanni.silva18@gmail.com': 'Giovanni',
+    'moises110723@gmail.com': 'Moisés',
+    'jackson_division@hotmail.com': 'Jackson Maciel'
+};
 
-                const reportData = {
-                    name: nameField.value,
-                    deliveries,
-                    sameHouseDeliveries,
-                    amountReceived,
-                    pix,
-                    status: 'Pendente',
-                    date,
-                    shift,
-                    totalAmountToReceive,
-                    timestamp: new Date().toISOString()
-                };
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        const userEmail = user.email;
+        document.getElementById('motoboyName').value = nameMap[userEmail] || 'Usuário';
+    } else {
+        console.error('Usuário não autenticado');
+    }
+});
 
-                try {
-                    await database.ref('reports/' + email.replace(/\./g, '_')).push(reportData);
-                    alert('Relatório enviado com sucesso!');
-                } catch (error) {
-                    console.error('Erro ao enviar relatório:', error);
-                    alert('Erro ao enviar relatório: ' + error.message);
-                }
-            });
-        } else {
-            console.log('Nenhum usuário autenticado');
-        }
-    });
+function populateSelectOptions() {
+    const deliveryCountSelect = document.getElementById('deliveryCount');
+    const sameHouseCountSelect = document.getElementById('sameHouseCount');
+
+    for (let i = 1; i <= 100; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        deliveryCountSelect.appendChild(option);
+    }
+
+    for (let i = 1; i <= 15; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        sameHouseCountSelect.appendChild(option);
+    }
+}
+
+populateSelectOptions();
+
+form.addEventListener('input', () => {
+    const deliveryCount = parseInt(document.getElementById('deliveryCount').value) || 0;
+    const sameHouseCount = parseInt(document.getElementById('sameHouseCount').value) || 0;
+    const receivedAmount = parseFloat(document.getElementById('receivedAmount').value) || 0;
+    const shiftValue = parseFloat(document.getElementById('shiftType').value) || 0;
+
+    const totalAmount = (deliveryCount * 3) - (sameHouseCount * 3) - receivedAmount + shiftValue;
+    totalAmountDiv.textContent = totalAmount.toFixed(2);
+});
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const reportData = {
+        name: document.getElementById('motoboyName').value,
+        dayOfWeek: document.getElementById('dayOfWeek').value,
+        deliveryCount: document.getElementById('deliveryCount').value,
+        sameHouseCount: document.getElementById('sameHouseCount').value,
+        receivedAmount: parseFloat(document.getElementById('receivedAmount').value),
+        pixKey: document.getElementById('pixKey').value,
+        totalAmount: parseFloat(totalAmountDiv.textContent),
+        paymentStatus: document.getElementById('paymentStatus').value
+    };
+
+    document.getElementById('displayMotoboyName').textContent = reportData.name;
+    document.getElementById('displayDayOfWeek').textContent = reportData.dayOfWeek;
+    document.getElementById('displayDeliveryCount').textContent = reportData.deliveryCount;
+    document.getElementById('displaySameHouseCount').textContent = reportData.sameHouseCount;
+    document.getElementById('displayReceivedAmount').textContent = reportData.receivedAmount.toFixed(2);
+    document.getElementById('displayPixKey').textContent = reportData.pixKey;
+    document.getElementById('displayTotalAmount').textContent = reportData.totalAmount.toFixed(2);
+    document.getElementById('displayPaymentStatus').textContent = reportData.paymentStatus;
+
+    reportDisplay.style.display = 'block';
 });

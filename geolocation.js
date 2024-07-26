@@ -2,7 +2,6 @@ import { auth, database, ref, set } from './firebase-config.js';
 
 function updateLocation() {
     if (navigator.geolocation) {
-        // Utiliza watchPosition para obter atualizações contínuas
         navigator.geolocation.watchPosition(
             (position) => {
                 const user = auth.currentUser;
@@ -27,7 +26,7 @@ function updateLocation() {
                 console.error('Erro ao obter localização:', error);
             },
             {
-                enableHighAccuracy: true, // Aumenta a precisão
+                enableHighAccuracy: true, // Melhora a precisão da localização
                 timeout: 5000,            // Tempo máximo para obter a localização
                 maximumAge: 1000         // Máxima idade da localização para ser considerada válida
             }

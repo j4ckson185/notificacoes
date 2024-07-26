@@ -4,8 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const clearMessagesButton = document.getElementById('clearMessagesButton');
     const logoutButton = document.getElementById('logoutButton');
 
-    // Verificar se as variáveis globais estão disponíveis
-    if (!window.firebaseDatabase || !window.firebaseAuth) {
+    // Verificar se os serviços do Firebase foram inicializados corretamente
+    if (!window.firebaseInitialized) {
         console.error('Firebase services not initialized.');
         return;
     }

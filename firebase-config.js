@@ -23,4 +23,7 @@ const database = getDatabase(app);
 const auth = getAuth(app);
 const messaging = getMessaging(app);
 
-export { app, database, auth, messaging, getDatabase, ref, set, push, onValue, onChildAdded, getToken, onMessage, signInWithEmailAndPassword, onAuthStateChanged, signOut, firebaseConfig };
+// Group all Firebase services into one object for easier export
+const firebaseServices = { app, database, auth, messaging, getDatabase, ref, set, push, onValue, onChildAdded, getToken, onMessage, signInWithEmailAndPassword, onAuthStateChanged, signOut, firebaseConfig };
+
+export { firebaseServices };

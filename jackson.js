@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutButton = document.getElementById('logoutButton');
 
     // Verificar se os serviços do Firebase foram inicializados corretamente
-    if (!window.firebaseInitialized) {
+    if (!window.firebaseDatabase || !window.firebaseAuth) {
         console.error('Firebase services not initialized.');
         return;
     }

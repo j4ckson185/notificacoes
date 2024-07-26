@@ -11,33 +11,28 @@ const firebaseConfig = {
     measurementId: "G-96Y337GYT8"
 };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+(function() {
+    // Initialize Firebase
+    try {
+        firebase.initializeApp(firebaseConfig);
+        console.log('Firebase initialized');
 
-// Get Firebase services after initialization
-try {
-    console.log('Initializing Firebase Database...');
-    window.firebaseDatabase = firebase.database();
-    console.log('Firebase Database initialized:', window.firebaseDatabase);
-
-    console.log('Initializing Firebase Auth...');
-    window.firebaseAuth = firebase.auth();
-    console.log('Firebase Auth initialized:', window.firebaseAuth);
-
-    if (firebase.messaging.isSupported()) {
-        try {
-            console.log('Initializing Firebase Messaging...');
-            window.firebaseMessaging = firebase.messaging();
-            console.log('Firebase Messaging initialized:', window.firebaseMessaging);
-        } catch (error) {
-            console.error("Firebase messaging is not available:", error);
+        // Get Firebase services after initialization
+        window.firebaseDatabase = firebase.database();
+        window.firebaseAuth = firebase.auth();
+        if (firebase.messaging.isSupported()) {
+            try {
+                window.firebaseMessaging = firebase.messaging();
+            } catch (error) {
+                console.error("Firebase messaging is not available:", error);
+            }
+        } else {
+            console.warn("Firebase messaging is not supported on this browser.");
         }
-    } else {
-        console.warn("Firebase messaging is not supported on this browser.");
+        window.firebaseInitialized = true;
+        console.log('Firebase services initialized successfully');
+    } catch (error) {
+        console.error('Error initializing Firebase services:', error);
+        window.firebaseInitialized = false;
     }
-    window.firebaseInitialized = true;
-    console.log('Firebase services initialized successfully');
-} catch (error) {
-    console.error('Error initializing Firebase services:', error);
-    window.firebaseInitialized = false;
-}
+})();

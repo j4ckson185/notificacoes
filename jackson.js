@@ -4,6 +4,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const clearMessagesButton = document.getElementById('clearMessagesButton');
     const logoutButton = document.getElementById('logoutButton');
 
+    // Verificar se os serviços do Firebase foram inicializados corretamente
+    if (!window.firebaseDatabase || !window.firebaseAuth) {
+        console.error('Firebase services not initialized.');
+        return;
+    }
+
     // Register service worker
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/firebase-messaging-sw.js')
@@ -13,6 +19,12 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(err => {
                 console.error('Error registering Service Worker:', err);
             });
+    }
+
+    // Verificar se firebaseDatabase está disponível
+    if (!window.firebaseDatabase) {
+        console.error('Firebase Realtime Database is not available.');
+        return;
     }
 
     // Listen for changes in the Realtime Database

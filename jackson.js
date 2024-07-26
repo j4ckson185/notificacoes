@@ -1,7 +1,7 @@
 // jackson.js
 import { getDatabase } from './firebase-config.js';
 import { ref, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
-import { getMessaging } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
+import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM carregado');
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Listen for FCM messages
     if (messaging) {
-        messaging.onMessage((payload) => {
+        onMessage(messaging, (payload) => {
             console.log('Received FCM message:', payload);
             const messageData = payload.data;
             const messageElement = document.createElement('div');

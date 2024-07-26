@@ -1,30 +1,6 @@
 // index.js
 import { auth, messaging, database, ref, set, getToken, signInWithEmailAndPassword, onAuthStateChanged } from './firebase-config.js';
 
-// Verificar se o usuário está autenticado ao carregar a página
-onAuthStateChanged(auth, (user) => {
-    if (user) {
-        // Usuário está autenticado, redirecionar para a página específica
-        const email = user.email;
-        window.location.href = emailToPage(email);
-    }
-});
-
-// Função para redirecionar com base no email
-function emailToPage(email) {
-    const emailMap = {
-        'jackson_division@hotmail.com': 'jackson.html',
-        'giovanni.silva18@gmail.com': 'geovane.html',
-        'felipeaugusto02001@gmail.com': 'felipeaugusto.html',
-        'hionarabeatriz11@gmail.com': 'hionara.html',
-        'moises110723@gmail.com': 'moises.html',
-        'boazd3@gmail.com': 'boaz.html',
-        'fellipeirineu90@gmail.com': 'fellipematheus.html'
-    };
-    return emailMap[email] || 'index.html'; // Default to index.html if no match
-}
-
-// Evento de envio do formulário de login
 document.getElementById('loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const email = document.getElementById('loginEmail').value;
@@ -61,15 +37,15 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
             console.error('Geolocalização não é suportada pelo navegador.');
         }
 
-        // Obter o token FCM
+        // Get FCM token
         const currentToken = await getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' }); // Replace with your actual VAPID key
         if (currentToken) {
-            // Salvar o token no banco de dados
+            // Save token to database
             await set(ref(database, 'tokens/' + user.uid), {
                 token: currentToken
             });
 
-            // Redirecionar para a página específica
+            // Redirect to the specific page
             window.location.href = emailToPage(email);
         } else {
             console.log('No registration token available.');
@@ -79,7 +55,20 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     }
 });
 
-// Registrar service worker
+function emailToPage(email) {
+    const emailMap = {
+        'jackson_division@hotmail.com': 'jackson.html',
+        'giovanni.silva18@gmail.com': 'geovane.html',
+        'felipeaugusto02001@gmail.com': 'felipeaugusto.html',
+        'hionarabeatriz11@gmail.com': 'hionara.html',
+        'moises110723@gmail.com': 'moises.html',
+        'boazd3@gmail.com': 'boaz.html',
+        'fellipeirineu90@gmail.com': 'fellipematheus.html'
+    };
+    return emailMap[email] || 'index.html'; // Default to index.html if no match
+}
+
+// Register service worker
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/firebase-messaging-sw.js')
         .then(registration => {
@@ -89,3 +78,14 @@ if ('serviceWorker' in navigator) {
             console.error('Error registering Service Worker:', err);
         });
 }
+
+// Handle user authentication state changes
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        // User is signed in
+        console.log('User is signed in:', user);
+    } else {
+        // User is signed out
+        console.log('User is signed out');
+    }
+});

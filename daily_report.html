@@ -34,14 +34,10 @@
             <input type="text" id="name" name="name" readonly>
             
             <label for="deliveries">Quantidade de Entregas:</label>
-            <select id="deliveries" name="deliveries">
-                ${Array.from({length: 100}, (_, i) => `<option value="${i + 1}">${i + 1}</option>`).join('')}
-            </select>
+            <select id="deliveries" name="deliveries"></select>
             
             <label for="sameHouseDeliveries">Entregas na Mesma Casa:</label>
-            <select id="sameHouseDeliveries" name="sameHouseDeliveries">
-                ${Array.from({length: 16}, (_, i) => `<option value="${i}">${i}</option>`).join('')}
-            </select>
+            <select id="sameHouseDeliveries" name="sameHouseDeliveries"></select>
             
             <label for="amountReceived">Valor Recebido:</label>
             <input type="number" id="amountReceived" name="amountReceived">

@@ -2,6 +2,7 @@
 import { database, ref, push } from './firebase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Verifique a existência dos elementos DOM
     const sendMessageForm = document.getElementById('sendMessageForm');
     const userSelect = document.getElementById('userSelect');
     const messageInput = document.getElementById('messageInput');

@@ -22,4 +22,4 @@ const database = getDatabase(app);
 const auth = getAuth(app);
 const messaging = getMessaging(app);
 
-export { app, database, auth, messaging, ref, set, push, onValue, onChildAdded, getToken, onMessage, signInWithEmailAndPassword, onAuthStateChanged, signOut };
+export { app, database, auth, messaging, ref, set, push, onValue, onChildAdded, getToken, onMessage, signInWithEmailAndPassword, onAuthStateChanged, signOut, firebaseServices };

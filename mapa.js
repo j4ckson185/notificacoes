@@ -1,6 +1,4 @@
-import { firebaseServices } from './firebase-config.js';
-
-const { database, ref, onValue } = firebaseServices;
+import { database, ref, onValue } from './firebase-config.js';
 
 let map;
 let markers = {};

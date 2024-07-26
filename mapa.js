@@ -51,7 +51,6 @@ window.initMap = function() {
 
 function addUserMarker(location, userId) {
     const email = location.email || 'Email não disponível';
-    const address = location.address || 'Endereço não disponível';
 
     const marker = new google.maps.Marker({
         position: { lat: location.latitude, lng: location.longitude },
@@ -60,11 +59,11 @@ function addUserMarker(location, userId) {
             url: 'https://i.ibb.co/FHdgjcK/capacete.png',
             scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone ajustado
         },
-        title: `${email}\n${address}`
+        title: `${email}`
     });
 
     const infowindow = new google.maps.InfoWindow({
-        content: `${email}<br>${address}`
+        content: `${email}`
     });
 
     marker.addListener('mouseover', () => {

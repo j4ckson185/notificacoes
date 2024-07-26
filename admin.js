@@ -6,18 +6,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const userSelect = document.getElementById('userSelect');
     const messageInput = document.getElementById('messageInput');
 
+    // Verifique se todos os elementos foram encontrados
     if (!sendMessageForm || !userSelect || !messageInput) {
         console.error('Um ou mais elementos não foram encontrados no DOM.');
         return;
     }
 
+    // Adicione o event listener ao formulário
     sendMessageForm.addEventListener('submit', async function(e) {
         e.preventDefault();
         const user = userSelect.value;
         const message = messageInput.value;
 
         if (message) {
-            // Send message to Realtime Database
+            // Enviar mensagem para o Realtime Database
             push(ref(database, `messages/${user}`), {
                 text: message
             })

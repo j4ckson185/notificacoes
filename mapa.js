@@ -19,7 +19,10 @@ function initMap() {
                 new google.maps.Marker({
                     position: pos,
                     map,
-                    icon: "https://i.ibb.co/FHdgjcK/capacete.png", // Ícone do capacete
+                    icon: {
+                        url: "https://i.ibb.co/FHdgjcK/capacete.png", // Ícone do capacete
+                        scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone
+                    },
                     title: "Minha localização",
                 });
 
@@ -42,7 +45,10 @@ function initMap() {
                 new google.maps.Marker({
                     position: { lat: data.lat, lng: data.lng },
                     map,
-                    icon: "https://i.ibb.co/FHdgjcK/capacete.png",
+                    icon: {
+                        url: "https://i.ibb.co/FHdgjcK/capacete.png", // Ícone do capacete
+                        scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone
+                    },
                     title: data.name,
                     label: data.name,
                 });

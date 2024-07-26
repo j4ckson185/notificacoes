@@ -1,10 +1,13 @@
 // firebase-config.js
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getDatabase } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
-import { getMessaging } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 
-export const firebaseConfig = {
+// Importa os módulos Firebase necessários
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+import { getDatabase, ref, set, get, remove, child } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { getAuth, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
+
+// Configuração do Firebase
+const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
     authDomain: "cabana-8d55e.firebaseapp.com",
     databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
@@ -15,10 +18,10 @@ export const firebaseConfig = {
     measurementId: "G-96Y337GYT8"
 };
 
-// Inicializar Firebase
+// Inicializa o Firebase
 const app = initializeApp(firebaseConfig);
 
-// Exportar os serviços do Firebase
-export const firebaseAuth = getAuth(app);
-export const firebaseDatabase = getDatabase(app);
-export const firebaseMessaging = getMessaging(app);
+// Exporta os serviços necessários
+export const database = getDatabase(app);
+export const auth = getAuth(app);
+export const messaging = getMessaging(app);

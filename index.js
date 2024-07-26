@@ -8,18 +8,23 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         const userCredential = await firebaseAuth.signInWithEmailAndPassword(email, password);
         const user = userCredential.user;
 
-        // Get FCM token
-        const currentToken = await firebaseMessaging.getToken({ vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' });
-        if (currentToken) {
-            // Save token to database
-            await firebaseDatabase.ref('tokens/' + user.uid).set({
-                token: currentToken
-            });
+        if (window.firebaseMessaging) {
+            // Get FCM token
+            const currentToken = await firebaseMessaging.getToken({ vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' });
+            if (currentToken) {
+                // Save token to database
+                await firebaseDatabase.ref('tokens/' + user.uid).set({
+                    token: currentToken
+                });
 
+                // Redirect to the specific page
+                window.location.href = emailToPage(email);
+            } else {
+                console.log('No registration token available.');
+            }
+        } else {
             // Redirect to the specific page
             window.location.href = emailToPage(email);
-        } else {
-            console.log('No registration token available.');
         }
     } catch (error) {
         console.error('Error signing in:', error);

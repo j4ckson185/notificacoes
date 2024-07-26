@@ -33,32 +33,32 @@ function updateMarkers(locations) {
 // Adiciona ou atualiza um marcador para um motoboy
 function addMotoboyMarker(location, name) {
     if (markers[name]) {
-        markers[name].setMap(null);
+        markers[name].setPosition(new google.maps.LatLng(location.latitude, location.longitude));
+    } else {
+        const marker = new google.maps.Marker({
+            position: { lat: location.latitude, lng: location.longitude },
+            map: map,
+            icon: {
+                url: 'https://i.ibb.co/FHdgjcK/capacete.png', // URL do ícone
+                scaledSize: new google.maps.Size(50, 50) // Tamanho reduzido do ícone
+            },
+            title: name
+        });
+
+        const infowindow = new google.maps.InfoWindow({
+            content: name
+        });
+
+        marker.addListener('mouseover', () => {
+            infowindow.open(map, marker);
+        });
+
+        marker.addListener('mouseout', () => {
+            infowindow.close();
+        });
+
+        markers[name] = marker;
     }
-
-    const marker = new google.maps.Marker({
-        position: { lat: location.latitude, lng: location.longitude },
-        map: map,
-        icon: {
-            url: 'https://i.ibb.co/FHdgjcK/capacete.png', // URL do ícone
-            scaledSize: new google.maps.Size(50, 50) // Tamanho reduzido do ícone
-        },
-        title: name
-    });
-
-    const infowindow = new google.maps.InfoWindow({
-        content: name
-    });
-
-    marker.addListener('mouseover', () => {
-        infowindow.open(map, marker);
-    });
-
-    marker.addListener('mouseout', () => {
-        infowindow.close();
-    });
-
-    markers[name] = marker;
 }
 
 // Limpa todos os marcadores

@@ -17,6 +17,7 @@ const app = initializeApp(firebaseConfig);
 const database = getDatabase(app);
 
 let map;
+let markers = {}; // Armazena os marcadores para atualização
 
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
@@ -24,35 +25,59 @@ function initMap() {
         zoom: 15
     });
 
-    // Atualizar localização dos usuários
+    updateMarkers(); // Atualiza os marcadores inicialmente
+    setInterval(updateMarkers, 5000); // Atualiza os marcadores a cada 5 segundos
+}
+
+function updateMarkers() {
     const locationsRef = ref(database, 'locations');
     onValue(locationsRef, (snapshot) => {
+        const updates = [];
         snapshot.forEach((childSnapshot) => {
             const data = childSnapshot.val();
             const userId = childSnapshot.key; // Obtenha o UID
 
             if (typeof data.lat === 'number' && typeof data.lng === 'number') {
-                const marker = new google.maps.Marker({
-                    position: { lat: data.lat, lng: data.lng },
-                    map,
-                    icon: {
-                        url: "https://i.ibb.co/FHdgjcK/capacete.png", // Ícone do capacete
-                        scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone
-                    },
-                    title: data.name,
-                });
+                if (!markers[userId]) {
+                    // Crie um novo marcador se ainda não existir
+                    const marker = new google.maps.Marker({
+                        position: { lat: data.lat, lng: data.lng },
+                        map,
+                        icon: {
+                            url: "https://i.ibb.co/FHdgjcK/capacete.png", // Ícone do capacete
+                            scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone
+                        },
+                        title: data.name,
+                    });
 
-                // Crie uma janela de informação
-                const infoWindow = new google.maps.InfoWindow({
-                    content: `<div><strong>ID do Usuário:</strong> ${userId}</div>`
-                });
+                    // Crie uma janela de informação
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: `<div><strong>ID do Usuário:</strong> ${userId}</div>`
+                    });
 
-                // Adicione um evento de clique no marcador para abrir a janela de informação
-                marker.addListener('click', () => {
-                    infoWindow.open(map, marker);
-                });
+                    // Adicione um evento de clique no marcador para abrir a janela de informação
+                    marker.addListener('click', () => {
+                        infoWindow.open(map, marker);
+                    });
+
+                    // Armazene o marcador
+                    markers[userId] = marker;
+                } else {
+                    // Atualize a posição do marcador existente
+                    markers[userId].setPosition({ lat: data.lat, lng: data.lng });
+                }
+
+                updates.push(userId);
             }
         });
+
+        // Remova os marcadores que não estão mais na base de dados
+        for (const userId in markers) {
+            if (!updates.includes(userId)) {
+                markers[userId].setMap(null);
+                delete markers[userId];
+            }
+        }
     });
 }
 

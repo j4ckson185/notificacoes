@@ -4,7 +4,78 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle Financeiro</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Supondo que você tenha um arquivo de estilos -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: auto;
+        }
+
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        input, select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .status-icon {
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-left: 10px;
+            vertical-align: middle;
+        }
+
+        .status-icon.red {
+            background-color: red;
+        }
+
+        .status-icon.yellow {
+            background-color: yellow;
+        }
+
+        .status-icon.green {
+            background-color: green;
+        }
+
+        #total-receivable {
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
     <h1>Controle Financeiro</h1>
@@ -17,8 +88,8 @@
 
         <label for="same-house">Entregas na mesma casa:</label>
         <select id="same-house" name="same-house">
+            <!-- Options for 0 to 15 -->
             <option value="0">0</option>
-            <!-- Adicione mais opções conforme necessário -->
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>

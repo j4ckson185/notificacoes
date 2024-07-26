@@ -1,4 +1,4 @@
-import { database, ref, onValue, set } from './firebase-config.js';
+import { database, ref, onValue } from './firebase-config.js';
 
 let map;
 let markers = {};
@@ -12,9 +12,6 @@ window.initMap = function() {
         zoom: 15
     });
 
-    // Atualiza a localização do usuário em tempo real
-    updateUserLocationPeriodically();
-
     const locationsRef = ref(database, 'locations');
     onValue(locationsRef, (snapshot) => {
         const locations = snapshot.val();
@@ -23,36 +20,6 @@ window.initMap = function() {
         }
     });
 };
-
-// Atualiza a localização do usuário periodicamente
-function updateUserLocationPeriodically() {
-    if (navigator.geolocation) {
-        setInterval(() => {
-            navigator.geolocation.getCurrentPosition((position) => {
-                const user = auth.currentUser;
-                if (user) {
-                    const userId = user.uid;
-                    const userRef = ref(database, 'locations/' + userId);
-                    const newLocation = {
-                        latitude: position.coords.latitude,
-                        longitude: position.coords.longitude
-                    };
-                    set(userRef, newLocation)
-                        .then(() => {
-                            console.log('Localização atualizada no Firebase:', newLocation);
-                        })
-                        .catch((error) => {
-                            console.error('Erro ao atualizar localização:', error);
-                        });
-                }
-            }, (error) => {
-                console.error('Erro ao obter localização:', error);
-            });
-        }, 5000); // Atualiza a cada 5 segundos
-    } else {
-        console.error('Geolocalização não é suportada pelo navegador.');
-    }
-}
 
 // Atualiza os marcadores no mapa
 function updateMarkers(locations) {

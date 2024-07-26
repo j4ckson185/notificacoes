@@ -1,17 +1,11 @@
-// Importar funções da Firebase SDK
-import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { firebaseConfig } from './firebase-config.js'; // Certifique-se de que a configuração do Firebase está exportada corretamente
-
-// Inicializar o Firebase
-const app = initializeApp(firebaseConfig);
-const firebaseAuth = getAuth(app); // Definindo a variável firebaseAuth corretamente
+import { firebaseAuth } from './firebase-config.js';
+import { signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 
 // Lidar com o envio do formulário de login
 document.getElementById('loginForm').addEventListener('submit', async function(e) {
     e.preventDefault();
-    const email = document.getElementById('emailInput').value;
-    const password = document.getElementById('passwordInput').value;
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
 
     try {
         const userCredential = await signInWithEmailAndPassword(firebaseAuth, email, password);

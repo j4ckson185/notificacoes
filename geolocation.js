@@ -1,3 +1,5 @@
+import { auth, database, ref, set } from './firebase-config.js';
+
 function updateLocation() {
     if (navigator.geolocation) {
         navigator.geolocation.watchPosition((position) => {
@@ -12,6 +14,10 @@ function updateLocation() {
             }
         }, (error) => {
             console.error('Erro ao obter localização:', error);
+        }, {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
         });
     } else {
         console.error('Geolocalização não é suportada pelo navegador.');

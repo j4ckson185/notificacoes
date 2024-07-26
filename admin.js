@@ -1,4 +1,6 @@
 // admin.js
+import { database, ref, push } from './firebase-config.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const sendMessageForm = document.getElementById('sendMessageForm');
     const userSelect = document.getElementById('userSelect');

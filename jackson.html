@@ -15,12 +15,16 @@
         <button id="financialReportButton">Relatório Financeiro</button>
     </div>
 
-    <!-- Inclua o Firebase e o script do jackson.js -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js" type="module"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js" type="module"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js" type="module"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js" type="module"></script>
-    <script src="firebase-config.js" type="module"></script>
-    <script src="jackson.js" type="module"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+    <script type="module" src="https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js"></script>
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="jackson.js"></script>
+    <script>
+        document.getElementById('financialReportButton').addEventListener('click', () => {
+            window.location.href = 'daily_report.html';
+        });
+    </script>
 </body>
 </html>

@@ -2,6 +2,7 @@
 import { getDatabase } from './firebase-config.js';
 import { ref, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
+import { getAuth } from './firebase-config.js'; // Importando getAuth
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM carregado');
@@ -18,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize Firebase services
     const database = getDatabase();
     const messaging = getMessaging();
+    const auth = getAuth(); // Obter a instância do auth
 
     // Listen for changes in the Realtime Database
     onValue(ref(database, 'messages'), (snapshot) => {
@@ -51,7 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Logout
     logoutButton.addEventListener('click', () => {
-        const auth = getAuth();
         auth.signOut()
             .then(() => {
                 console.log('Signed out');

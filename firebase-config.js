@@ -18,6 +18,3 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
 const messaging = firebase.messaging();
-
-// Export the necessary functions and objects
-export { database, auth, messaging };

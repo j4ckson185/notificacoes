@@ -37,10 +37,11 @@ function calculateTotalAmountToReceive() {
     const deliveries = parseInt(document.getElementById('deliveries').value) || 0;
     const sameHouseDeliveries = parseInt(document.getElementById('sameHouseDeliveries').value) || 0;
     const amountReceived = parseFloat(document.getElementById('amountReceived').value) || 0;
+    const shiftValue = parseFloat(document.getElementById('shift').value) || 0;
 
     const deliveryValue = deliveries * 3;
     const sameHouseDeliveryValue = sameHouseDeliveries * 3;
-    const totalAmount = (deliveryValue + sameHouseDeliveryValue) - amountReceived;
+    const totalAmount = (deliveryValue + sameHouseDeliveryValue + shiftValue) - amountReceived;
 
     document.getElementById('totalAmountToReceive').value = totalAmount.toFixed(2);
 }
@@ -58,6 +59,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('deliveries').addEventListener('change', calculateTotalAmountToReceive);
 document.getElementById('sameHouseDeliveries').addEventListener('change', calculateTotalAmountToReceive);
 document.getElementById('amountReceived').addEventListener('input', calculateTotalAmountToReceive);
+document.getElementById('shift').addEventListener('change', calculateTotalAmountToReceive);
 
 // Adicionar evento de envio do formulário
 document.getElementById('dailyReportForm').addEventListener('submit', async (e) => {
@@ -74,6 +76,7 @@ document.getElementById('dailyReportForm').addEventListener('submit', async (e) 
         deliveries: document.getElementById('deliveries').value,
         sameHouseDeliveries: document.getElementById('sameHouseDeliveries').value,
         amountReceived: document.getElementById('amountReceived').value,
+        shift: document.getElementById('shift').value,
         pix: document.getElementById('pix').value,
         status: document.getElementById('status').value,
         date: document.getElementById('date').value,
@@ -108,6 +111,7 @@ async function displayReports(userId) {
                 <p>Pix: ${report.pix}</p>
                 <p>Status: ${report.status}</p>
                 <p>Data: ${report.date}</p>
+                <p>Turno: ${report.shift === '35' ? 'Um turno' : 'Dois turnos'}</p>
                 <p>Valor Total a Receber: ${report.totalAmountToReceive}</p>
                 <p>Timestamp: ${report.timestamp}</p>
                 <button onclick="editReport('${childSnapshot.key}')">Editar</button>

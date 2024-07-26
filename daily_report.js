@@ -1,5 +1,5 @@
 // daily_report.js
-import { auth, database, ref, push, onValue } from './firebase-config.js';
+import { auth, database, ref, push, onValue, set } from './firebase-config.js';
 
 // Mapear emails para nomes
 const emailToNameMap = {

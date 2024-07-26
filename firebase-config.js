@@ -15,14 +15,22 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 
 // Get Firebase services after initialization
-window.firebaseDatabase = firebase.database();
-window.firebaseAuth = firebase.auth();
+const database = firebase.database();
+const auth = firebase.auth();
+let messaging;
 if (firebase.messaging.isSupported()) {
     try {
-        window.firebaseMessaging = firebase.messaging();
+        messaging = firebase.messaging();
     } catch (error) {
         console.error("Firebase messaging is not available:", error);
     }
 } else {
     console.warn("Firebase messaging is not supported on this browser.");
+}
+
+// Expose the initialized services globally
+window.firebaseDatabase = database;
+window.firebaseAuth = auth;
+if (messaging) {
+    window.firebaseMessaging = messaging;
 }

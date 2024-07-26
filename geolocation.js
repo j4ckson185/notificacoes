@@ -2,6 +2,7 @@ import { auth, database, ref, set } from './firebase-config.js';
 
 function updateLocation() {
     if (navigator.geolocation) {
+        // Utiliza watchPosition para obter atualizações contínuas
         navigator.geolocation.watchPosition(
             (position) => {
                 const user = auth.currentUser;
@@ -12,7 +13,7 @@ function updateLocation() {
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude
                     };
-                    console.log('Atualizando localização:', newLocation); // Log de depuração
+                    console.log('Atualizando localização:', newLocation); // Log para depuração
                     set(userRef, newLocation)
                         .then(() => {
                             console.log('Localização atualizada no Firebase');
@@ -26,9 +27,9 @@ function updateLocation() {
                 console.error('Erro ao obter localização:', error);
             },
             {
-                enableHighAccuracy: true,
-                timeout: 5000,
-                maximumAge: 1000
+                enableHighAccuracy: true, // Aumenta a precisão
+                timeout: 5000,            // Tempo máximo para obter a localização
+                maximumAge: 1000         // Máxima idade da localização para ser considerada válida
             }
         );
     } else {
@@ -36,7 +37,7 @@ function updateLocation() {
     }
 }
 
-// Call the function when the user logs in
+// Chama a função quando o usuário faz login
 auth.onAuthStateChanged((user) => {
     if (user) {
         updateLocation();

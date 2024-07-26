@@ -1,8 +1,6 @@
-import { getAuth, signInWithEmailAndPassword } from './firebase-config.js';
-import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
-
-const auth = getAuth();
-const database = getDatabase();
+import { auth, database } from './firebase-config.js';
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+import { ref, set } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
 
 document.getElementById('loginForm').addEventListener('submit', (e) => {
     e.preventDefault();

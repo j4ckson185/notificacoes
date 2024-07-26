@@ -1,7 +1,7 @@
 import { database, ref, onValue } from './firebase-config.js';
 
 let map;
-let markers = [];
+let markers = {};
 
 // Inicializa o mapa e carrega as localizações
 window.initMap = function() {
@@ -12,20 +12,32 @@ window.initMap = function() {
         zoom: 15
     });
 
+    // Referência para a localização dos motoboys
     const locationsRef = ref(database, 'locations');
     onValue(locationsRef, (snapshot) => {
         const locations = snapshot.val();
         if (locations) {
-            clearMarkers();
-            for (const key in locations) {
-                const location = locations[key];
-                addMotoboyMarker(location, key);
-            }
+            updateMarkers(locations);
         }
     });
 };
 
+// Atualiza os marcadores no mapa
+function updateMarkers(locations) {
+    clearMarkers();
+    for (const key in locations) {
+        const location = locations[key];
+        addMotoboyMarker(location, key);
+    }
+}
+
+// Adiciona um marcador para um motoboy
 function addMotoboyMarker(location, name) {
+    // Remove o marcador antigo se ele já existir
+    if (markers[name]) {
+        markers[name].setMap(null);
+    }
+
     const marker = new google.maps.Marker({
         position: { lat: location.latitude, lng: location.longitude },
         map: map,
@@ -48,12 +60,13 @@ function addMotoboyMarker(location, name) {
         infowindow.close();
     });
 
-    markers.push(marker);
+    markers[name] = marker;
 }
 
+// Limpa todos os marcadores
 function clearMarkers() {
-    for (let i = 0; i < markers.length; i++) {
-        markers[i].setMap(null);
+    for (const key in markers) {
+        markers[key].setMap(null);
     }
-    markers = [];
+    markers = {};
 }

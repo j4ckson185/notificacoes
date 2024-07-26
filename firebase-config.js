@@ -18,10 +18,14 @@ firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const auth = firebase.auth();
 let messaging;
-try {
-    messaging = firebase.messaging();
-} catch (error) {
-    console.error("Firebase messaging is not available:", error);
+if (firebase.messaging.isSupported()) {
+    try {
+        messaging = firebase.messaging();
+    } catch (error) {
+        console.error("Firebase messaging is not available:", error);
+    }
+} else {
+    console.warn("Firebase messaging is not supported on this browser.");
 }
 
 // Expose the initialized services globally

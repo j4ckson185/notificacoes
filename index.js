@@ -4,7 +4,6 @@ import { auth, messaging, database, ref, set, getToken, signInWithEmailAndPasswo
 // Verificar se o usuário está autenticado ao carregar a página
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        console.log('Usuário autenticado:', user.email);
         // Usuário está autenticado, redirecionar para a página específica
         const email = user.email;
         window.location.href = emailToPage(email);
@@ -65,9 +64,6 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
         // Obter o token FCM
         const currentToken = await getToken(messaging, { vapidKey: 'BG1rGdXly1ZZLYgvdoo8M-yOxMULPxbt5f5WpbISG4XWChaV7AOyG4SjTsnSvAQlRI6Nwa5XurzTEvE8brQh01w' }); // Replace with your actual VAPID key
         if (currentToken) {
-            // Exibir o token no console
-            console.log('FCM Token:', currentToken);
-
             // Salvar o token no banco de dados
             await set(ref(database, 'tokens/' + user.uid), {
                 token: currentToken

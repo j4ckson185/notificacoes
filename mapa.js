@@ -15,6 +15,7 @@ window.initMap = function() {
     const locationsRef = ref(database, 'locations');
     onValue(locationsRef, (snapshot) => {
         const locations = snapshot.val();
+        console.log('Received locations:', locations); // Debugging line
         if (locations) {
             updateMarkers(locations);
         }
@@ -23,6 +24,7 @@ window.initMap = function() {
 
 // Atualiza os marcadores no mapa
 function updateMarkers(locations) {
+    console.log('Updating markers with locations:', locations); // Debugging line
     for (const key in locations) {
         const location = locations[key];
         if (markers[key]) {

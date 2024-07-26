@@ -1,5 +1,5 @@
 // relatorios.js
-import { database, ref, onValue, query, orderByChild, equalTo, set } from './firebase-config.js';
+import { database, ref, onValue, query, orderByChild, equalTo } from './firebase-config.js';
 
 document.getElementById('applyFilter').addEventListener('click', () => {
     const motoboyEmail = document.getElementById('motoboy').value;

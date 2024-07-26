@@ -1,6 +1,7 @@
 // jackson.js
-import { getDatabase, ref, onValue } from './firebase-config.js';
-import { getMessaging, onMessage } from './firebase-config.js';
+import { getDatabase, getMessaging } from './firebase-config.js';
+import { ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+import { onMessage } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM carregado');

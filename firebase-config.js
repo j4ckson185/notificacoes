@@ -2,9 +2,9 @@
 
 // Importa os módulos Firebase necessários
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getDatabase, ref, set, get, remove, child } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
-import { getAuth, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getMessaging, onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
+import { getDatabase } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+import { getMessaging } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 
 // Configuração do Firebase
 const firebaseConfig = {

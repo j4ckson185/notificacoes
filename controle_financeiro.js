@@ -1,23 +1,16 @@
-// Assumindo que você já configurou o Firebase no seu projeto
-
 // Inicializa o Firebase
 firebase.initializeApp(firebaseConfig); // Substitua firebaseConfig pela sua configuração
 
-// Referência ao formulário
+// Referências aos elementos do DOM
 const form = document.getElementById('financial-form');
 const totalValueElement = document.getElementById('total-value');
 
 // Função para calcular o valor total a receber
 function calculateTotal() {
-    const quantity = parseInt(document.getElementById('quantity').value);
-    const sameHouse = parseInt(document.getElementById('same-house').value);
-    const valueReceived = parseFloat(document.getElementById('value-received').value);
+    const quantity = parseInt(document.getElementById('quantity').value) || 0;
+    const sameHouse = parseInt(document.getElementById('same-house').value) || 0;
+    const valueReceived = parseFloat(document.getElementById('value-received').value) || 0;
     
-    if (isNaN(quantity) || isNaN(sameHouse) || isNaN(valueReceived)) {
-        totalValueElement.textContent = 'R$ 0,00';
-        return;
-    }
-
     const totalReceivable = quantity - sameHouse - valueReceived;
     totalValueElement.textContent = `R$ ${totalReceivable.toFixed(2)}`;
 }

@@ -9,6 +9,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Verifique se todos os elementos foram encontrados
     if (!sendMessageForm || !userSelect || !messageInput) {
         console.error('Um ou mais elementos não foram encontrados no DOM.');
+        console.log('sendMessageForm:', sendMessageForm);
+        console.log('userSelect:', userSelect);
+        console.log('messageInput:', messageInput);
         return;
     }
 

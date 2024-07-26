@@ -39,6 +39,7 @@ function updateLocation() {
 // Chama a função quando o usuário faz login
 auth.onAuthStateChanged((user) => {
     if (user) {
-        updateLocation();
+        // Inicia a atualização da localização em tempo real
+        setInterval(updateLocation, 5000); // Atualiza a cada 5 segundos
     }
 });

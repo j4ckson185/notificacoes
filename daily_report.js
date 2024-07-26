@@ -67,13 +67,6 @@ function populateSelectOptions() {
 
 populateSelectOptions();
 
-document.getElementById('date').addEventListener('change', () => {
-    const date = new Date(document.getElementById('date').value);
-    const options = { weekday: 'long', timeZone: 'America/Sao_Paulo' }; // Set timezone to Brazil
-    const dayOfWeek = new Intl.DateTimeFormat('pt-BR', options).format(date);
-    document.getElementById('dayOfWeek').value = dayOfWeek;
-});
-
 form.addEventListener('input', () => {
     const deliveryCount = parseInt(document.getElementById('deliveryCount').value) || 0;
     const sameHouseCount = parseInt(document.getElementById('sameHouseCount').value) || 0;

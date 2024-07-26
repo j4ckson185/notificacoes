@@ -1,8 +1,8 @@
 // firebase-config.js
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getDatabase as getFirebaseDatabase } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
-import { getAuth as getFirebaseAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getMessaging as getFirebaseMessaging } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
+import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+import { getDatabase } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { getMessaging } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 
 export const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -15,10 +15,10 @@ export const firebaseConfig = {
     measurementId: "G-96Y337GYT8"
 };
 
-// Initialize Firebase
+// Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 
-// Export Firebase services
-export const getDatabase = () => getFirebaseDatabase(app);
-export const getAuth = () => getFirebaseAuth(app);
-export const getMessaging = () => getFirebaseMessaging(app);
+// Exportar os serviços do Firebase
+export const firebaseAuth = getAuth(app);
+export const firebaseDatabase = getDatabase(app);
+export const firebaseMessaging = getMessaging(app);

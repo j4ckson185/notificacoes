@@ -1,11 +1,13 @@
 // jackson.js
+import { database, ref, getDatabase, onValue } from './firebase-config.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     const messagesContainer = document.getElementById('messages-container');
     const clearMessagesButton = document.getElementById('clearMessagesButton');
     const logoutButton = document.getElementById('logoutButton');
 
-    // Verificar se os serviços do Firebase foram inicializados corretamente
-    if (!window.firebaseDatabase || !window.firebaseAuth) {
+    // Check if Firebase services are initialized
+    if (!database) {
         console.error('Firebase services not initialized.');
         return;
     }
@@ -21,14 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-    // Verificar se firebaseDatabase está disponível
-    if (!window.firebaseDatabase) {
-        console.error('Firebase Realtime Database is not available.');
-        return;
-    }
-
     // Listen for changes in the Realtime Database
-    window.firebaseDatabase.ref('messages').on('value', (snapshot) => {
+    onValue(ref(database, 'messages'), (snapshot) => {
         if (messagesContainer) {
             messagesContainer.innerHTML = '';
             snapshot.forEach((childSnapshot) => {
@@ -40,26 +36,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Listen for FCM messages
-    if (window.firebaseMessaging) {
-        window.firebaseMessaging.onMessage((payload) => {
-            console.log('Received FCM message:', payload);
-            const messageData = payload.data;
-            const messageElement = document.createElement('div');
-            messageElement.textContent = messageData.text || 'Mensagem sem texto';
-            messagesContainer.appendChild(messageElement);
-        });
-    }
-
     // Clear all messages
     clearMessagesButton.addEventListener('click', () => {
-        window.firebaseDatabase.ref('messages').remove();
+        ref(database, 'messages').remove();
         messagesContainer.innerHTML = '';
     });
 
     // Logout
     logoutButton.addEventListener('click', () => {
-        window.firebaseAuth.signOut()
+        auth.signOut()
             .then(() => {
                 console.log('Signed out');
                 window.location.href = 'index.html';

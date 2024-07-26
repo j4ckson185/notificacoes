@@ -1,4 +1,6 @@
 // relatorios.js
+import { database, ref, onValue, query, orderByChild, equalTo } from './firebase-config.js';
+
 document.getElementById('applyFilter').addEventListener('click', () => {
     const motoboyEmail = document.getElementById('motoboy').value;
     const selectedDate = document.getElementById('date').value;
@@ -8,12 +10,12 @@ document.getElementById('applyFilter').addEventListener('click', () => {
         return;
     }
 
-    const reportsRef = window.firebaseDatabase.ref('reports/' + motoboyEmail.replace(/\./g, '_'));
+    const reportsRef = ref(database, 'reports/' + motoboyEmail.replace(/\./g, '_'));
 
     // Query to get reports by selected date
-    const reportsQuery = reportsRef.orderByChild('date').equalTo(selectedDate);
+    const reportsQuery = query(reportsRef, orderByChild('date'), equalTo(selectedDate));
 
-    reportsQuery.on('value', (snapshot) => {
+    onValue(reportsQuery, (snapshot) => {
         const reportsContainer = document.getElementById('reportsContainer');
         reportsContainer.innerHTML = ''; // Clear previous reports
 
@@ -51,8 +53,8 @@ window.editReport = function(reportId) {
 
 window.deleteReport = function(reportId) {
     const motoboyEmail = document.getElementById('motoboy').value;
-    const reportRef = window.firebaseDatabase.ref('reports/' + motoboyEmail.replace(/\./g, '_') + '/' + reportId);
-    reportRef.remove()
+    const reportRef = ref(database, 'reports/' + motoboyEmail.replace(/\./g, '_') + '/' + reportId);
+    set(reportRef, null)
         .then(() => {
             alert('Relatório removido com sucesso');
             document.getElementById('applyFilter').click(); // Reapply filter to refresh reports

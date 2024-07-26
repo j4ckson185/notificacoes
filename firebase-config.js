@@ -4,7 +4,7 @@ import { getDatabase as getFirebaseDatabase } from 'https://www.gstatic.com/fire
 import { getAuth as getFirebaseAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 import { getMessaging as getFirebaseMessaging } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 
-const firebaseConfig = {
+export const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
     authDomain: "cabana-8d55e.firebaseapp.com",
     databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",

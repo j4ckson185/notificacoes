@@ -1,4 +1,4 @@
-import { database, ref, onValue, auth } from './firebase-config.js';
+import { database, ref, onValue } from './firebase-config.js';
 
 let map;
 let markers = [];
@@ -12,28 +12,6 @@ window.initMap = function() {
         zoom: 15
     });
 
-    // Adicionar localização própria do usuário
-    if (auth.currentUser) {
-        navigator.geolocation.getCurrentPosition((position) => {
-            const userLocation = {
-                lat: position.coords.latitude,
-                lng: position.coords.longitude
-            };
-            new google.maps.Marker({
-                position: userLocation,
-                map: map,
-                icon: {
-                    url: 'https://i.ibb.co/FHdgjcK/capacete.png',
-                    scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone ajustado
-                },
-                title: 'Sua Localização'
-            });
-            map.setCenter(userLocation);
-        }, (error) => {
-            console.error('Erro ao obter localização do usuário:', error);
-        });
-    }
-
     const locationsRef = ref(database, 'locations');
     onValue(locationsRef, (snapshot) => {
         const locations = snapshot.val();
@@ -41,29 +19,22 @@ window.initMap = function() {
             clearMarkers();
             for (const key in locations) {
                 const location = locations[key];
-                if (location) {
-                    addUserMarker(location, key);
-                }
+                addMotoboyMarker(location, key);
             }
         }
     });
 };
 
-function addUserMarker(location, userId) {
-    const email = location.email || 'Email não disponível';
-
+function addMotoboyMarker(location, name) {
     const marker = new google.maps.Marker({
         position: { lat: location.latitude, lng: location.longitude },
         map: map,
-        icon: {
-            url: 'https://i.ibb.co/FHdgjcK/capacete.png',
-            scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone ajustado
-        },
-        title: `${email}`
+        icon: 'https://i.ibb.co/FHdgjcK/capacete.png', // Caminho do ícone atualizado
+        title: name
     });
 
     const infowindow = new google.maps.InfoWindow({
-        content: `${email}`
+        content: name
     });
 
     marker.addListener('mouseover', () => {

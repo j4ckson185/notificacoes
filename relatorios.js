@@ -1,100 +1,65 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getAuth, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-import { getDatabase, ref, query, orderByChild, startAt, endAt, get, remove } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+// relatorios.js
+import { database, ref, onValue, query, orderByChild, equalTo } from './firebase-config.js';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
-    authDomain: "cabana-8d55e.firebaseapp.com",
-    databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
-    projectId: "cabana-8d55e",
-    storageBucket: "cabana-8d55e.appspot.com",
-    messagingSenderId: "706144237954",
-    appId: "1:706144237954:web:345c10370972486afc779b",
-    measurementId: "G-96Y337GYT8"
+document.getElementById('applyFilter').addEventListener('click', () => {
+    const motoboyEmail = document.getElementById('motoboy').value;
+    const selectedDate = document.getElementById('date').value;
+
+    if (!motoboyEmail || !selectedDate) {
+        alert('Por favor, selecione o motoboy e a data.');
+        return;
+    }
+
+    const reportsRef = ref(database, 'reports/' + motoboyEmail.replace(/\./g, '_'));
+
+    // Query to get reports by selected date
+    const reportsQuery = query(reportsRef, orderByChild('date'), equalTo(selectedDate));
+
+    onValue(reportsQuery, (snapshot) => {
+        const reportsContainer = document.getElementById('reportsContainer');
+        reportsContainer.innerHTML = ''; // Clear previous reports
+
+        if (snapshot.exists()) {
+            snapshot.forEach((childSnapshot) => {
+                const report = childSnapshot.val();
+                const reportElement = document.createElement('div');
+                reportElement.innerHTML = `
+                    <p>Nome: ${report.name}</p>
+                    <p>Quantidade de Entregas: ${report.deliveries}</p>
+                    <p>Entregas na Mesma Casa: ${report.sameHouseDeliveries}</p>
+                    <p>Valor Recebido: ${report.amountReceived}</p>
+                    <p>Pix: ${report.pix}</p>
+                    <p>Status: ${report.status}</p>
+                    <p>Data: ${report.date}</p>
+                    <p>Turno: ${report.shift === '35' ? 'Um turno' : 'Dois turnos'}</p>
+                    <p>Valor Total a Receber: ${report.totalAmountToReceive}</p>
+                    <p>Timestamp: ${report.timestamp}</p>
+                    <button onclick="editReport('${childSnapshot.key}')">Editar</button>
+                    <button onclick="deleteReport('${childSnapshot.key}')">Remover</button>
+                `;
+                reportsContainer.appendChild(reportElement);
+            });
+        } else {
+            reportsContainer.innerHTML = '<p>Nenhum relatório encontrado para a data selecionada.</p>';
+        }
+    }, (error) => {
+        console.error('Erro ao buscar relatórios:', error);
+    });
+});
+
+window.editReport = function(reportId) {
+    // Lógica para editar o relatório
 };
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const database = getDatabase(app);
-
-document.getElementById('logoutButton').addEventListener('click', () => {
-    signOut(auth)
+window.deleteReport = function(reportId) {
+    const motoboyEmail = document.getElementById('motoboy').value;
+    const reportRef = ref(database, 'reports/' + motoboyEmail.replace(/\./g, '_') + '/' + reportId);
+    set(reportRef, null)
         .then(() => {
-            window.location.href = 'index.html';
+            alert('Relatório removido com sucesso');
+            document.getElementById('applyFilter').click(); // Reapply filter to refresh reports
         })
         .catch((error) => {
-            console.error('Erro ao sair da conta:', error);
+            console.error('Erro ao remover relatório:', error);
         });
-});
-
-document.getElementById('applyFilter').addEventListener('click', async () => {
-    const email = document.getElementById('motoboyName').value;
-    const filterDate = document.getElementById('reportDate').value;
-
-    if (email && filterDate) {
-        try {
-            const sanitizedEmail = sanitizeEmail(email);
-            const reportsRef = ref(database, `reports/${sanitizedEmail}`);
-            const startDate = new Date(filterDate);
-            const endDate = new Date(filterDate);
-            endDate.setDate(endDate.getDate() + 1);
-
-            const startDateString = startDate.toISOString().split('T')[0];
-            const endDateString = endDate.toISOString().split('T')[0];
-
-            const filteredReportsQuery = query(reportsRef, orderByChild('date'), startAt(startDateString), endAt(endDateString));
-            const snapshot = await get(filteredReportsQuery);
-
-            const reportsContainer = document.getElementById('reportsContainer');
-            reportsContainer.innerHTML = '';
-
-            if (snapshot.exists()) {
-                snapshot.forEach((childSnapshot) => {
-                    const reportData = childSnapshot.val();
-                    const reportKey = childSnapshot.key;
-
-                    const reportDiv = document.createElement('div');
-                    reportDiv.classList.add('report');
-
-                    reportDiv.innerHTML = `
-                        <p><strong>Nome:</strong> ${reportData.name}</p>
-                        <p><strong>Data:</strong> ${reportData.date}</p>
-                        <p><strong>Quantidade de Entregas:</strong> ${reportData.deliveryCount}</p>
-                        <p><strong>Entregas na mesma casa:</strong> ${reportData.sameHouseCount}</p>
-                        <p><strong>Valor dentro (já recebido):</strong> ${reportData.receivedAmount.toFixed(2)}</p>
-                        <p><strong>PIX:</strong> ${reportData.pixKey}</p>
-                        <p><strong>Total a Receber:</strong> ${reportData.totalAmount.toFixed(2)}</p>
-                        <p><strong>Status do Pagamento:</strong> ${reportData.paymentStatus}</p>
-                        <button class="deleteReport" data-key="${reportKey}">Remover Relatório</button>
-                    `;
-
-                    reportsContainer.appendChild(reportDiv);
-                });
-
-                document.querySelectorAll('.deleteReport').forEach((button) => {
-                    button.addEventListener('click', async (e) => {
-                        const reportKey = e.target.getAttribute('data-key');
-                        const sanitizedEmail = sanitizeEmail(email);
-                        const reportRef = ref(database, `reports/${sanitizedEmail}/${reportKey}`);
-                        try {
-                            await remove(reportRef);
-                            e.target.parentElement.remove();
-                        } catch (error) {
-                            console.error('Erro ao remover relatório:', error);
-                        }
-                    });
-                });
-            } else {
-                reportsContainer.innerHTML = '<p>Nenhum relatório encontrado para a data selecionada.</p>';
-            }
-        } catch (error) {
-            console.error('Erro ao buscar relatórios:', error);
-        }
-    } else {
-        alert('Por favor, selecione um nome e uma data.');
-    }
-});
-
-function sanitizeEmail(email) {
-    return email.replace(/[\.\#\$\[\]]/g, '_');
-}
+};

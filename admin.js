@@ -1,13 +1,16 @@
 // admin.js
-import { getDatabase } from './firebase-config.js';
+import { database } from './firebase-config.js';
 import { ref, push } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOM carregado');
-
     const sendMessageForm = document.getElementById('sendMessageForm');
     const userSelect = document.getElementById('userSelect');
     const messageInput = document.getElementById('messageInput');
+
+    console.log('Iniciando admin.js');
+    console.log('sendMessageForm:', sendMessageForm);
+    console.log('userSelect:', userSelect);
+    console.log('messageInput:', messageInput);
 
     if (!sendMessageForm || !userSelect || !messageInput) {
         console.error('Um ou mais elementos não foram encontrados no DOM.');
@@ -20,8 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const message = messageInput.value;
 
         if (message) {
-            // Send message to Realtime Database
-            push(ref(getDatabase(), `messages/${user}`), {
+            // Envia a mensagem para o Realtime Database
+            push(ref(database, `messages/${user}`), {
                 text: message
             })
             .then(() => {

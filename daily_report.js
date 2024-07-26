@@ -1,88 +1,94 @@
-// daily_report.js
-import { auth, database, ref, push, set, onValue } from './firebase-config.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 
-document.getElementById('dailyReportForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+const firebaseConfig = {
+    apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
+    authDomain: "cabana-8d55e.firebaseapp.com",
+    databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
+    projectId: "cabana-8d55e",
+    storageBucket: "cabana-8d55e.appspot.com",
+    messagingSenderId: "706144237954",
+    appId: "1:706144237954:web:345c10370972486afc779b",
+    measurementId: "G-96Y337GYT8"
+};
 
-    const user = auth.currentUser;
-    if (!user) {
-        console.error('Usuário não está autenticado');
-        return;
-    }
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-    const reportData = {
-        name: document.getElementById('name').value,
-        deliveries: document.getElementById('deliveries').value,
-        sameHouseDeliveries: document.getElementById('sameHouseDeliveries').value,
-        amountReceived: document.getElementById('amountReceived').value,
-        totalAmountPending: document.getElementById('totalAmountPending').value,
-        pix: document.getElementById('pix').value,
-        status: document.getElementById('status').value,
-        date: document.getElementById('date').value,
-        timestamp: new Date().toISOString()
-    };
+const form = document.getElementById('dailyReportForm');
+const totalAmountDiv = document.getElementById('totalAmount');
+const reportDisplay = document.getElementById('reportDisplay');
 
-    try {
-        const reportsRef = ref(database, 'reports/' + user.uid);
-        await push(reportsRef, reportData);
-        alert('Relatório enviado com sucesso');
-        // Lógica para exibir o relatório enviado na mesma página
-        displayReports(user.uid);
-    } catch (error) {
-        console.error('Erro ao enviar relatório:', error);
+const nameMap = {
+    'boazd3@gmail.com': 'Boaz',
+    'fellipeirineu90@gmail.com': 'Fellipe Matheus',
+    'giovanni.silva18@gmail.com': 'Giovanni',
+    'moises110723@gmail.com': 'Moisés',
+    'jackson_division@hotmail.com': 'Jackson Maciel'
+};
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        const userEmail = user.email;
+        document.getElementById('motoboyName').value = nameMap[userEmail] || 'Usuário';
+    } else {
+        console.error('Usuário não autenticado');
     }
 });
 
-async function displayReports(userId) {
-    const reportsRef = ref(database, 'reports/' + userId);
-    onValue(reportsRef, (snapshot) => {
-        const reportsContainer = document.getElementById('reportsContainer');
-        reportsContainer.innerHTML = ''; // Limpa os relatórios antigos
-        snapshot.forEach((childSnapshot) => {
-            const report = childSnapshot.val();
-            const reportElement = document.createElement('div');
-            reportElement.innerHTML = `
-                <p>Nome: ${report.name}</p>
-                <p>Quantidade de Entregas: ${report.deliveries}</p>
-                <p>Entregas na Mesma Casa: ${report.sameHouseDeliveries}</p>
-                <p>Valor Recebido: ${report.amountReceived}</p>
-                <p>Valor Total Pendente: ${report.totalAmountPending}</p>
-                <p>Pix: ${report.pix}</p>
-                <p>Status: ${report.status}</p>
-                <p>Data: ${report.date}</p>
-                <p>Timestamp: ${report.timestamp}</p>
-                <button onclick="editReport('${childSnapshot.key}')">Editar</button>
-                <button onclick="deleteReport('${childSnapshot.key}')">Remover</button>
-            `;
-            reportsContainer.appendChild(reportElement);
-        });
-    });
+function populateSelectOptions() {
+    const deliveryCountSelect = document.getElementById('deliveryCount');
+    const sameHouseCountSelect = document.getElementById('sameHouseCount');
+
+    for (let i = 1; i <= 100; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        deliveryCountSelect.appendChild(option);
+    }
+
+    for (let i = 1; i <= 15; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        sameHouseCountSelect.appendChild(option);
+    }
 }
 
-window.editReport = function(reportId) {
-    // Lógica para editar o relatório
-};
+populateSelectOptions();
 
-window.deleteReport = function(reportId) {
-    const user = auth.currentUser;
-    if (!user) {
-        console.error('Usuário não está autenticado');
-        return;
-    }
-    const reportRef = ref(database, 'reports/' + user.uid + '/' + reportId);
-    set(reportRef, null)
-        .then(() => {
-            alert('Relatório removido com sucesso');
-            displayReports(user.uid);
-        })
-        .catch((error) => {
-            console.error('Erro ao remover relatório:', error);
-        });
-};
+form.addEventListener('input', () => {
+    const deliveryCount = parseInt(document.getElementById('deliveryCount').value) || 0;
+    const sameHouseCount = parseInt(document.getElementById('sameHouseCount').value) || 0;
+    const receivedAmount = parseFloat(document.getElementById('receivedAmount').value) || 0;
+    const shiftValue = parseFloat(document.getElementById('shiftType').value) || 0;
 
-// Carrega os relatórios ao inicializar a página
-auth.onAuthStateChanged((user) => {
-    if (user) {
-        displayReports(user.uid);
-    }
+    const totalAmount = (deliveryCount * 3) - (sameHouseCount * 3) - receivedAmount + shiftValue;
+    totalAmountDiv.textContent = totalAmount.toFixed(2);
+});
+
+form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const reportData = {
+        name: document.getElementById('motoboyName').value,
+        dayOfWeek: document.getElementById('dayOfWeek').value,
+        deliveryCount: document.getElementById('deliveryCount').value,
+        sameHouseCount: document.getElementById('sameHouseCount').value,
+        receivedAmount: parseFloat(document.getElementById('receivedAmount').value),
+        pixKey: document.getElementById('pixKey').value,
+        totalAmount: parseFloat(totalAmountDiv.textContent),
+        paymentStatus: document.getElementById('paymentStatus').value
+    };
+
+    document.getElementById('displayMotoboyName').textContent = reportData.name;
+    document.getElementById('displayDayOfWeek').textContent = reportData.dayOfWeek;
+    document.getElementById('displayDeliveryCount').textContent = reportData.deliveryCount;
+    document.getElementById('displaySameHouseCount').textContent = reportData.sameHouseCount;
+    document.getElementById('displayReceivedAmount').textContent = reportData.receivedAmount.toFixed(2);
+    document.getElementById('displayPixKey').textContent = reportData.pixKey;
+    document.getElementById('displayTotalAmount').textContent = reportData.totalAmount.toFixed(2);
+    document.getElementById('displayPaymentStatus').textContent = reportData.paymentStatus;
+
+    reportDisplay.style.display = 'block';
 });

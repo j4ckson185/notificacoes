@@ -17,4 +17,16 @@ firebase.initializeApp(firebaseConfig);
 // Get Firebase services after initialization
 const database = firebase.database();
 const auth = firebase.auth();
-const messaging = firebase.messaging();
+let messaging;
+try {
+    messaging = firebase.messaging();
+} catch (error) {
+    console.error("Firebase messaging is not available:", error);
+}
+
+// Expose the initialized services globally if needed
+window.firebaseDatabase = database;
+window.firebaseAuth = auth;
+if (messaging) {
+    window.firebaseMessaging = messaging;
+}

@@ -1,12 +1,11 @@
 // jackson.js
-import { database, ref } from './firebase-config.js';  // Importar apenas o que está exportado
+import { database, ref, onValue } from './firebase-config.js';  // Corrigir importações
 
 document.addEventListener('DOMContentLoaded', () => {
     const messagesContainer = document.getElementById('messages-container');
     const clearMessagesButton = document.getElementById('clearMessagesButton');
     const logoutButton = document.getElementById('logoutButton');
 
-    // Verificar se os serviços do Firebase foram inicializados corretamente
     if (!database) {
         console.error('Firebase services not initialized.');
         return;
@@ -24,7 +23,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Listen for changes in the Realtime Database
-    ref(database, 'messages').on('value', (snapshot) => {
+    const messagesRef = ref(database, 'messages');
+    onValue(messagesRef, (snapshot) => {
         if (messagesContainer) {
             messagesContainer.innerHTML = '';
             snapshot.forEach((childSnapshot) => {

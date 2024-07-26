@@ -29,8 +29,10 @@ function initMap() {
     onValue(locationsRef, (snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const data = childSnapshot.val();
+            const userId = childSnapshot.key; // Obtenha o UID
+
             if (typeof data.lat === 'number' && typeof data.lng === 'number') {
-                new google.maps.Marker({
+                const marker = new google.maps.Marker({
                     position: { lat: data.lat, lng: data.lng },
                     map,
                     icon: {
@@ -39,6 +41,16 @@ function initMap() {
                     },
                     title: data.name,
                     label: data.name,
+                });
+
+                // Crie uma janela de informação
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<div><strong>ID do Usuário:</strong> ${userId}</div>`
+                });
+
+                // Adicione um evento de clique no marcador para abrir a janela de informação
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
                 });
             }
         });

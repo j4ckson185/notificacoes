@@ -8,12 +8,18 @@ function updateLocation() {
                 if (user) {
                     const userId = user.uid;
                     const userRef = ref(database, 'locations/' + userId);
-                    set(userRef, {
+                    const newLocation = {
                         latitude: position.coords.latitude,
                         longitude: position.coords.longitude
-                    }).catch((error) => {
-                        console.error('Erro ao atualizar localização:', error);
-                    });
+                    };
+                    console.log('Atualizando localização:', newLocation); // Log de depuração
+                    set(userRef, newLocation)
+                        .then(() => {
+                            console.log('Localização atualizada no Firebase');
+                        })
+                        .catch((error) => {
+                            console.error('Erro ao atualizar localização:', error);
+                        });
                 }
             },
             (error) => {

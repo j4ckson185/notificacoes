@@ -93,7 +93,6 @@ form.addEventListener('submit', (e) => {
 
     const reportData = {
         name: document.getElementById('motoboyName').value,
-        dayOfWeek: document.getElementById('dayOfWeek').value,
         date: document.getElementById('date').value,
         deliveryCount: document.getElementById('deliveryCount').value,
         sameHouseCount: document.getElementById('sameHouseCount').value,
@@ -118,6 +117,7 @@ form.addEventListener('submit', (e) => {
 document.getElementById('viewReports').addEventListener('click', () => {
     confirmationMessage.style.display = 'none';
     reportsList.style.display = 'block';
+    loadReports();
 });
 
 document.getElementById('addNewReport').addEventListener('click', () => {
@@ -163,7 +163,6 @@ function loadReports() {
 
                 reportDiv.innerHTML = `
                     <p><strong>Nome:</strong> ${reportData.name}</p>
-                    <p><strong>Dia da Semana:</strong> ${reportData.dayOfWeek}</p>
                     <p><strong>Data:</strong> ${reportData.date}</p>
                     <p><strong>Quantidade de Entregas:</strong> ${reportData.deliveryCount}</p>
                     <p><strong>Entregas na mesma casa:</strong> ${reportData.sameHouseCount}</p>
@@ -205,7 +204,10 @@ function filterReports(filterDate) {
     const endDate = new Date(filterDate);
     endDate.setDate(endDate.getDate() + 1);
 
-    const filteredReportsQuery = query(reportsRef, orderByChild('date'), startAt(startDate.toISOString()), endAt(endDate.toISOString()));
+    const startDateString = startDate.toISOString().split('T')[0];
+    const endDateString = endDate.toISOString().split('T')[0];
+
+    const filteredReportsQuery = query(reportsRef, orderByChild('date'), startAt(startDateString), endAt(endDateString));
     onValue(filteredReportsQuery, (snapshot) => {
         if (snapshot.exists()) {
             snapshot.forEach((childSnapshot) => {
@@ -217,7 +219,6 @@ function filterReports(filterDate) {
 
                 reportDiv.innerHTML = `
                     <p><strong>Nome:</strong> ${reportData.name}</p>
-                    <p><strong>Dia da Semana:</strong> ${reportData.dayOfWeek}</p>
                     <p><strong>Data:</strong> ${reportData.date}</p>
                     <p><strong>Quantidade de Entregas:</strong> ${reportData.deliveryCount}</p>
                     <p><strong>Entregas na mesma casa:</strong> ${reportData.sameHouseCount}</p>
@@ -246,7 +247,7 @@ function filterReports(filterDate) {
                 });
             });
         } else {
-            reportsContainer.innerHTML = '<p>Você ainda não enviou nenhum relatório.</p>';
+            reportsContainer.innerHTML = '<p>Nenhum relatório encontrado para a data selecionada.</p>';
         }
     });
 }
@@ -259,7 +260,6 @@ function editReport(reportKey) {
             const reportData = snapshot.val();
 
             document.getElementById('motoboyName').value = reportData.name;
-            document.getElementById('dayOfWeek').value = reportData.dayOfWeek;
             document.getElementById('date').value = reportData.date;
             document.getElementById('deliveryCount').value = reportData.deliveryCount;
             document.getElementById('sameHouseCount').value = reportData.sameHouseCount;
@@ -286,7 +286,6 @@ function updateReport(e, reportKey) {
 
     const reportData = {
         name: document.getElementById('motoboyName').value,
-        dayOfWeek: document.getElementById('dayOfWeek').value,
         date: document.getElementById('date').value,
         deliveryCount: document.getElementById('deliveryCount').value,
         sameHouseCount: document.getElementById('sameHouseCount').value,
@@ -325,7 +324,6 @@ function submitNewReport(e) {
 
     const reportData = {
         name: document.getElementById('motoboyName').value,
-        dayOfWeek: document.getElementById('dayOfWeek').value,
         date: document.getElementById('date').value,
         deliveryCount: document.getElementById('deliveryCount').value,
         sameHouseCount: document.getElementById('sameHouseCount').value,

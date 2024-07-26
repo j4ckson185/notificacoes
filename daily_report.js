@@ -22,6 +22,25 @@ function setUserName() {
     }
 }
 
+// Função para preencher as opções de seleção com números inteiros
+function populateSelectOptions(selectElement, start, end) {
+    for (let i = start; i <= end; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        selectElement.appendChild(option);
+    }
+}
+
+// Preencher as opções de seleção
+document.addEventListener('DOMContentLoaded', () => {
+    const deliveriesSelect = document.getElementById('deliveries');
+    const sameHouseDeliveriesSelect = document.getElementById('sameHouseDeliveries');
+    populateSelectOptions(deliveriesSelect, 1, 100);
+    populateSelectOptions(sameHouseDeliveriesSelect, 0, 15);
+    setUserName();
+});
+
 // Adicionar evento de envio do formulário
 document.getElementById('dailyReportForm').addEventListener('submit', async (e) => {
     e.preventDefault();

@@ -1,94 +1,152 @@
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+// daily_report.js
+import { auth, database, ref, push, onValue, set } from './firebase-config.js';
 
-const firebaseConfig = {
-    apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
-    authDomain: "cabana-8d55e.firebaseapp.com",
-    databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
-    projectId: "cabana-8d55e",
-    storageBucket: "cabana-8d55e.appspot.com",
-    messagingSenderId: "706144237954",
-    appId: "1:706144237954:web:345c10370972486afc779b",
-    measurementId: "G-96Y337GYT8"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-const form = document.getElementById('dailyReportForm');
-const totalAmountDiv = document.getElementById('totalAmount');
-const reportDisplay = document.getElementById('reportDisplay');
-
-const nameMap = {
-    'boazd3@gmail.com': 'Boaz',
-    'fellipeirineu90@gmail.com': 'Fellipe Matheus',
+// Mapear emails para nomes
+const emailToNameMap = {
+    'jackson_division@hotmail.com': 'Jackson Maciel',
     'giovanni.silva18@gmail.com': 'Giovanni',
+    'felipeaugusto02001@gmail.com': 'Felipe Augusto',
+    'hionarabeatriz11@gmail.com': 'Hionara',
     'moises110723@gmail.com': 'Moisés',
-    'jackson_division@hotmail.com': 'Jackson Maciel'
+    'boazd3@gmail.com': 'Boaz',
+    'fellipeirineu90@gmail.com': 'Fellipe Matheus'
 };
 
-onAuthStateChanged(auth, (user) => {
+// Função para preencher o nome do usuário autenticado
+function setUserName() {
+    const user = auth.currentUser;
     if (user) {
-        const userEmail = user.email;
-        document.getElementById('motoboyName').value = nameMap[userEmail] || 'Usuário';
-    } else {
-        console.error('Usuário não autenticado');
-    }
-});
-
-function populateSelectOptions() {
-    const deliveryCountSelect = document.getElementById('deliveryCount');
-    const sameHouseCountSelect = document.getElementById('sameHouseCount');
-
-    for (let i = 1; i <= 100; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = i;
-        deliveryCountSelect.appendChild(option);
-    }
-
-    for (let i = 1; i <= 15; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = i;
-        sameHouseCountSelect.appendChild(option);
+        const email = user.email;
+        const userName = emailToNameMap[email] || 'Usuário';
+        document.getElementById('name').value = userName;
     }
 }
 
-populateSelectOptions();
+// Função para preencher as opções de seleção com números inteiros
+function populateSelectOptions(selectElement, start, end) {
+    for (let i = start; i <= end; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        selectElement.appendChild(option);
+    }
+}
 
-form.addEventListener('input', () => {
-    const deliveryCount = parseInt(document.getElementById('deliveryCount').value) || 0;
-    const sameHouseCount = parseInt(document.getElementById('sameHouseCount').value) || 0;
-    const receivedAmount = parseFloat(document.getElementById('receivedAmount').value) || 0;
-    const shiftValue = parseFloat(document.getElementById('shiftType').value) || 0;
+// Função para calcular o valor total a receber
+function calculateTotalAmountToReceive() {
+    const deliveries = parseInt(document.getElementById('deliveries').value) || 0;
+    const sameHouseDeliveries = parseInt(document.getElementById('sameHouseDeliveries').value) || 0;
+    const amountReceived = parseFloat(document.getElementById('amountReceived').value) || 0;
+    const shiftValue = parseFloat(document.getElementById('shift').value) || 0;
 
-    const totalAmount = (deliveryCount * 3) - (sameHouseCount * 3) - receivedAmount + shiftValue;
-    totalAmountDiv.textContent = totalAmount.toFixed(2);
+    const deliveryValue = deliveries * 3;
+    const sameHouseDeliveryValue = sameHouseDeliveries * 3;
+    const totalAmount = (deliveryValue - sameHouseDeliveryValue + shiftValue) - amountReceived;
+
+    document.getElementById('totalAmountToReceive').value = totalAmount.toFixed(2);
+}
+
+// Preencher as opções de seleção
+document.addEventListener('DOMContentLoaded', () => {
+    const deliveriesSelect = document.getElementById('deliveries');
+    const sameHouseDeliveriesSelect = document.getElementById('sameHouseDeliveries');
+    populateSelectOptions(deliveriesSelect, 1, 100);
+    populateSelectOptions(sameHouseDeliveriesSelect, 0, 15);
+    setUserName();
 });
 
-form.addEventListener('submit', (e) => {
+// Adicionar eventos para calcular o valor total a receber
+document.getElementById('deliveries').addEventListener('change', calculateTotalAmountToReceive);
+document.getElementById('sameHouseDeliveries').addEventListener('change', calculateTotalAmountToReceive);
+document.getElementById('amountReceived').addEventListener('input', calculateTotalAmountToReceive);
+document.getElementById('shift').addEventListener('change', calculateTotalAmountToReceive);
+
+// Adicionar evento de envio do formulário
+document.getElementById('dailyReportForm').addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    const user = auth.currentUser;
+    if (!user) {
+        console.error('Usuário não está autenticado');
+        return;
+    }
+
     const reportData = {
-        name: document.getElementById('motoboyName').value,
-        dayOfWeek: document.getElementById('dayOfWeek').value,
-        deliveryCount: document.getElementById('deliveryCount').value,
-        sameHouseCount: document.getElementById('sameHouseCount').value,
-        receivedAmount: parseFloat(document.getElementById('receivedAmount').value),
-        pixKey: document.getElementById('pixKey').value,
-        totalAmount: parseFloat(totalAmountDiv.textContent),
-        paymentStatus: document.getElementById('paymentStatus').value
+        name: document.getElementById('name').value,
+        deliveries: document.getElementById('deliveries').value,
+        sameHouseDeliveries: document.getElementById('sameHouseDeliveries').value,
+        amountReceived: document.getElementById('amountReceived').value,
+        shift: document.getElementById('shift').value,
+        pix: document.getElementById('pix').value,
+        status: document.getElementById('status').value,
+        date: document.getElementById('date').value,
+        totalAmountToReceive: document.getElementById('totalAmountToReceive').value,
+        timestamp: new Date().toISOString()
     };
 
-    document.getElementById('displayMotoboyName').textContent = reportData.name;
-    document.getElementById('displayDayOfWeek').textContent = reportData.dayOfWeek;
-    document.getElementById('displayDeliveryCount').textContent = reportData.deliveryCount;
-    document.getElementById('displaySameHouseCount').textContent = reportData.sameHouseCount;
-    document.getElementById('displayReceivedAmount').textContent = reportData.receivedAmount.toFixed(2);
-    document.getElementById('displayPixKey').textContent = reportData.pixKey;
-    document.getElementById('displayTotalAmount').textContent = reportData.totalAmount.toFixed(2);
-    document.getElementById('displayPaymentStatus').textContent = reportData.paymentStatus;
+    try {
+        const reportsRef = ref(database, 'reports/' + user.uid);
+        await push(reportsRef, reportData);
+        alert('Relatório enviado com sucesso');
+        displayReports(user.uid);
+    } catch (error) {
+        console.error('Erro ao enviar relatório:', error);
+    }
+});
 
-    reportDisplay.style.display = 'block';
+// Função para exibir relatórios
+async function displayReports(userId) {
+    const reportsRef = ref(database, 'reports/' + userId);
+    onValue(reportsRef, (snapshot) => {
+        const reportsContainer = document.getElementById('reportsContainer');
+        reportsContainer.innerHTML = ''; // Limpa os relatórios antigos
+        snapshot.forEach((childSnapshot) => {
+            const report = childSnapshot.val();
+            const reportElement = document.createElement('div');
+            reportElement.innerHTML = `
+                <p>Nome: ${report.name}</p>
+                <p>Quantidade de Entregas: ${report.deliveries}</p>
+                <p>Entregas na Mesma Casa: ${report.sameHouseDeliveries}</p>
+                <p>Valor Recebido: ${report.amountReceived}</p>
+                <p>Pix: ${report.pix}</p>
+                <p>Status: ${report.status}</p>
+                <p>Data: ${report.date}</p>
+                <p>Turno: ${report.shift === '35' ? 'Um turno' : 'Dois turnos'}</p>
+                <p>Valor Total a Receber: ${report.totalAmountToReceive}</p>
+                <p>Timestamp: ${report.timestamp}</p>
+                <button onclick="editReport('${childSnapshot.key}')">Editar</button>
+                <button onclick="deleteReport('${childSnapshot.key}')">Remover</button>
+            `;
+            reportsContainer.appendChild(reportElement);
+        });
+    });
+}
+
+window.editReport = function(reportId) {
+    // Lógica para editar o relatório
+};
+
+window.deleteReport = function(reportId) {
+    const user = auth.currentUser;
+    if (!user) {
+        console.error('Usuário não está autenticado');
+        return;
+    }
+    const reportRef = ref(database, 'reports/' + user.uid + '/' + reportId);
+    set(reportRef, null)
+        .then(() => {
+            alert('Relatório removido com sucesso');
+            displayReports(user.uid);
+        })
+        .catch((error) => {
+            console.error('Erro ao remover relatório:', error);
+        });
+};
+
+// Carregar relatórios ao inicializar a página e definir o nome do usuário
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        setUserName();
+        displayReports(user.uid);
+    }
 });

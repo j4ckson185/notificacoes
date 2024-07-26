@@ -12,7 +12,6 @@ window.initMap = function() {
         zoom: 15
     });
 
-    // Referência para a localização dos motoboys
     const locationsRef = ref(database, 'locations');
     onValue(locationsRef, (snapshot) => {
         const locations = snapshot.val();

@@ -1,29 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moisés - Notificações</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Moisés - Notificações</h1>
-        <div id="messages-container"></div>
-        <button id="clearMessagesButton">Apagar todas</button>
-        <button id="logoutButton">Sair</button>
-        <button id="financialReportButton" style="background-color: red; color: white;">Relatório Financeiro</button>
-    </div>
+<script>
+  let map;
+  let markers = {};
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js"></script>
-    <script src="moises.js" type="module"></script>
-    <script>
-        document.getElementById('financialReportButton').addEventListener('click', () => {
-            window.location.href = 'daily_report.html';
-        });
-    </script>
-</body>
-</html>
+  // Inicializa o mapa e carrega as localizações
+  function initMap() {
+      const storeLocation = { lat: -5.748178, lng: -35.256141 };
+
+      map = new google.maps.Map(document.getElementById('map'), {
+          center: storeLocation,
+          zoom: 15
+      });
+
+      const locationsRef = firebase.database().ref('locations');
+      locationsRef.on('value', (snapshot) => {
+          const locations = snapshot.val();
+          if (locations) {
+              updateMarkers(locations);
+          }
+      });
+  }
+
+  // Atualiza os marcadores no mapa
+  function updateMarkers(locations) {
+      for (const key in locations) {
+          const location = locations[key];
+          if (markers[key]) {
+              markers[key].setPosition(new google.maps.LatLng(location.latitude, location.longitude));
+          } else {
+              addMotoboyMarker(location, key);
+          }
+      }
+  }
+
+  // Adiciona ou atualiza um marcador para um motoboy
+  function addMotoboyMarker(location, name) {
+      const marker = new google.maps.Marker({
+          position: { lat: location.latitude, lng: location.longitude },
+          map: map,
+          icon: {
+              url: 'https://i.ibb.co/FHdgjcK/capacete.png',
+              scaledSize: new google.maps.Size(50, 50)
+          },
+          title: name
+      });
+
+      const infowindow = new google.maps.InfoWindow({
+          content: name
+      });
+
+      marker.addListener('mouseover', () => {
+          infowindow.open(map, marker);
+      });
+
+      marker.addListener('mouseout', () => {
+          infowindow.close();
+      });
+
+      markers[name] = marker;
+  }
+</script>

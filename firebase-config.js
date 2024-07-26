@@ -19,7 +19,7 @@ const database = firebase.database();
 const auth = firebase.auth();
 let messaging;
 try {
-    messaging = firebase.messaging.isSupported() ? firebase.messaging() : null;
+    messaging = firebase.messaging();
 } catch (error) {
     console.error("Firebase messaging is not available:", error);
 }

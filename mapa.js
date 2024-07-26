@@ -40,7 +40,6 @@ function initMap() {
                         scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone
                     },
                     title: data.name,
-                    label: data.name,
                 });
 
                 // Crie uma janela de informação

@@ -1,5 +1,6 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getDatabase, ref, get, query, orderByChild, startAt, endAt, equalTo } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { getAuth, signOut } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+import { getDatabase, ref, query, orderByChild, equalTo, get } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -13,48 +14,68 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const database = getDatabase(app);
 
-document.getElementById('loginForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const password = document.getElementById('password').value;
-    if (password === '@Saberviagens123') {
-        document.getElementById('loginForm').style.display = 'none';
-        document.getElementById('reportSection').style.display = 'block';
-    } else {
-        alert('Senha incorreta!');
-    }
+document.getElementById('logoutButton').addEventListener('click', () => {
+    signOut(auth)
+        .then(() => {
+            window.location.href = 'index.html';
+        })
+        .catch((error) => {
+            console.error('Erro ao sair da conta:', error);
+        });
 });
 
-document.getElementById('fetchReport').addEventListener('click', async (e) => {
-    e.preventDefault();
-    const motoboyEmail = document.getElementById('motoboySelect').value;
-    const date = document.getElementById('dateSelect').value;
+document.getElementById('applyFilter').addEventListener('click', async () => {
+    const email = document.getElementById('motoboyEmail').value;
+    const filterDate = document.getElementById('reportDate').value;
 
-    if (motoboyEmail && date) {
-        const sanitizedEmail = sanitizeEmail(motoboyEmail);
-        const reportRef = query(ref(database, `reports/${sanitizedEmail}`), orderByChild('date'), equalTo(date));
-        const snapshot = await get(reportRef);
+    if (email && filterDate) {
+        try {
+            const sanitizedEmail = sanitizeEmail(email);
+            const reportsRef = ref(database, `reports/${sanitizedEmail}`);
+            const startDate = new Date(filterDate);
+            const endDate = new Date(filterDate);
+            endDate.setDate(endDate.getDate() + 1);
 
-        if (snapshot.exists()) {
-            const reports = snapshot.val();
-            const reportData = Object.values(reports)[0]; // Considering the first match
+            const startDateString = startDate.toISOString().split('T')[0];
+            const endDateString = endDate.toISOString().split('T')[0];
 
-            document.getElementById('displayMotoboyName').textContent = reportData.name;
-            document.getElementById('displayDate').textContent = reportData.date;
-            document.getElementById('displayDeliveryCount').textContent = reportData.deliveryCount;
-            document.getElementById('displaySameHouseCount').textContent = reportData.sameHouseCount;
-            document.getElementById('displayReceivedAmount').textContent = reportData.receivedAmount.toFixed(2);
-            document.getElementById('displayPixKey').textContent = reportData.pixKey;
-            document.getElementById('displayTotalAmount').textContent = reportData.totalAmount.toFixed(2);
-            document.getElementById('displayPaymentStatus').textContent = reportData.paymentStatus;
+            const filteredReportsQuery = query(reportsRef, orderByChild('date'), startAt(startDateString), endAt(endDateString));
+            const snapshot = await get(filteredReportsQuery);
 
-            document.getElementById('reportDisplay').style.display = 'block';
-        } else {
-            alert('Relatório não encontrado para este motoboy e data.');
+            const reportsContainer = document.getElementById('reportsContainer');
+            reportsContainer.innerHTML = '';
+
+            if (snapshot.exists()) {
+                snapshot.forEach((childSnapshot) => {
+                    const reportData = childSnapshot.val();
+
+                    const reportDiv = document.createElement('div');
+                    reportDiv.classList.add('report');
+
+                    reportDiv.innerHTML = `
+                        <p><strong>Nome:</strong> ${reportData.name}</p>
+                        <p><strong>Data:</strong> ${reportData.date}</p>
+                        <p><strong>Quantidade de Entregas:</strong> ${reportData.deliveryCount}</p>
+                        <p><strong>Entregas na mesma casa:</strong> ${reportData.sameHouseCount}</p>
+                        <p><strong>Valor dentro (já recebido):</strong> ${reportData.receivedAmount.toFixed(2)}</p>
+                        <p><strong>PIX:</strong> ${reportData.pixKey}</p>
+                        <p><strong>Total a Receber:</strong> ${reportData.totalAmount.toFixed(2)}</p>
+                        <p><strong>Status do Pagamento:</strong> ${reportData.paymentStatus}</p>
+                    `;
+
+                    reportsContainer.appendChild(reportDiv);
+                });
+            } else {
+                reportsContainer.innerHTML = '<p>Nenhum relatório encontrado para a data selecionada.</p>';
+            }
+        } catch (error) {
+            console.error('Erro ao buscar relatórios:', error);
         }
     } else {
-        alert('Por favor, selecione um motoboy e uma data.');
+        alert('Por favor, selecione um email e uma data.');
     }
 });
 

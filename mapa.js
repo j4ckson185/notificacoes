@@ -30,9 +30,8 @@ function updateMarkers(locations) {
     }
 }
 
-// Adiciona um marcador para um motoboy
+// Adiciona ou atualiza um marcador para um motoboy
 function addMotoboyMarker(location, name) {
-    // Remove o marcador antigo se ele já existir
     if (markers[name]) {
         markers[name].setMap(null);
     }

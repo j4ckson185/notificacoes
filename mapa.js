@@ -1,4 +1,7 @@
 // mapa.js
+
+import { getDatabase, ref, onValue } from './firebase-config.js';
+
 let map;
 
 function initMap() {
@@ -38,7 +41,9 @@ function initMap() {
     }
 
     // Atualizar localização dos motoboys
-    firebaseDatabase.ref('locations').on('value', (snapshot) => {
+    const database = getDatabase();
+    const locationsRef = ref(database, 'locations');
+    onValue(locationsRef, (snapshot) => {
         snapshot.forEach((childSnapshot) => {
             const data = childSnapshot.val();
             if (typeof data.lat === 'number' && typeof data.lng === 'number') {

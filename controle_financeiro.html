@@ -1,93 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle Financeiro</title>
-    <link rel="stylesheet" href="styles.css">
-    <style>
-        .container {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        label, select, input, button {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-            font-size: 16px;
-        }
-        button {
-            padding: 10px;
-            font-size: 16px;
-        }
-        .status {
-            display: flex;
-            align-items: center;
-        }
-        .status span {
-            margin-left: 10px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css"> <!-- Supondo que você tenha um arquivo de estilos -->
 </head>
 <body>
-    <div class="container">
-        <h1>Controle Financeiro</h1>
-        <form id="financeForm">
-            <label for="name">Nome:</label>
-            <input type="text" id="name" readonly>
+    <h1>Controle Financeiro</h1>
+    <form id="financial-form">
+        <label for="name">Nome:</label>
+        <input type="text" id="name" name="name" required>
 
-            <label for="deliveries">Quantidade de Entregas:</label>
-            <select id="deliveries">
-                <script>
-                    for (let i = 1; i <= 100; i++) {
-                        document.write(`<option value="${i}">${i}</option>`);
-                    }
-                </script>
-            </select>
+        <label for="quantity">Quantidade de Entregas:</label>
+        <input type="number" id="quantity" name="quantity" min="1" max="100" required>
 
-            <label for="sameHouseDeliveries">Entregas na Mesma Casa:</label>
-            <select id="sameHouseDeliveries">
-                <option value="0">0</option>
-                <script>
-                    for (let i = 1; i <= 15; i++) {
-                        document.write(`<option value="${i}">${i}</option>`);
-                    }
-                </script>
-            </select>
+        <label for="same-house">Entregas na mesma casa:</label>
+        <select id="same-house" name="same-house">
+            <option value="0">0</option>
+            <!-- Adicione mais opções conforme necessário -->
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+        </select>
 
-            <label for="amountReceived">Valor Recebido:</label>
-            <input type="number" id="amountReceived" step="0.01" min="0">
+        <label for="value-received">Valor já recebido:</label>
+        <input type="number" id="value-received" name="value-received" step="0.01" required>
 
-            <label for="pix">Pix:</label>
-            <input type="text" id="pix">
+        <label for="pix">Chave PIX:</label>
+        <input type="text" id="pix" name="pix" required>
 
-            <label for="shift">Um ou dois turnos?</label>
-            <select id="shift">
-                <option value="35">Um turno</option>
-                <option value="70">Dois turnos</option>
-            </select>
+        <label for="payment-status">Selecione o status do pagamento:</label>
+        <select id="payment-status" name="payment-status">
+            <option value="pendente">Pendente <span class="status-icon red"></span></option>
+            <option value="pago-parcial">Pago uma parte <span class="status-icon yellow"></span></option>
+            <option value="quitado">Quitado <span class="status-icon green"></span></option>
+        </select>
 
-            <label for="totalAmount">Valor Total a Receber:</label>
-            <input type="text" id="totalAmount" readonly>
+        <button type="submit">Enviar</button>
+    </form>
 
-            <label for="status">Selecione o status do pagamento:</label>
-            <select id="status">
-                <option value="pendente">Pendente</option>
-                <option value="parcial">Pago uma parte</option>
-                <option value="quitado">Quitado</option>
-            </select>
-
-            <button type="submit">Enviar Relatório</button>
-        </form>
-        <div id="reportsContainer"></div>
+    <div id="total-receivable">
+        <h2>Valor Total a Receber:</h2>
+        <p id="total-value">R$ 0,00</p>
     </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-    <script src="firebase-config.js"></script>
     <script src="controle_financeiro.js"></script>
 </body>
 </html>

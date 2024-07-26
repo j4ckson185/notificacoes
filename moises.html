@@ -12,6 +12,7 @@
         <div id="messages-container"></div>
         <button id="clearMessagesButton">Apagar todas</button>
         <button id="logoutButton">Sair</button>
+        <button id="financialReportButton" style="background-color: red; color: white;">Relatório Financeiro</button>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
@@ -19,5 +20,10 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging-compat.js"></script>
     <script src="moises.js" type="module"></script>
+    <script>
+        document.getElementById('financialReportButton').addEventListener('click', () => {
+            window.location.href = 'daily_report.html';
+        });
+    </script>
 </body>
 </html>

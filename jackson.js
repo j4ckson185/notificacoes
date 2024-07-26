@@ -1,11 +1,11 @@
 // jackson.js
 import { getDatabase, getMessaging } from './firebase-config.js';
-import { ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
-import { onMessage } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js";
+import { ref, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+import { onMessage } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM carregado');
-    
+
     const messagesContainer = document.getElementById('messages-container');
     const clearMessagesButton = document.getElementById('clearMessagesButton');
     const logoutButton = document.getElementById('logoutButton');
@@ -50,8 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Logout
     logoutButton.addEventListener('click', () => {
-        const auth = getAuth(); // Certifique-se de importar e inicializar o auth
-        signOut(auth).then(() => {
+        const auth = getAuth();
+        auth.signOut().then(() => {
             console.log('Signed out');
             window.location.href = 'index.html';
         }).catch((error) => {

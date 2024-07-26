@@ -16,11 +16,19 @@ firebase.initializeApp(firebaseConfig);
 
 // Get Firebase services after initialization
 try {
+    console.log('Initializing Firebase Database...');
     window.firebaseDatabase = firebase.database();
+    console.log('Firebase Database initialized:', window.firebaseDatabase);
+
+    console.log('Initializing Firebase Auth...');
     window.firebaseAuth = firebase.auth();
+    console.log('Firebase Auth initialized:', window.firebaseAuth);
+
     if (firebase.messaging.isSupported()) {
         try {
+            console.log('Initializing Firebase Messaging...');
             window.firebaseMessaging = firebase.messaging();
+            console.log('Firebase Messaging initialized:', window.firebaseMessaging);
         } catch (error) {
             console.error("Firebase messaging is not available:", error);
         }
@@ -28,6 +36,7 @@ try {
         console.warn("Firebase messaging is not supported on this browser.");
     }
     window.firebaseInitialized = true;
+    console.log('Firebase services initialized successfully');
 } catch (error) {
     console.error('Error initializing Firebase services:', error);
     window.firebaseInitialized = false;

@@ -41,7 +41,7 @@ function calculateTotalAmountToReceive() {
 
     const deliveryValue = deliveries * 3;
     const sameHouseDeliveryValue = sameHouseDeliveries * 3;
-    const totalAmount = (deliveryValue + sameHouseDeliveryValue + shiftValue) - amountReceived;
+    const totalAmount = (deliveryValue - sameHouseDeliveryValue + shiftValue) - amountReceived;
 
     document.getElementById('totalAmountToReceive').value = totalAmount.toFixed(2);
 }

@@ -1,12 +1,12 @@
 // jackson.js
-import { database, ref, onValue } from './firebase-config.js';  // Corrigir importações
+import { database, ref, onValue, remove, auth } from './firebase-config.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const messagesContainer = document.getElementById('messages-container');
     const clearMessagesButton = document.getElementById('clearMessagesButton');
     const logoutButton = document.getElementById('logoutButton');
 
-    if (!database) {
+    if (!database || !auth) {
         console.error('Firebase services not initialized.');
         return;
     }
@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Clear all messages
     clearMessagesButton.addEventListener('click', () => {
-        ref(database, 'messages').remove();
+        remove(ref(database, 'messages'));
         messagesContainer.innerHTML = '';
     });
 

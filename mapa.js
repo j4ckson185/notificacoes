@@ -1,23 +1,9 @@
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
+// mapa.js
 
-const firebaseConfig = {
-    apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
-    authDomain: "cabana-8d55e.firebaseapp.com",
-    databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
-    projectId: "cabana-8d55e",
-    storageBucket: "cabana-8d55e.appspot.com",
-    messagingSenderId: "706144237954",
-    appId: "1:706144237954:web:345c10370972486afc779b",
-    measurementId: "G-96Y337GYT8"
-};
-
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+import { getDatabase, ref, onValue } from './firebase-config.js';
 
 let map;
-let markers = {}; // Armazena os marcadores para atualização
+let markers = {}; // Para armazenar marcadores
 
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
@@ -25,63 +11,88 @@ function initMap() {
         zoom: 15
     });
 
-    // Atualiza os marcadores inicialmente
+    // Solicitar permissão de localização
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const pos = {
+                    lat: position.coords.latitude,
+                    lng: position.coords.longitude,
+                };
+
+                new google.maps.Marker({
+                    position: pos,
+                    map,
+                    icon: {
+                        url: "https://i.ibb.co/FHdgjcK/capacete.png", // Ícone do capacete
+                        scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone
+                    },
+                    title: "Minha localização",
+                });
+
+                map.setCenter(pos);
+            },
+            () => {
+                handleLocationError(true, map.getCenter());
+            }
+        );
+    } else {
+        // Browser doesn't support Geolocation
+        handleLocationError(false, map.getCenter());
+    }
+
+    // Atualizar localização dos motoboys a cada 5 segundos
     updateMarkers();
-    
-    // Atualiza os marcadores a cada 5 segundos
     setInterval(updateMarkers, 5000);
 }
 
 function updateMarkers() {
+    const database = getDatabase();
     const locationsRef = ref(database, 'locations');
-    onValue(locationsRef, (snapshot) => {
-        const updates = [];
-        snapshot.forEach((childSnapshot) => {
-            const data = childSnapshot.val();
-            const userId = childSnapshot.key; // Obtenha o UID
 
-            if (typeof data.lat === 'number' && typeof data.lng === 'number') {
-                if (!markers[userId]) {
-                    // Crie um novo marcador se ainda não existir
+    onValue(locationsRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            // Limpar marcadores existentes
+            Object.values(markers).forEach(marker => marker.setMap(null));
+            markers = {};
+
+            Object.values(data).forEach((location) => {
+                if (typeof location.lat === 'number' && typeof location.lng === 'number') {
                     const marker = new google.maps.Marker({
-                        position: { lat: data.lat, lng: data.lng },
+                        position: { lat: location.lat, lng: location.lng },
                         map,
                         icon: {
                             url: "https://i.ibb.co/FHdgjcK/capacete.png", // Ícone do capacete
                             scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone
                         },
-                        title: data.name,
+                        title: location.uid, // Exibir UID no infowindow
                     });
 
-                    // Crie uma janela de informação
-                    const infoWindow = new google.maps.InfoWindow({
-                        content: `<div><strong>ID do Usuário:</strong> ${userId}</div>`
-                    });
-
-                    // Adicione um evento de clique no marcador para abrir a janela de informação
                     marker.addListener('click', () => {
+                        const infoWindow = new google.maps.InfoWindow({
+                            content: `<div><strong>UID:</strong> ${location.uid}</div>`,
+                        });
                         infoWindow.open(map, marker);
                     });
 
-                    // Armazene o marcador
-                    markers[userId] = marker;
-                } else {
-                    // Atualize a posição do marcador existente
-                    markers[userId].setPosition({ lat: data.lat, lng: data.lng });
+                    markers[location.uid] = marker; // Armazenar marcador
                 }
-
-                updates.push(userId);
-            }
-        });
-
-        // Remova os marcadores que não estão mais na base de dados
-        for (const userId in markers) {
-            if (!updates.includes(userId)) {
-                markers[userId].setMap(null);
-                delete markers[userId];
-            }
+            });
         }
     });
+}
+
+function handleLocationError(browserHasGeolocation, pos) {
+    const infoWindow = new google.maps.InfoWindow({
+        position: pos,
+    });
+    infoWindow.setContent(
+        browserHasGeolocation
+            ? "Error: The Geolocation service failed."
+            : "Error: Your browser doesn't support geolocation."
+    );
+    infoWindow.open(map);
 }
 
 // Expor initMap para ser chamado pela API do Google Maps

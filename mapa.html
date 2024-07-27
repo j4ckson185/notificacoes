@@ -1,40 +1,24 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Mapa de Usuários - Cabana Açaí</title>
     <style>
         #map {
-            height: 80vh;
+            height: 100vh;
             width: 100%;
-        }
-        .container {
-            width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Mapa</h1>
-        <div id="map"></div>
-    </div>
+    <div id="map"></div>
 
-    <!-- Firebase JS SDK via CDN -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js"></script>
-    
-    <!-- Google Maps API -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E&callback=initMap" async defer></script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+        import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
-    <script>
-        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
             authDomain: "cabana-8d55e.firebaseapp.com",
@@ -46,95 +30,97 @@
             measurementId: "G-96Y337GYT8"
         };
 
-        // Inicializar o Firebase
-        firebase.initializeApp(firebaseConfig);
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
 
-        // Variáveis Firebase
-        let database;
+        let map;
+        let userMarkers = {};
 
         function initMap() {
-            // Inicializar o Firebase Database
-            database = firebase.database();
-
-            const map = new google.maps.Map(document.getElementById("map"), {
-                center: { lat: -5.748178, lng: -35.256141 }, // Coordenadas da loja
-                zoom: 15
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: { lat: -15.7801, lng: -47.9292 }, // Centro do Brasil
+                zoom: 5
             });
 
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const pos = {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude,
-                        };
-
-                        new google.maps.Marker({
-                            position: pos,
-                            map,
-                            icon: {
-                                url: "https://i.ibb.co/FHdgjcK/capacete.png",
-                                scaledSize: new google.maps.Size(45, 45)
-                            },
-                            title: "Minha localização",
-                        });
-
-                        map.setCenter(pos);
-                    },
-                    () => {
-                        handleLocationError(true, map.getCenter());
-                    }
-                );
-            } else {
-                handleLocationError(false, map.getCenter());
-            }
-
-            // Atualizar localizações
-            updateLocations();
-            setInterval(updateLocations, 5000); // Atualizar localização a cada 5 segundos
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    startLocationTracking(user.email);
+                    listenToUserLocations();
+                } else {
+                    window.location.href = 'index.html';
+                }
+            });
         }
 
-        function updateLocations() {
-            if (!database) return;
-
-            const locationsRef = database.ref('locations');
-            locationsRef.on('value', (snapshot) => {
-                snapshot.forEach((childSnapshot) => {
-                    const data = childSnapshot.val();
-                    if (typeof data.lat === 'number' && typeof data.lng === 'number') {
-                        const marker = new google.maps.Marker({
-                            position: { lat: data.lat, lng: data.lng },
-                            map,
-                            icon: {
-                                url: "https://i.ibb.co/FHdgjcK/capacete.png",
-                                scaledSize: new google.maps.Size(45, 45)
-                            },
-                            title: data.uid,
-                            label: data.uid
-                        });
-
-                        marker.addListener('click', () => {
-                            const infoWindow = new google.maps.InfoWindow({
-                                content: `Usuário: ${data.uid}`
-                            });
-                            infoWindow.open(map, marker);
-                        });
-                    }
+        function startLocationTracking(userEmail) {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.watchPosition((position) => {
+                    const { latitude, longitude } = position.coords;
+                    updateUserLocation(userEmail, latitude, longitude);
+                }, (error) => {
+                    console.error("Erro ao obter localização:", error);
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
                 });
+            }
+        }
+
+        function updateUserLocation(userEmail, latitude, longitude) {
+            const userRef = ref(database, `users/${userEmail.replace('.', ',')}`);
+            set(userRef, {
+                email: userEmail,
+                latitude: latitude,
+                longitude: longitude,
+                lastUpdate: new Date().toISOString()
             });
         }
 
-        function handleLocationError(browserHasGeolocation, pos) {
-            const infoWindow = new google.maps.InfoWindow({
-                position: pos,
+        function listenToUserLocations() {
+            const usersRef = ref(database, 'users');
+            onValue(usersRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    Object.keys(data).forEach((key) => {
+                        const user = data[key];
+                        updateMarker(user);
+                    });
+                }
             });
-            infoWindow.setContent(
-                browserHasGeolocation
-                    ? "Error: The Geolocation service failed."
-                    : "Error: Your browser doesn't support geolocation."
-            );
-            infoWindow.open(map);
         }
+
+        function updateMarker(user) {
+            const position = new google.maps.LatLng(user.latitude, user.longitude);
+            
+            if (userMarkers[user.email]) {
+                userMarkers[user.email].setPosition(position);
+            } else {
+                const marker = new google.maps.Marker({
+                    position: position,
+                    map: map,
+                    icon: {
+                        url: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png', // Substitua pelo URL do ícone do capacete
+                        scaledSize: new google.maps.Size(45, 45)
+                    },
+                    title: user.email
+                });
+
+                const infoWindow = new google.maps.InfoWindow({
+                    content: `<div>${user.email}</div>`
+                });
+
+                marker.addListener('click', () => {
+                    infoWindow.open(map, marker);
+                });
+
+                userMarkers[user.email] = marker;
+            }
+        }
+
+        window.initMap = initMap;
     </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E&callback=initMap" async defer></script>
 </body>
 </html>

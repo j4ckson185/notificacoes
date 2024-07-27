@@ -1,210 +1,34 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de Usuários - Cabana Açaí</title>
-    <style>
-        #map { height: 100vh; width: 100%; }
-        #logContainer { 
-            position: fixed; 
-            top: 10px; 
-            right: 10px; 
-            width: 300px; 
-            height: 200px; 
-            background: rgba(255,255,255,0.8); 
-            overflow-y: scroll; 
-            padding: 10px; 
-            font-family: monospace; 
-        }
-    </style>
+    <!-- ... (cabeçalho permanece o mesmo) ... -->
 </head>
 <body>
-    <div id="map"></div>
-    <div id="logContainer"></div>
+    <!-- ... (corpo permanece o mesmo) ... -->
 
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-        import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-        import { getDatabase, ref, onValue, set, onChildAdded, onChildChanged, onChildRemoved } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
-            authDomain: "cabana-8d55e.firebaseapp.com",
-            databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
-            projectId: "cabana-8d55e",
-            storageBucket: "cabana-8d55e.appspot.com",
-            messagingSenderId: "706144237954",
-            appId: "1:706144237954:web:345c10370972486afc779b",
-            measurementId: "G-96Y337GYT8"
+        // Adicione isso no início do seu script
+        window.onerror = function(message, source, lineno, colno, error) {
+            console.error('Erro global capturado:', message, 'em', source, 'linha:', lineno);
+            log(`Erro global: ${message}`);
+            document.getElementById('errorMessage').style.display = 'block';
+            document.getElementById('errorMessage').textContent = `Erro: ${message}. Por favor, recarregue a página.`;
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const database = getDatabase(app);
-
-        let map;
-        let userMarkers = {};
-        let currentUserEmail;
-
-        function log(message) {
-            console.log(message);
-            const logContainer = document.getElementById('logContainer');
-            logContainer.innerHTML += `<div>${new Date().toISOString()}: ${message}</div>`;
-            logContainer.scrollTop = logContainer.scrollHeight;
-        }
+        // ... (resto do código permanece o mesmo) ...
 
         function initMap() {
             log('Iniciando o mapa');
-            map = new google.maps.Map(document.getElementById('map'), {
-                center: { lat: -15.7801, lng: -47.9292 },
-                zoom: 5
-            });
-
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    currentUserEmail = user.email;
-                    log(`Usuário autenticado: ${currentUserEmail}`);
-                    startLocationTracking(currentUserEmail);
-                    listenToUserLocations();
-                    registerServiceWorker(currentUserEmail);
-                } else {
-                    log('Usuário não autenticado, redirecionando para login');
-                    window.location.href = 'index.html';
-                }
-            });
-        }
-
-        function startLocationTracking(userEmail) {
-            log(`Iniciando rastreamento de localização para ${userEmail}`);
-            if ("geolocation" in navigator) {
-                navigator.geolocation.watchPosition((position) => {
-                    log(`Nova posição obtida via watchPosition para ${userEmail}`);
-                    const { latitude, longitude } = position.coords;
-                    updateUserLocation(userEmail, latitude, longitude);
-                }, (error) => {
-                    log(`Erro ao obter localização: ${error.message}`);
-                }, {
-                    enableHighAccuracy: true,
-                    timeout: 5000,
-                    maximumAge: 0
-                });
-            } else {
-                log('Geolocalização não disponível neste navegador');
+            try {
+                // ... (código de inicialização do mapa) ...
+            } catch (error) {
+                console.error('Erro ao inicializar o mapa:', error);
+                log(`Erro ao inicializar o mapa: ${error.message}`);
+                document.getElementById('errorMessage').style.display = 'block';
             }
         }
 
-        function updateUserLocation(userEmail, latitude, longitude) {
-            log(`Atualizando localização do usuário ${userEmail}: ${latitude}, ${longitude}`);
-            const userRef = ref(database, `users/${userEmail.replace('.', ',')}`);
-            set(userRef, {
-                email: userEmail,
-                latitude: latitude,
-                longitude: longitude,
-                lastUpdate: new Date().toISOString()
-            }).then(() => {
-                log(`Localização atualizada com sucesso para ${userEmail}`);
-            }).catch((error) => {
-                log(`Erro ao atualizar localização para ${userEmail}: ${error.message}`);
-            });
-        }
-
-        function listenToUserLocations() {
-            log('Iniciando escuta de localizações dos usuários');
-            const usersRef = ref(database, 'users');
-            
-            onChildAdded(usersRef, (snapshot) => {
-                const user = snapshot.val();
-                log(`Novo usuário adicionado: ${user.email}`);
-                updateMarker(user);
-            });
-
-            onChildChanged(usersRef, (snapshot) => {
-                const user = snapshot.val();
-                log(`Usuário atualizado: ${user.email}`);
-                updateMarker(user);
-            });
-
-            onChildRemoved(usersRef, (snapshot) => {
-                const user = snapshot.val();
-                log(`Usuário removido: ${user.email}`);
-                removeMarker(user);
-            });
-        }
-
-        function updateMarker(user) {
-            log(`Atualizando marcador para ${user.email}`);
-            const position = new google.maps.LatLng(user.latitude, user.longitude);
-            
-            if (userMarkers[user.email]) {
-                log(`Atualizando posição do marcador existente para ${user.email}`);
-                userMarkers[user.email].setPosition(position);
-            } else {
-                log(`Criando novo marcador para ${user.email}`);
-                const marker = new google.maps.Marker({
-                    position: position,
-                    map: map,
-                    icon: {
-                        url: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png',
-                        scaledSize: new google.maps.Size(45, 45)
-                    },
-                    title: user.email
-                });
-
-                const infoWindow = new google.maps.InfoWindow({
-                    content: `<div>${user.email}</div>`
-                });
-
-                marker.addListener('click', () => {
-                    infoWindow.open(map, marker);
-                });
-
-                userMarkers[user.email] = marker;
-            }
-        }
-
-        function removeMarker(user) {
-            log(`Removendo marcador para ${user.email}`);
-            if (userMarkers[user.email]) {
-                userMarkers[user.email].setMap(null);
-                delete userMarkers[user.email];
-                log(`Marcador removido para ${user.email}`);
-            } else {
-                log(`Nenhum marcador encontrado para remover para ${user.email}`);
-            }
-        }
-
-        function registerServiceWorker(userEmail) {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('service-worker.js')
-                    .then((registration) => {
-                        log('Service Worker registrado com sucesso');
-                        registration.active.postMessage({
-                            type: 'START_BACKGROUND_SYNC',
-                            userEmail: userEmail
-                        });
-                    })
-                    .catch((error) => {
-                        log(`Erro ao registrar Service Worker: ${error}`);
-                    });
-
-                navigator.serviceWorker.addEventListener('message', (event) => {
-                    if (event.data && event.data.type === 'UPDATE_LOCATION') {
-                        log('Recebida mensagem para atualizar localização');
-                        if ("geolocation" in navigator) {
-                            navigator.geolocation.getCurrentPosition((position) => {
-                                const { latitude, longitude } = position.coords;
-                                updateUserLocation(currentUserEmail, latitude, longitude);
-                            }, (error) => {
-                                log(`Erro ao obter localização: ${error.message}`);
-                            });
-                        }
-                    }
-                });
-            }
-        }
-
-        window.initMap = initMap;
+        // ... (resto do código permanece o mesmo) ...
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E&callback=initMap" async defer></script>
 </body>

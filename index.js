@@ -1,7 +1,4 @@
-import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-
-// Configuração do Firebase
+// Inicialize o Firebase com sua configuração
 const firebaseConfig = {
     apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
     authDomain: "cabana-8d55e.firebaseapp.com",
@@ -13,11 +10,11 @@ const firebaseConfig = {
     measurementId: "G-96Y337GYT8"
 };
 
-// Inicializa o Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+firebase.initializeApp(firebaseConfig);
 
+const auth = firebase.auth();
 const loginForm = document.getElementById('loginForm');
+
 loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
@@ -25,7 +22,7 @@ loginForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('loginPassword').value;
 
     try {
-        await signInWithEmailAndPassword(auth, email, password);
+        await auth.signInWithEmailAndPassword(email, password);
         // Redireciona para mapa.html após login bem-sucedido
         window.location.href = 'mapa.html';
     } catch (error) {

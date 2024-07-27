@@ -1,50 +1,28 @@
-import { auth, database } from './firebase-config.js';
-import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js";
-import { ref, set } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+import { initializeApp } from "firebase/app";
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 
-document.getElementById('loginForm').addEventListener('submit', (e) => {
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    databaseURL: "YOUR_DATABASE_URL",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+
+document.querySelector('#loginForm').addEventListener('submit', async (e) => {
     e.preventDefault();
+    const email = document.querySelector('#loginEmail').value;
+    const password = document.querySelector('#loginPassword').value;
 
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-
-    signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            const user = userCredential.user;
-            startTrackingLocation(user.uid);
-        })
-        .catch((error) => {
-            console.error('Error signing in:', error);
-        });
-});
-
-function startTrackingLocation(userId) {
-    if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(
-            (position) => {
-                const pos = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude,
-                };
-
-                // Atualizar a localização do usuário no Firebase
-                set(ref(database, 'locations/' + userId), {
-                    lat: pos.lat,
-                    lng: pos.lng,
-                    name: userId // Ou qualquer identificador que você queira usar
-                });
-
-            },
-            (error) => {
-                console.error('Error getting location:', error);
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 1000
-            }
-        );
-    } else {
-        console.error('Geolocation not supported.');
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        console.log('Login bem-sucedido');
+    } catch (error) {
+        console.error('Erro ao fazer login', error);
     }
-}
+});

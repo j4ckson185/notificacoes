@@ -65,6 +65,7 @@
                     log(`Usuário autenticado: ${user.email}`);
                     startLocationTracking(user.email);
                     listenToUserLocations();
+                    registerServiceWorker(user.email);
                 } else {
                     log('Usuário não autenticado, redirecionando para login');
                     window.location.href = 'index.html';
@@ -72,112 +73,23 @@
             });
         }
 
-        function startLocationTracking(userEmail) {
-            log(`Iniciando rastreamento de localização para ${userEmail}`);
-            if ("geolocation" in navigator) {
-                navigator.geolocation.watchPosition((position) => {
-                    log(`Nova posição obtida via watchPosition para ${userEmail}`);
-                    const { latitude, longitude } = position.coords;
-                    updateUserLocation(userEmail, latitude, longitude);
-                }, (error) => {
-                    log(`Erro ao obter localização: ${error.message}`);
-                }, {
-                    enableHighAccuracy: true,
-                    timeout: 5000,
-                    maximumAge: 0
-                });
-
-                setInterval(() => {
-                    log(`Atualizando posição via setInterval para ${userEmail}`);
-                    navigator.geolocation.getCurrentPosition((position) => {
-                        const { latitude, longitude } = position.coords;
-                        updateUserLocation(userEmail, latitude, longitude);
+        function registerServiceWorker(userEmail) {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then((registration) => {
+                        log('Service Worker registrado com sucesso');
+                        registration.active.postMessage({
+                            type: 'START_BACKGROUND_SYNC',
+                            userEmail: userEmail
+                        });
+                    })
+                    .catch((error) => {
+                        log(`Erro ao registrar Service Worker: ${error}`);
                     });
-                }, 5000);
-            } else {
-                log('Geolocalização não disponível neste navegador');
             }
         }
 
-        function updateUserLocation(userEmail, latitude, longitude) {
-            log(`Atualizando localização do usuário ${userEmail}: ${latitude}, ${longitude}`);
-            const userRef = ref(database, `users/${userEmail.replace('.', ',')}`);
-            set(userRef, {
-                email: userEmail,
-                latitude: latitude,
-                longitude: longitude,
-                lastUpdate: new Date().toISOString()
-            }).then(() => {
-                log(`Localização atualizada com sucesso para ${userEmail}`);
-            }).catch((error) => {
-                log(`Erro ao atualizar localização para ${userEmail}: ${error.message}`);
-            });
-        }
-
-        function listenToUserLocations() {
-            log('Iniciando escuta de localizações dos usuários');
-            const usersRef = ref(database, 'users');
-            
-            onChildAdded(usersRef, (snapshot) => {
-                const user = snapshot.val();
-                log(`Novo usuário adicionado: ${user.email}`);
-                updateMarker(user);
-            });
-
-            onChildChanged(usersRef, (snapshot) => {
-                const user = snapshot.val();
-                log(`Usuário atualizado: ${user.email}`);
-                updateMarker(user);
-            });
-
-            onChildRemoved(usersRef, (snapshot) => {
-                const user = snapshot.val();
-                log(`Usuário removido: ${user.email}`);
-                removeMarker(user);
-            });
-        }
-
-        function updateMarker(user) {
-            log(`Atualizando marcador para ${user.email}`);
-            const position = new google.maps.LatLng(user.latitude, user.longitude);
-            
-            if (userMarkers[user.email]) {
-                log(`Atualizando posição do marcador existente para ${user.email}`);
-                userMarkers[user.email].setPosition(position);
-            } else {
-                log(`Criando novo marcador para ${user.email}`);
-                const marker = new google.maps.Marker({
-                    position: position,
-                    map: map,
-                    icon: {
-                        url: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png',
-                        scaledSize: new google.maps.Size(45, 45)
-                    },
-                    title: user.email
-                });
-
-                const infoWindow = new google.maps.InfoWindow({
-                    content: `<div>${user.email}</div>`
-                });
-
-                marker.addListener('click', () => {
-                    infoWindow.open(map, marker);
-                });
-
-                userMarkers[user.email] = marker;
-            }
-        }
-
-        function removeMarker(user) {
-            log(`Removendo marcador para ${user.email}`);
-            if (userMarkers[user.email]) {
-                userMarkers[user.email].setMap(null);
-                delete userMarkers[user.email];
-                log(`Marcador removido para ${user.email}`);
-            } else {
-                log(`Nenhum marcador encontrado para remover para ${user.email}`);
-            }
-        }
+        // ... (resto do código permanece o mesmo)
 
         window.initMap = initMap;
     </script>

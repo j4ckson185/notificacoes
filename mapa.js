@@ -16,24 +16,37 @@ firebase.initializeApp(firebaseConfig);
 let map;
 let userMarkers = {};
 
-// Coordenadas da sua localização
-const YOUR_LOCATION = { lat: -15.7801, lng: -47.9292 }; // Substitua por suas coordenadas exatas
+// Coordenadas e informações da localização central
+const CENTER_LOCATION = { 
+    lat: -5.748161940178177, 
+    lng: -35.25617338650904,
+    address: "Rua Serra do Mar, 1216, Potengi - Natal-RN"
+};
 
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
-        center: YOUR_LOCATION,
-        zoom: 15 // Ajuste o zoom conforme necessário
+        center: CENTER_LOCATION,
+        zoom: 14 // Ajustado para mostrar um pouco mais do bairro
     });
 
-    // Adicionar um marcador na sua localização
-    new google.maps.Marker({
-        position: -5.748161940178177, -35.25617338650904,
+    // Adicionar um marcador na localização central
+    const centerMarker = new google.maps.Marker({
+        position: CENTER_LOCATION,
         map: map,
-        title: "Cabana Açaí",
+        title: CENTER_LOCATION.address,
         icon: {
-            url: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png', // Substitua pelo URL do ícone desejado
+            url: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png',
             scaledSize: new google.maps.Size(45, 45)
         }
+    });
+
+    // Adicionar uma janela de informações ao marcador central
+    const infoWindow = new google.maps.InfoWindow({
+        content: `<div><strong>Localização Central</strong><br>${CENTER_LOCATION.address}</div>`
+    });
+
+    centerMarker.addListener('click', () => {
+        infoWindow.open(map, centerMarker);
     });
 
     firebase.auth().onAuthStateChanged((user) => {

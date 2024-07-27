@@ -1,3 +1,12 @@
+// No início do seu script, adicione:
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(function(registrations) {
+        for(let registration of registrations) {
+            registration.unregister();
+        }
+    });
+}
+
 // service-worker.js
 self.addEventListener('install', (event) => {
   self.skipWaiting();

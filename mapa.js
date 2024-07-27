@@ -1,30 +1,28 @@
 // mapa.js
-import { initializeApp } from "firebase/app";
-import { getDatabase, ref, onValue } from "firebase/database";
-
-// Configure o Firebase
+// Substitua com suas configurações do Firebase
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_AUTH_DOMAIN",
-    databaseURL: "YOUR_DATABASE_URL",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_STORAGE_BUCKET",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
+  authDomain: "cabana-8d55e.firebaseapp.com",
+  databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
+  projectId: "cabana-8d55e",
+  storageBucket: "cabana-8d55e.appspot.com",
+  messagingSenderId: "706144237954",
+  appId: "1:706144237954:web:345c10370972486afc779b",
+  measurementId: "G-96Y337GYT8"
 };
 
-const app = initializeApp(firebaseConfig);
-const database = getDatabase(app);
+firebase.initializeApp(firebaseConfig);
+
+const database = firebase.database();
 
 let map;
 
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat: -5.748178, lng: -35.256141 }, // Coordenadas da loja
+        center: { lat: -5.748178, lng: -35.256141 },
         zoom: 15
     });
 
-    // Solicitar permissão de localização
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -37,8 +35,8 @@ function initMap() {
                     position: pos,
                     map,
                     icon: {
-                        url: "https://i.ibb.co/FHdgjcK/capacete.png", // Ícone do capacete
-                        scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone
+                        url: "https://i.ibb.co/FHdgjcK/capacete.png",
+                        scaledSize: new google.maps.Size(45, 45)
                     },
                     title: "Minha localização",
                 });
@@ -50,19 +48,16 @@ function initMap() {
             }
         );
     } else {
-        // Browser doesn't support Geolocation
         handleLocationError(false, map.getCenter());
     }
 
     // Atualizar localização dos motoboys a cada 5 segundos
-    setInterval(() => {
-        updateMotoboysLocation();
-    }, 5000);
+    setInterval(updateMotoboysLocation, 5000);
 }
 
 function updateMotoboysLocation() {
-    const locationsRef = ref(database, 'locations');
-    onValue(locationsRef, (snapshot) => {
+    const locationsRef = database.ref('locations');
+    locationsRef.on('value', (snapshot) => {
         map.clear(); // Limpa o mapa antes de adicionar novos marcadores
         snapshot.forEach((childSnapshot) => {
             const data = childSnapshot.val();
@@ -71,12 +66,12 @@ function updateMotoboysLocation() {
                     position: { lat: data.lat, lng: data.lng },
                     map,
                     icon: {
-                        url: "https://i.ibb.co/FHdgjcK/capacete.png", // Ícone do capacete
-                        scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone
+                        url: "https://i.ibb.co/FHdgjcK/capacete.png",
+                        scaledSize: new google.maps.Size(45, 45)
                     },
-                    title: data.uid, // Exibir o UID no título
-                    label: data.uid, // Exibir o UID como rótulo
-                }).addListener('click', () => {
+                    title: data.uid,
+                    label: data.uid,
+                }).addListener('click', function() {
                     const infoWindow = new google.maps.InfoWindow({
                         content: `UID: ${data.uid}`
                     });
@@ -99,5 +94,4 @@ function handleLocationError(browserHasGeolocation, pos) {
     infoWindow.open(map);
 }
 
-// Expor initMap para ser chamado pela API do Google Maps
 window.initMap = initMap;

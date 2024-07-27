@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,17 +22,12 @@
             <button type="submit">Entrar</button>
         </form>
     </div>
-
+    
     <!-- Firebase JS SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js"></script>
-
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-        import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-        import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+        import { getDatabase } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
         import { getMessaging } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 
         const firebaseConfig = {
@@ -53,14 +48,12 @@
 
         document.getElementById('loginForm').addEventListener('submit', async (event) => {
             event.preventDefault();
-
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
-
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                localStorage.setItem('userEmail', email); // Armazenar email no localStorage
-                window.location.href = 'mapa.html'; // Redirecionar para a página do mapa
+                localStorage.setItem('userEmail', email);
+                window.location.href = 'mapa.html';
             } catch (error) {
                 console.error('Erro ao fazer login:', error.message);
                 alert('Erro ao fazer login. Verifique suas credenciais.');
@@ -68,13 +61,18 @@
         });
 
         // Manter o usuário logado
-        window.onload = () => {
-            const savedEmail = localStorage.getItem('userEmail');
-            if (savedEmail) {
-                document.getElementById('loginEmail').value = savedEmail;
-                document.getElementById('loginForm').submit(); // Submeter o formulário automaticamente
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.location.href = 'mapa.html';
             }
-        };
+        });
+
+        // Solicitar permissão de geolocalização
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                console.log("Permissão de geolocalização concedida");
+            });
+        }
     </script>
 </body>
 </html>

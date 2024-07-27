@@ -17,7 +17,7 @@
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
         import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-        import { getDatabase, ref, onValue, set } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+        import { getDatabase, ref, onValue, set, onChildAdded, onChildChanged, onChildRemoved } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
         const firebaseConfig = {
             apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -54,31 +54,54 @@
         }
 
         function startLocationTracking(userEmail) {
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/service-worker.js')
-                    .then(function(registration) {
-                        console.log('Service Worker registrado com sucesso:', registration);
-                        registration.active.postMessage({
-                            type: 'START_LOCATION_TRACKING',
-                            userEmail: userEmail
-                        });
-                    })
-                    .catch(function(error) {
-                        console.log('Falha ao registrar o Service Worker:', error);
+            if ("geolocation" in navigator) {
+                navigator.geolocation.watchPosition((position) => {
+                    const { latitude, longitude } = position.coords;
+                    updateUserLocation(userEmail, latitude, longitude);
+                }, (error) => {
+                    console.error("Erro ao obter localização:", error);
+                }, {
+                    enableHighAccuracy: true,
+                    timeout: 5000,
+                    maximumAge: 0
+                });
+
+                // Atualização periódica
+                setInterval(() => {
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        const { latitude, longitude } = position.coords;
+                        updateUserLocation(userEmail, latitude, longitude);
                     });
+                }, 5000);
             }
+        }
+
+        function updateUserLocation(userEmail, latitude, longitude) {
+            const userRef = ref(database, `users/${userEmail.replace('.', ',')}`);
+            set(userRef, {
+                email: userEmail,
+                latitude: latitude,
+                longitude: longitude,
+                lastUpdate: new Date().toISOString()
+            });
         }
 
         function listenToUserLocations() {
             const usersRef = ref(database, 'users');
-            onValue(usersRef, (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    Object.keys(data).forEach((key) => {
-                        const user = data[key];
-                        updateMarker(user);
-                    });
-                }
+            
+            onChildAdded(usersRef, (snapshot) => {
+                const user = snapshot.val();
+                updateMarker(user);
+            });
+
+            onChildChanged(usersRef, (snapshot) => {
+                const user = snapshot.val();
+                updateMarker(user);
+            });
+
+            onChildRemoved(usersRef, (snapshot) => {
+                const user = snapshot.val();
+                removeMarker(user);
             });
         }
 
@@ -107,6 +130,13 @@
                 });
 
                 userMarkers[user.email] = marker;
+            }
+        }
+
+        function removeMarker(user) {
+            if (userMarkers[user.email]) {
+                userMarkers[user.email].setMap(null);
+                delete userMarkers[user.email];
             }
         }
 

@@ -29,10 +29,6 @@ self.addEventListener('notificationclick', event => {
     event.notification.close();
 });
 
-self.addEventListener('notificationclose', event => {
-    console.log('Notificação fechada');
-});
-
 self.addEventListener('message', (event) => {
     if (event.data && event.data.type === 'START_LOCATION_TRACKING') {
         startLocationTracking(event.data.userEmail);
@@ -40,9 +36,10 @@ self.addEventListener('message', (event) => {
 });
 
 function startLocationTracking(userEmail) {
+    // Intervalo de 10 segundos para atualizar a localização
     setInterval(() => {
-        if ('geolocation' in self) {
-            self.geolocation.getCurrentPosition(
+        if ('geolocation' in self.navigator) {
+            self.navigator.geolocation.getCurrentPosition(
                 (position) => {
                     const { latitude, longitude } = position.coords;
                     updateUserLocation(userEmail, latitude, longitude);
@@ -53,7 +50,7 @@ function startLocationTracking(userEmail) {
                 { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
             );
         }
-    }, 5000);
+    }, 10000);
 }
 
 function updateUserLocation(userEmail, latitude, longitude) {

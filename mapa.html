@@ -24,14 +24,18 @@
         <div id="map"></div>
     </div>
 
-    <!-- Firebase JS SDK (type module) -->
-    <script type="module">
-        import { initializeApp } from './firebase-app.js'; // Ajuste o caminho conforme necessário
-        import { getAuth, onAuthStateChanged } from './firebase-auth.js'; // Ajuste o caminho conforme necessário
-        import { getDatabase, ref, onValue } from './firebase-database.js'; // Ajuste o caminho conforme necessário
-        import { getMessaging } from './firebase-messaging.js'; // Ajuste o caminho conforme necessário
+    <!-- Firebase JS SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js"></script>
 
-        // Configuração do Firebase
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+        import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+        import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+        import { getMessaging } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
+
         const firebaseConfig = {
             apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
             authDomain: "cabana-8d55e.firebaseapp.com",
@@ -43,20 +47,17 @@
             measurementId: "G-96Y337GYT8"
         };
 
-        // Inicializar Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const database = getDatabase(app);
         const messaging = getMessaging(app);
 
-        // Função para inicializar o mapa
         function initMap() {
             const map = new google.maps.Map(document.getElementById("map"), {
                 center: { lat: -5.748178, lng: -35.256141 }, // Coordenadas da loja
                 zoom: 15
             });
 
-            // Solicitar permissão de localização
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
@@ -69,8 +70,8 @@
                             position: pos,
                             map,
                             icon: {
-                                url: "https://i.ibb.co/FHdgjcK/capacete.png", // Ícone do capacete
-                                scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone
+                                url: "https://i.ibb.co/FHdgjcK/capacete.png",
+                                scaledSize: new google.maps.Size(45, 45)
                             },
                             title: "Minha localização",
                         });
@@ -82,11 +83,9 @@
                     }
                 );
             } else {
-                // Browser doesn't support Geolocation
                 handleLocationError(false, map.getCenter());
             }
 
-            // Atualizar localização dos motoboys a cada 5 segundos
             function updateLocations() {
                 const locationsRef = ref(database, 'locations');
                 onValue(locationsRef, (snapshot) => {
@@ -98,8 +97,8 @@
                                 position: { lat: data.lat, lng: data.lng },
                                 map,
                                 icon: {
-                                    url: "https://i.ibb.co/FHdgjcK/capacete.png", // Ícone do capacete
-                                    scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone
+                                    url: "https://i.ibb.co/FHdgjcK/capacete.png",
+                                    scaledSize: new google.maps.Size(45, 45)
                                 },
                                 title: data.uid,
                                 label: data.uid
@@ -133,7 +132,6 @@
             infoWindow.open(map);
         }
 
-        // Carregar o mapa quando o script do Google Maps estiver pronto
         window.initMap = initMap;
     </script>
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E&callback=initMap" async defer></script>

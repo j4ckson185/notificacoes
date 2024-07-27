@@ -10,7 +10,12 @@ const firebaseConfig = {
     measurementId: "G-96Y337GYT8"
 };
 
-firebase.initializeApp(firebaseConfig);
+// Certifique-se de que o Firebase está inicializado antes de usar
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+} else {
+    firebase.app(); // if already initialized, use that one
+}
 
 const auth = firebase.auth();
 const loginForm = document.getElementById('loginForm');

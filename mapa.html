@@ -24,18 +24,14 @@
         <div id="map"></div>
     </div>
 
-    <!-- Firebase JS SDK -->
+    <!-- Firebase JS SDK via CDN -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js"></script>
-
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-        import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-        import { getDatabase, ref, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
-        import { getMessaging } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
-
+    
+    <script>
+        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
             authDomain: "cabana-8d55e.firebaseapp.com",
@@ -47,10 +43,11 @@
             measurementId: "G-96Y337GYT8"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const database = getDatabase(app);
-        const messaging = getMessaging(app);
+        // Inicialize o Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+        const messaging = firebase.messaging();
 
         function initMap() {
             const map = new google.maps.Map(document.getElementById("map"), {
@@ -87,8 +84,8 @@
             }
 
             function updateLocations() {
-                const locationsRef = ref(database, 'locations');
-                onValue(locationsRef, (snapshot) => {
+                const locationsRef = database.ref('locations');
+                locationsRef.on('value', (snapshot) => {
                     const markers = [];
                     snapshot.forEach((childSnapshot) => {
                         const data = childSnapshot.val();

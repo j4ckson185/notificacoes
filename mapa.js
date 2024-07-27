@@ -25,8 +25,11 @@ function initMap() {
         zoom: 15
     });
 
-    updateMarkers(); // Atualiza os marcadores inicialmente
-    setInterval(updateMarkers, 5000); // Atualiza os marcadores a cada 5 segundos
+    // Atualiza os marcadores inicialmente
+    updateMarkers();
+    
+    // Atualiza os marcadores a cada 5 segundos
+    setInterval(updateMarkers, 5000);
 }
 
 function updateMarkers() {

@@ -23,13 +23,52 @@
         </form>
     </div>
 
-    <!-- Firebase CDN -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js"></script>
-    
-    <!-- JavaScript Application -->
-    <script src="index.js"></script>
+    <!-- Firebase JS SDK (type module) -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+        import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+        import { getMessaging } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
+            authDomain: "cabana-8d55e.firebaseapp.com",
+            databaseURL: "https://cabana-8d55e-default-rtdb.firebaseio.com",
+            projectId: "cabana-8d55e",
+            storageBucket: "cabana-8d55e.appspot.com",
+            messagingSenderId: "706144237954",
+            appId: "1:706144237954:web:345c10370972486afc779b",
+            measurementId: "G-96Y337GYT8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const database = getDatabase(app);
+        const messaging = getMessaging(app);
+
+        const loginForm = document.getElementById('loginForm');
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                // Redireciona para mapa.html após login bem-sucedido
+                window.location.href = 'mapa.html';
+            } catch (error) {
+                console.error('Error signing in:', error);
+            }
+        });
+
+        // Tenta manter o usuário logado ao carregar a página
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                window.location.href = 'mapa.html';
+            }
+        });
+    </script>
 </body>
 </html>

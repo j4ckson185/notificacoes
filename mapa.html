@@ -30,6 +30,9 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js"></script>
     
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY&callback=initMap" async defer></script>
+
     <script>
         // Configuração do Firebase
         const firebaseConfig = {
@@ -86,7 +89,6 @@
             function updateLocations() {
                 const locationsRef = database.ref('locations');
                 locationsRef.on('value', (snapshot) => {
-                    const markers = [];
                     snapshot.forEach((childSnapshot) => {
                         const data = childSnapshot.val();
                         if (typeof data.lat === 'number' && typeof data.lng === 'number') {
@@ -100,7 +102,6 @@
                                 title: data.uid,
                                 label: data.uid
                             });
-                            markers.push(marker);
 
                             marker.addListener('click', () => {
                                 const infoWindow = new google.maps.InfoWindow({
@@ -128,9 +129,6 @@
             );
             infoWindow.open(map);
         }
-
-        window.initMap = initMap;
     </script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E&callback=initMap" async defer></script>
 </body>
 </html>

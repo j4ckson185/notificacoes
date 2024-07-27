@@ -47,7 +47,9 @@
         };
 
         // Inicialize o Firebase
-        firebase.initializeApp(firebaseConfig);
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
 
         function initMap() {
             const map = new google.maps.Map(document.getElementById("map"), {
@@ -84,6 +86,12 @@
             }
 
             function updateLocations() {
+                // Verifique se o Firebase foi inicializado corretamente
+                if (!firebase.apps.length) {
+                    console.error('Firebase não está inicializado.');
+                    return;
+                }
+
                 const locationsRef = firebase.database().ref('locations');
                 locationsRef.on('value', (snapshot) => {
                     snapshot.forEach((childSnapshot) => {

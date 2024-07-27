@@ -3,33 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cabana Notificações - Login</title>
+    <title>Login</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" href="https://i.ibb.co/jZ6rbSp/logo-cabana.png" type="image/png">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/jZ6rbSp/logo-cabana.png">
-    <link rel="manifest" href="manifest.json">
 </head>
 <body>
-    <div class="container">
-        <img src="https://i.ibb.co/jZ6rbSp/logo-cabana.png" alt="Logo Cabana Açaí" class="logo">
-        <h1>Cabana Açaí</h1>
-        <h2>Login</h2>
-        <form id="loginForm">
-            <label for="loginEmail">Email:</label>
-            <input type="email" id="loginEmail" required>
-            <label for="loginPassword">Senha:</label>
-            <input type="password" id="loginPassword" required>
+    <div class="login-container">
+        <h1>Login</h1>
+        <form id="login-form">
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="password">Senha:</label>
+            <input type="password" id="password" name="password" required>
             <button type="submit">Entrar</button>
         </form>
+        <div id="error-message" class="hidden"></div>
     </div>
-    
-    <!-- Firebase JS SDK -->
-    <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-        import { getDatabase } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
-        import { getMessaging } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 
+    <!-- Firebase App (SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
+    <!-- Seu script Firebase -->
+    <script>
+        // Configuração do Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
             authDomain: "cabana-8d55e.firebaseapp.com",
@@ -41,38 +36,43 @@
             measurementId: "G-96Y337GYT8"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const database = getDatabase(app);
-        const messaging = getMessaging(app);
+        // Inicializar o Firebase
+        firebase.initializeApp(firebaseConfig);
 
-        document.getElementById('loginForm').addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const email = document.getElementById('loginEmail').value;
-            const password = document.getElementById('loginPassword').value;
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                localStorage.setItem('userEmail', email);
-                window.location.href = 'mapa.html';
-            } catch (error) {
-                console.error('Erro ao fazer login:', error.message);
-                alert('Erro ao fazer login. Verifique suas credenciais.');
-            }
+        // Referências para autenticação
+        const auth = firebase.auth();
+
+        // Manipulador do formulário de login
+        document.getElementById('login-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    // Login bem-sucedido
+                    const user = userCredential.user;
+                    // Salvar o token no Firebase Realtime Database
+                    user.getIdToken().then((token) => {
+                        // Redirecionar com base no email
+                        if (email === 'admin@example.com') {
+                            window.location.href = 'admin.html';
+                        } else if (email === 'cozinha@example.com') {
+                            window.location.href = 'cozinha.html';
+                        } else if (email === 'motoboy@example.com') {
+                            window.location.href = 'motoboy.html';
+                        } else {
+                            // Redirecionar para uma página padrão ou mostrar mensagem de erro
+                            window.location.href = 'default.html';
+                        }
+                    });
+                })
+                .catch((error) => {
+                    // Exibir mensagem de erro
+                    document.getElementById('error-message').innerText = error.message;
+                    document.getElementById('error-message').classList.remove('hidden');
+                });
         });
-
-        // Manter o usuário logado
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                window.location.href = 'mapa.html';
-            }
-        });
-
-        // Solicitar permissão de geolocalização
-        if ("geolocation" in navigator) {
-            navigator.geolocation.getCurrentPosition(function(position) {
-                console.log("Permissão de geolocalização concedida");
-            });
-        }
     </script>
 </body>
 </html>

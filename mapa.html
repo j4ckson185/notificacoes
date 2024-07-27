@@ -52,6 +52,12 @@
         }
 
         function initMap() {
+            // Verifique se o Firebase foi inicializado
+            if (!firebase.apps.length) {
+                console.error('Firebase não está inicializado.');
+                return;
+            }
+
             const map = new google.maps.Map(document.getElementById("map"), {
                 center: { lat: -5.748178, lng: -35.256141 }, // Coordenadas da loja
                 zoom: 15
@@ -86,7 +92,7 @@
             }
 
             function updateLocations() {
-                // Verifique se o Firebase foi inicializado corretamente
+                // Verifique se o Firebase foi inicializado
                 if (!firebase.apps.length) {
                     console.error('Firebase não está inicializado.');
                     return;

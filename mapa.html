@@ -54,36 +54,19 @@
         }
 
         function startLocationTracking(userEmail) {
-            if ("geolocation" in navigator) {
-                navigator.geolocation.watchPosition((position) => {
-                    const { latitude, longitude } = position.coords;
-                    updateUserLocation(userEmail, latitude, longitude);
-                }, (error) => {
-                    console.error("Erro ao obter localização:", error);
-                }, {
-                    enableHighAccuracy: true,
-                    timeout: 5000,
-                    maximumAge: 0
-                });
-
-                // Adicionar atualização periódica
-                setInterval(() => {
-                    navigator.geolocation.getCurrentPosition((position) => {
-                        const { latitude, longitude } = position.coords;
-                        updateUserLocation(userEmail, latitude, longitude);
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(function(registration) {
+                        console.log('Service Worker registrado com sucesso:', registration);
+                        registration.active.postMessage({
+                            type: 'START_LOCATION_TRACKING',
+                            userEmail: userEmail
+                        });
+                    })
+                    .catch(function(error) {
+                        console.log('Falha ao registrar o Service Worker:', error);
                     });
-                }, 5000);
             }
-        }
-
-        function updateUserLocation(userEmail, latitude, longitude) {
-            const userRef = ref(database, `users/${userEmail.replace('.', ',')}`);
-            set(userRef, {
-                email: userEmail,
-                latitude: latitude,
-                longitude: longitude,
-                lastUpdate: new Date().toISOString()
-            });
         }
 
         function listenToUserLocations() {

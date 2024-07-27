@@ -1,7 +1,7 @@
 {
   "name": "Cabana Açaí",
-  "short_name": "Cabana Açaí",
-  "start_url": "/index.html",
+  "short_name": "Cabana",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
@@ -10,11 +10,9 @@
       "src": "https://i.ibb.co/jZ6rbSp/logo-cabana.png",
       "sizes": "192x192",
       "type": "image/png"
-    },
-    {
-      "src": "https://i.ibb.co/jZ6rbSp/logo-cabana.png",
-      "sizes": "512x512",
-      "type": "image/png"
     }
+  ],
+  "permissions": [
+    "geolocation"
   ]
 }

@@ -26,7 +26,22 @@ const CENTER_LOCATION = {
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
         center: CENTER_LOCATION,
-        zoom: 14 // Ajustado para mostrar um pouco mais do bairro
+        zoom: 16, // Zoom aumentado para focar mais na área
+        minZoom: 14, // Impede que o usuário diminua muito o zoom
+        maxZoom: 18, // Limita o zoom máximo
+        streetViewControl: false, // Desativa o Street View
+        mapTypeControl: false, // Remove os controles de tipo de mapa
+        fullscreenControl: false, // Remove o controle de tela cheia
+        gestureHandling: 'greedy', // Permite zoom com um dedo em dispositivos móveis
+        restriction: {
+            latLngBounds: {
+                north: -5.72,
+                south: -5.78,
+                east: -35.20,
+                west: -35.30
+            },
+            strictBounds: false
+        }
     });
 
     // Adicionar um marcador na localização central

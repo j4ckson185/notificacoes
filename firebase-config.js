@@ -5,7 +5,7 @@ import { getDatabase } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-
 import { getAuth } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
 import { getMessaging } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 
-// Your web app's Firebase configuration
+// Sua configuração do Firebase
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
   authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
@@ -16,10 +16,10 @@ const firebaseConfig = {
   appId: "YOUR_APP_ID"
 };
 
-// Initialize Firebase
+// Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 
-// Export the services
+// Exportar os serviços necessários
 export const auth = getAuth(app);
 export const database = getDatabase(app);
 export const messaging = getMessaging(app);

@@ -23,11 +23,16 @@
         </form>
     </div>
 
-    <!-- Firebase JS SDK (type module) -->
+    <!-- Firebase JS SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js"></script>
+
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-        import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
-        import { getDatabase, ref, set, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+        import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js';
+        import { getDatabase, ref, set } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
         import { getMessaging } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-messaging.js';
 
         const firebaseConfig = {
@@ -46,29 +51,30 @@
         const database = getDatabase(app);
         const messaging = getMessaging(app);
 
-        const loginForm = document.getElementById('loginForm');
+        document.getElementById('loginForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
 
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
 
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                // Redireciona para mapa.html após login bem-sucedido
-                window.location.href = 'mapa.html';
+                localStorage.setItem('userEmail', email); // Armazenar email no localStorage
+                window.location.href = 'mapa.html'; // Redirecionar para a página do mapa
             } catch (error) {
-                console.error('Error signing in:', error);
+                console.error('Erro ao fazer login:', error.message);
+                alert('Erro ao fazer login. Verifique suas credenciais.');
             }
         });
 
-        // Tenta manter o usuário logado ao carregar a página
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                window.location.href = 'mapa.html';
+        // Manter o usuário logado
+        window.onload = () => {
+            const savedEmail = localStorage.getItem('userEmail');
+            if (savedEmail) {
+                document.getElementById('loginEmail').value = savedEmail;
+                document.getElementById('loginForm').submit(); // Submeter o formulário automaticamente
             }
-        });
+        };
     </script>
 </body>
 </html>

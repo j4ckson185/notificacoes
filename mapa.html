@@ -48,9 +48,14 @@
 
         // Inicializar o Firebase
         firebase.initializeApp(firebaseConfig);
-        const database = firebase.database();
+
+        // Variáveis Firebase
+        let database;
 
         function initMap() {
+            // Inicializar o Firebase Database
+            database = firebase.database();
+
             const map = new google.maps.Map(document.getElementById("map"), {
                 center: { lat: -5.748178, lng: -35.256141 }, // Coordenadas da loja
                 zoom: 15
@@ -84,36 +89,39 @@
                 handleLocationError(false, map.getCenter());
             }
 
-            function updateLocations() {
-                const locationsRef = database.ref('locations');
-                locationsRef.on('value', (snapshot) => {
-                    snapshot.forEach((childSnapshot) => {
-                        const data = childSnapshot.val();
-                        if (typeof data.lat === 'number' && typeof data.lng === 'number') {
-                            const marker = new google.maps.Marker({
-                                position: { lat: data.lat, lng: data.lng },
-                                map,
-                                icon: {
-                                    url: "https://i.ibb.co/FHdgjcK/capacete.png",
-                                    scaledSize: new google.maps.Size(45, 45)
-                                },
-                                title: data.uid,
-                                label: data.uid
-                            });
-
-                            marker.addListener('click', () => {
-                                const infoWindow = new google.maps.InfoWindow({
-                                    content: `Usuário: ${data.uid}`
-                                });
-                                infoWindow.open(map, marker);
-                            });
-                        }
-                    });
-                });
-            }
-
+            // Atualizar localizações
             updateLocations();
             setInterval(updateLocations, 5000); // Atualizar localização a cada 5 segundos
+        }
+
+        function updateLocations() {
+            if (!database) return;
+
+            const locationsRef = database.ref('locations');
+            locationsRef.on('value', (snapshot) => {
+                snapshot.forEach((childSnapshot) => {
+                    const data = childSnapshot.val();
+                    if (typeof data.lat === 'number' && typeof data.lng === 'number') {
+                        const marker = new google.maps.Marker({
+                            position: { lat: data.lat, lng: data.lng },
+                            map,
+                            icon: {
+                                url: "https://i.ibb.co/FHdgjcK/capacete.png",
+                                scaledSize: new google.maps.Size(45, 45)
+                            },
+                            title: data.uid,
+                            label: data.uid
+                        });
+
+                        marker.addListener('click', () => {
+                            const infoWindow = new google.maps.InfoWindow({
+                                content: `Usuário: ${data.uid}`
+                            });
+                            infoWindow.open(map, marker);
+                        });
+                    }
+                });
+            });
         }
 
         function handleLocationError(browserHasGeolocation, pos) {

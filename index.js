@@ -1,4 +1,3 @@
-// index.js
 // Substitua com suas configurações do Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E",
@@ -22,11 +21,10 @@ document.querySelector('#loginForm').addEventListener('submit', async (e) => {
     const password = document.querySelector('#loginPassword').value;
 
     try {
-        await firebase.auth().signInWithEmailAndPassword(email, password);
+        await auth.signInWithEmailAndPassword(email, password);
         console.log('Login bem-sucedido');
-        // Salvar email no localStorage
-        localStorage.setItem('userEmail', email);
         // Redirecionar ou realizar outra ação após login
+        window.location.href = 'mapa.html'; // Exemplo de redirecionamento
     } catch (error) {
         console.error('Erro ao fazer login', error);
     }
@@ -34,15 +32,11 @@ document.querySelector('#loginForm').addEventListener('submit', async (e) => {
 
 // Função para manter o usuário logado
 window.onload = function() {
-    const storedEmail = localStorage.getItem('userEmail');
-    if (storedEmail) {
-        const password = 'user_password'; // Senha deve ser armazenada com segurança, aqui está apenas para o exemplo
-        firebase.auth().signInWithEmailAndPassword(storedEmail, password)
-            .then(() => {
-                console.log('Login automático bem-sucedido');
-            })
-            .catch(error => {
-                console.error('Erro ao fazer login automático', error);
-            });
-    }
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            console.log('Usuário já autenticado');
+            // Redirecionar ou realizar outra ação após o login automático
+            window.location.href = 'mapa.html'; // Exemplo de redirecionamento
+        }
+    });
 };

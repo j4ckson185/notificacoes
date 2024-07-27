@@ -38,6 +38,6 @@ loginForm.addEventListener('submit', async (e) => {
 // Tenta manter o usuário logado ao carregar a página
 auth.onAuthStateChanged((user) => {
     if (user) {
-        window.location.href = 'mapa.html';
+        window.location.href = 'index.html';
     }
 });

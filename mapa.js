@@ -1,6 +1,7 @@
 // mapa.js
 
-import { getDatabase, ref, onValue } from './firebase-config.js';
+import { database } from './firebase-config.js';
+import { ref, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
 
 let map;
 let markers = {}; // Para armazenar marcadores
@@ -47,7 +48,6 @@ function initMap() {
 }
 
 function updateMarkers() {
-    const database = getDatabase();
     const locationsRef = ref(database, 'locations');
 
     onValue(locationsRef, (snapshot) => {

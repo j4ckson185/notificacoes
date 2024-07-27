@@ -1,10 +1,22 @@
 // mapa.js
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, onValue } from "firebase/database";
 
-import { database } from './firebase-config.js';
-import { ref, onValue } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js';
+// Configure o Firebase
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    databaseURL: "YOUR_DATABASE_URL",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
 
 let map;
-let markers = {}; // Para armazenar marcadores
 
 function initMap() {
     map = new google.maps.Map(document.getElementById("map"), {
@@ -43,43 +55,35 @@ function initMap() {
     }
 
     // Atualizar localização dos motoboys a cada 5 segundos
-    updateMarkers();
-    setInterval(updateMarkers, 5000);
+    setInterval(() => {
+        updateMotoboysLocation();
+    }, 5000);
 }
 
-function updateMarkers() {
+function updateMotoboysLocation() {
     const locationsRef = ref(database, 'locations');
-
     onValue(locationsRef, (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            // Limpar marcadores existentes
-            Object.values(markers).forEach(marker => marker.setMap(null));
-            markers = {};
-
-            Object.values(data).forEach((location) => {
-                if (typeof location.lat === 'number' && typeof location.lng === 'number') {
-                    const marker = new google.maps.Marker({
-                        position: { lat: location.lat, lng: location.lng },
-                        map,
-                        icon: {
-                            url: "https://i.ibb.co/FHdgjcK/capacete.png", // Ícone do capacete
-                            scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone
-                        },
-                        title: location.uid, // Exibir UID no infowindow
+        map.clear(); // Limpa o mapa antes de adicionar novos marcadores
+        snapshot.forEach((childSnapshot) => {
+            const data = childSnapshot.val();
+            if (typeof data.lat === 'number' && typeof data.lng === 'number') {
+                new google.maps.Marker({
+                    position: { lat: data.lat, lng: data.lng },
+                    map,
+                    icon: {
+                        url: "https://i.ibb.co/FHdgjcK/capacete.png", // Ícone do capacete
+                        scaledSize: new google.maps.Size(45, 45) // Tamanho do ícone
+                    },
+                    title: data.uid, // Exibir o UID no título
+                    label: data.uid, // Exibir o UID como rótulo
+                }).addListener('click', () => {
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: `UID: ${data.uid}`
                     });
-
-                    marker.addListener('click', () => {
-                        const infoWindow = new google.maps.InfoWindow({
-                            content: `<div><strong>UID:</strong> ${location.uid}</div>`,
-                        });
-                        infoWindow.open(map, marker);
-                    });
-
-                    markers[location.uid] = marker; // Armazenar marcador
-                }
-            });
-        }
+                    infoWindow.open(map, this);
+                });
+            }
+        });
     });
 }
 

@@ -16,10 +16,24 @@ firebase.initializeApp(firebaseConfig);
 let map;
 let userMarkers = {};
 
+// Coordenadas da sua localização
+const YOUR_LOCATION = { lat: -15.7801, lng: -47.9292 }; // Substitua por suas coordenadas exatas
+
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: -15.7801, lng: -47.9292 }, // Centro do Brasil
-        zoom: 5
+        center: YOUR_LOCATION,
+        zoom: 15 // Ajuste o zoom conforme necessário
+    });
+
+    // Adicionar um marcador na sua localização
+    new google.maps.Marker({
+        position: -5.748161940178177, -35.25617338650904,
+        map: map,
+        title: "Cabana Açaí",
+        icon: {
+            url: 'https://i.ibb.co/jZ6rbSp/logo-cabana.png', // Substitua pelo URL do ícone desejado
+            scaledSize: new google.maps.Size(45, 45)
+        }
     });
 
     firebase.auth().onAuthStateChanged((user) => {

@@ -45,6 +45,7 @@
 
         let map;
         let userMarkers = {};
+        let currentUserEmail;
 
         function log(message) {
             console.log(message);
@@ -62,10 +63,11 @@
 
             onAuthStateChanged(auth, (user) => {
                 if (user) {
-                    log(`Usuário autenticado: ${user.email}`);
-                    startLocationTracking(user.email);
+                    currentUserEmail = user.email;
+                    log(`Usuário autenticado: ${currentUserEmail}`);
+                    startLocationTracking(currentUserEmail);
                     listenToUserLocations();
-                    registerServiceWorker(user.email);
+                    registerServiceWorker(currentUserEmail);
                 } else {
                     log('Usuário não autenticado, redirecionando para login');
                     window.location.href = 'index.html';
@@ -87,14 +89,6 @@
                     timeout: 5000,
                     maximumAge: 0
                 });
-
-                setInterval(() => {
-                    log(`Atualizando posição via setInterval para ${userEmail}`);
-                    navigator.geolocation.getCurrentPosition((position) => {
-                        const { latitude, longitude } = position.coords;
-                        updateUserLocation(userEmail, latitude, longitude);
-                    });
-                }, 5000);
             } else {
                 log('Geolocalização não disponível neste navegador');
             }
@@ -193,6 +187,20 @@
                     .catch((error) => {
                         log(`Erro ao registrar Service Worker: ${error}`);
                     });
+
+                navigator.serviceWorker.addEventListener('message', (event) => {
+                    if (event.data && event.data.type === 'UPDATE_LOCATION') {
+                        log('Recebida mensagem para atualizar localização');
+                        if ("geolocation" in navigator) {
+                            navigator.geolocation.getCurrentPosition((position) => {
+                                const { latitude, longitude } = position.coords;
+                                updateUserLocation(currentUserEmail, latitude, longitude);
+                            }, (error) => {
+                                log(`Erro ao obter localização: ${error.message}`);
+                            });
+                        }
+                    }
+                });
             }
         }
 

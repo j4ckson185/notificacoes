@@ -78,8 +78,8 @@
                     const row = document.createElement('tr');
                     ['Endereço', 'Complemento', 'Data e Hora', 'Situação', 'Distância em km', 'Entregador', 'Taxa do entregador', 'Forma de pagamento', 'Detalhes do Pedido', 'Observações'].forEach(field => {
                         const td = document.createElement('td');
-                        const value = record[field];
-                        td.textContent = formatCellValue(field, value);
+                        const value = field === 'Data e Hora' ? combineDateTime(record) : record[field];
+                        td.textContent = formatCellValue(value);
                         row.appendChild(td);
                     });
                     table.appendChild(row);
@@ -88,6 +88,15 @@
                 dateDiv.appendChild(table);
                 reportDiv.appendChild(dateDiv);
             }
+        }
+
+        function combineDateTime(record) {
+            const date = record['Data'];
+            const time = record['Hora'];
+            if (date && time) {
+                return `${formatDate(date)} ${time}`;
+            }
+            return 'Data e Hora Inválidas';
         }
 
         function groupByDate(data) {
@@ -99,23 +108,16 @@
             }, {});
         }
 
-        function formatCellValue(field, value) {
-            if (field === 'Data e Hora') {
-                return formatDate(value);
-            }
+        function formatCellValue(value) {
             return value || '';
         }
 
         function formatDate(value) {
-            if (value instanceof Date) {
-                return value.toLocaleString('pt-BR');
-            } else if (typeof value === 'string') {
-                const date = new Date(value);
-                if (!isNaN(date.getTime())) {
-                    return date.toLocaleString('pt-BR');
-                }
+            const date = new Date(value);
+            if (!isNaN(date.getTime())) {
+                return date.toLocaleString('pt-BR');
             }
-            return value || 'Data Inválida';
+            return 'Data Inválida';
         }
     </script>
 </body>

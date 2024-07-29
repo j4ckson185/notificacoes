@@ -1,56 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatórios</title>
-    <link rel="stylesheet" href="styles.css">
     <style>
-        .container {
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        #upload {
+            margin-bottom: 20px;
+        }
+        table {
             width: 100%;
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
+            border-collapse: collapse;
         }
-        label, select, button {
-            margin-bottom: 10px;
-            font-size: 16px;
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
         }
-        button {
-            padding: 10px;
-            font-size: 16px;
+        th {
+            background-color: #f4f4f4;
         }
-        #reportsContainer {
+        .date-group {
             margin-top: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Relatórios</h1>
-        <label for="motoboy">Selecione o Motoboy:</label>
-        <select id="motoboy">
-            <option value="jackson_division@hotmail.com">Jackson Maciel</option>
-            <option value="giovanni.silva18@gmail.com">Giovanni</option>
-            <option value="felipeaugusto02001@gmail.com">Felipe Augusto</option>
-            <option value="hionarabeatriz11@gmail.com">Hionara</option>
-            <option value="moises110723@gmail.com">Moisés</option>
-            <option value="boazd3@gmail.com">Boaz</option>
-            <option value="fellipeirineu90@gmail.com">Fellipe Matheus</option>
-        </select>
+    <h1>Relatórios de Pedidos</h1>
+    <input type="file" id="fileInput" accept=".xlsx, .xls">
+    <div id="report"></div>
 
-        <label for="date">Selecione a Data:</label>
-        <input type="date" id="date">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script>
+        document.getElementById('fileInput').addEventListener('change', handleFile, false);
 
-        <button id="applyFilter">Aplicar Filtro</button>
+        function handleFile(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const data = new Uint8Array(event.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+                const json = XLSX.utils.sheet_to_json(sheet);
 
-        <div id="reportsContainer"></div>
-    </div>
+                displayData(json);
+            };
+            reader.readAsArrayBuffer(file);
+        }
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js"></script>
-    <script src="firebase-config.js" type="module"></script>
-    <script src="relatorios.js" type="module"></script>
+        function displayData(data) {
+            const reportDiv = document.getElementById('report');
+            reportDiv.innerHTML = '';
+            const groupedData = groupByDate(data);
+
+            for (const [date, records] of Object.entries(groupedData)) {
+                const dateDiv = document.createElement('div');
+                dateDiv.classList.add('date-group');
+                dateDiv.innerHTML = `<h2>${date}</h2>`;
+                const table = document.createElement('table');
+                const headerRow = document.createElement('tr');
+                ['Endereço', 'Complemento', 'Data e Hora', 'Situação', 'Distância em km', 'Entregador', 'Taxa do entregador', 'Forma de pagamento', 'Detalhes do Pedido', 'Observações'].forEach(header => {
+                    const th = document.createElement('th');
+                    th.textContent = header;
+                    headerRow.appendChild(th);
+                });
+                table.appendChild(headerRow);
+
+                records.forEach(record => {
+                    const row = document.createElement('tr');
+                    ['Endereço', 'Complemento', 'Data e Hora', 'Situação', 'Distância em km', 'Entregador', 'Taxa do entregador', 'Forma de pagamento', 'Detalhes do Pedido', 'Observações'].forEach(field => {
+                        const td = document.createElement('td');
+                        td.textContent = record[field] || '';
+                        row.appendChild(td);
+                    });
+                    table.appendChild(row);
+                });
+
+                dateDiv.appendChild(table);
+                reportDiv.appendChild(dateDiv);
+            }
+        }
+
+        function groupByDate(data) {
+            return data.reduce((acc, record) => {
+                const date = record['Data e Hora'].split(' ')[0];
+                if (!acc[date]) acc[date] = [];
+                acc[date].push(record);
+                return acc;
+            }, {});
+        }
+    </script>
 </body>
 </html>

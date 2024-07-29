@@ -31,11 +31,15 @@
 <body>
     <h1>Relatórios de Pedidos</h1>
     <input type="file" id="fileInput" accept=".xlsx, .xls">
+    <button id="saveButton">Salvar</button>
     <div id="report"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         document.getElementById('fileInput').addEventListener('change', handleFile, false);
+        document.getElementById('saveButton').addEventListener('click', saveReport, false);
+
+        let currentData = [];
 
         function handleFile(e) {
             const file = e.target.files[0];
@@ -47,8 +51,8 @@
                     const workbook = XLSX.read(data, { type: 'array' });
                     const sheetName = workbook.SheetNames[0];
                     const sheet = workbook.Sheets[sheetName];
-                    const json = XLSX.utils.sheet_to_json(sheet, { raw: false });
-                    displayData(json);
+                    currentData = XLSX.utils.sheet_to_json(sheet, { raw: false });
+                    displayData(currentData);
                 } catch (error) {
                     console.error('Erro ao processar o arquivo:', error);
                 }
@@ -67,7 +71,7 @@
                 dateDiv.innerHTML = `<h2>${date}</h2>`;
                 const table = document.createElement('table');
                 const headerRow = document.createElement('tr');
-                ['Endereço', 'Complemento', 'Data e Hora', 'Situação', 'Distância em km', 'Entregador', 'Taxa do entregador', 'Forma de pagamento', 'Detalhes do Pedido', 'Observações'].forEach(header => {
+                ['Endereço', 'Complemento', 'Situação', 'Distância em km', 'Entregador', 'Taxa do entregador', 'Forma de pagamento', 'Detalhes do Pedido', 'Observações'].forEach(header => {
                     const th = document.createElement('th');
                     th.textContent = header;
                     headerRow.appendChild(th);
@@ -76,10 +80,9 @@
 
                 records.forEach(record => {
                     const row = document.createElement('tr');
-                    ['Endereço', 'Complemento', 'Data e Hora', 'Situação', 'Distância em km', 'Entregador', 'Taxa do entregador', 'Forma de pagamento', 'Detalhes do Pedido', 'Observações'].forEach(field => {
+                    ['Endereço', 'Complemento', 'Situação', 'Distância em km', 'Entregador', 'Taxa do entregador', 'Forma de pagamento', 'Detalhes do Pedido', 'Observações'].forEach(field => {
                         const td = document.createElement('td');
-                        const value = field === 'Data e Hora' ? combineDateTime(record) : record[field];
-                        td.textContent = value || '';
+                        td.textContent = record[field] || '';
                         row.appendChild(td);
                     });
                     table.appendChild(row);
@@ -90,22 +93,46 @@
             }
         }
 
-        function combineDateTime(record) {
-            const date = record['Data'];
-            const time = record['Hora'];
-            if (date && time) {
-                return `${date} ${time}`;
-            }
-            return 'Data e Hora Inválidas';
-        }
-
         function groupByDate(data) {
             return data.reduce((acc, record) => {
-                const date = record['Data e Hora'] ? record['Data e Hora'] : 'Sem Data';
+                const date = new Date().toLocaleDateString('pt-BR');
                 if (!acc[date]) acc[date] = [];
                 acc[date].push(record);
                 return acc;
             }, {});
+        }
+
+        function saveReport() {
+            const today = new Date().toLocaleDateString('pt-BR');
+            const filename = `relatorio_${today.replace(/\//g, '-')}.json`;
+            const blob = new Blob([JSON.stringify(currentData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            // Save report for each motoboy
+            saveForMotoboys();
+        }
+
+        function saveForMotoboys() {
+            const motoboys = ['moises']; // Add more motoboy names as needed
+            motoboys.forEach(motoboy => {
+                const date = new Date().toLocaleDateString('pt-BR');
+                fetch(`/${motoboy}.json`)
+                    .then(response => response.json())
+                    .then(data => {
+                        data[date] = currentData;
+                        return fetch(`/${motoboy}.json`, {
+                            method: 'PUT',
+                            body: JSON.stringify(data),
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                    })
+                    .catch(error => console.error('Erro ao salvar para motoboys:', error));
+            });
         }
     </script>
 </body>

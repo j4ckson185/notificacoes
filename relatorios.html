@@ -26,21 +26,37 @@
         .date-group {
             margin-top: 20px;
         }
+        #motoboySelect {
+            margin-top: 20px;
+        }
+        #sendButton {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
     <h1>Relatórios de Pedidos</h1>
     <input type="file" id="fileInput" accept=".xlsx, .xls">
-    <button id="sendButton">Enviar</button>
     <div id="report"></div>
+
+    <div id="motoboySelect" style="display: none;">
+        <label for="motoboy">Escolha o Motoboy:</label>
+        <select id="motoboy">
+            <option value="moises.html">Moisés</option>
+            <option value="giovanni.html">Giovanni</option>
+            <option value="felipe_augusto.html">Felipe Augusto</option>
+            <option value="boaz.html">Boaz</option>
+            <option value="fellipe_matheus.html">Fellipe Matheus</option>
+        </select>
+        <button id="sendButton">Enviar</button>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         document.getElementById('fileInput').addEventListener('change', handleFile, false);
-        document.getElementById('sendButton').addEventListener('click', () => {
-            // Placeholder for the send button functionality
-            alert('Enviar função ainda não implementada.');
-        });
+        document.getElementById('sendButton').addEventListener('click', sendReport);
+
+        let reportData = [];
 
         function handleFile(e) {
             const file = e.target.files[0];
@@ -51,11 +67,11 @@
                 const workbook = XLSX.read(data, { type: 'array' });
                 const sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
-                const json = XLSX.utils.sheet_to_json(sheet);
+                reportData = XLSX.utils.sheet_to_json(sheet);
 
-                console.log('Dados do arquivo:', json); // Verifique a estrutura dos dados
+                console.log('Dados do arquivo:', reportData); // Verifique a estrutura dos dados
 
-                displayData(json);
+                displayData(reportData);
             };
             reader.readAsArrayBuffer(file);
         }
@@ -92,6 +108,8 @@
                 dateDiv.appendChild(table);
                 reportDiv.appendChild(dateDiv);
             }
+
+            document.getElementById('motoboySelect').style.display = 'block'; // Mostrar a seleção de motoboy após carregar os dados
         }
 
         function groupByDate(data) {
@@ -101,6 +119,25 @@
                 acc[date].push(record);
                 return acc;
             }, {});
+        }
+
+        function sendReport() {
+            const motoboy = document.getElementById('motoboy').value;
+            if (!motoboy) {
+                alert('Selecione um motoboy para enviar o relatório.');
+                return;
+            }
+
+            // Exemplo de redirecionamento para a página do motoboy com o relatório.
+            // Em uma aplicação real, você pode precisar salvar o relatório em um banco de dados ou enviar via API.
+            const reportWindow = window.open(motoboy, '_blank');
+            if (reportWindow) {
+                reportWindow.onload = function() {
+                    // Envie os dados do relatório para a página do motoboy
+                    // Exemplo: reportWindow.postMessage(reportData, '*');
+                    console.log('Relatório enviado para:', motoboy);
+                };
+            }
         }
     </script>
 </body>

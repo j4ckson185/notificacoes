@@ -78,7 +78,8 @@
                     const row = document.createElement('tr');
                     ['Endereço', 'Complemento', 'Data e Hora', 'Situação', 'Distância em km', 'Entregador', 'Taxa do entregador', 'Forma de pagamento', 'Detalhes do Pedido', 'Observações'].forEach(field => {
                         const td = document.createElement('td');
-                        td.textContent = record[field] || '';
+                        const value = record[field];
+                        td.textContent = formatCellValue(field, value);
                         row.appendChild(td);
                     });
                     table.appendChild(row);
@@ -91,11 +92,29 @@
 
         function groupByDate(data) {
             return data.reduce((acc, record) => {
-                const date = record['Data e Hora'] ? record['Data e Hora'].split(' ')[0] : 'Sem Data';
+                const date = record['Data e Hora'] ? formatDate(record['Data e Hora']) : 'Sem Data';
                 if (!acc[date]) acc[date] = [];
                 acc[date].push(record);
                 return acc;
             }, {});
+        }
+
+        function formatCellValue(field, value) {
+            if (field === 'Data e Hora') {
+                return formatDate(value);
+            }
+            return value || '';
+        }
+
+        function formatDate(value) {
+            if (typeof value === 'string') {
+                // Tenta converter a string para uma data
+                const date = new Date(value);
+                if (!isNaN(date.getTime())) {
+                    return date.toLocaleString('pt-BR');
+                }
+            }
+            return value;
         }
     </script>
 </body>

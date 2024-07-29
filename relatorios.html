@@ -31,15 +31,24 @@
 <body>
     <h1>Relatórios de Pedidos</h1>
     <input type="file" id="fileInput" accept=".xlsx, .xls">
-    <button id="saveButton">Salvar</button>
+    <label for="motoboySelect">Enviar para:</label>
+    <select id="motoboySelect">
+        <option value="">Selecione um motoboy</option>
+        <option value="moises">Moisés</option>
+        <option value="giovanni">Giovanni</option>
+        <option value="felipe">Felipe Augusto</option>
+        <option value="boaz">Boaz</option>
+        <option value="fellipe">Fellipe Matheus</option>
+    </select>
+    <button id="sendButton">Enviar</button>
     <div id="report"></div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
-        document.getElementById('fileInput').addEventListener('change', handleFile, false);
-        document.getElementById('saveButton').addEventListener('click', saveReport, false);
-
         let currentData = [];
+
+        document.getElementById('fileInput').addEventListener('change', handleFile, false);
+        document.getElementById('sendButton').addEventListener('click', sendReport, false);
 
         function handleFile(e) {
             const file = e.target.files[0];
@@ -102,36 +111,25 @@
             }, {});
         }
 
-        function saveReport() {
-            const today = new Date().toLocaleDateString('pt-BR');
-            const filename = `relatorio_${today.replace(/\//g, '-')}.json`;
-            const blob = new Blob([JSON.stringify(currentData, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
-            URL.revokeObjectURL(url);
+        function sendReport() {
+            const motoboy = document.getElementById('motoboySelect').value;
+            if (!motoboy) {
+                alert('Selecione um motoboy.');
+                return;
+            }
 
-            // Save report for each motoboy
-            saveForMotoboys();
-        }
-
-        function saveForMotoboys() {
-            const motoboys = ['moises']; // Add more motoboy names as needed
-            motoboys.forEach(motoboy => {
-                const date = new Date().toLocaleDateString('pt-BR');
-                fetch(`/${motoboy}.json`)
-                    .then(response => response.json())
-                    .then(data => {
-                        data[date] = currentData;
-                        return fetch(`/${motoboy}.json`, {
-                            method: 'PUT',
-                            body: JSON.stringify(data),
-                            headers: { 'Content-Type': 'application/json' }
-                        });
-                    })
-                    .catch(error => console.error('Erro ao salvar para motoboys:', error));
+            fetch(`/save-report?motoboy=${motoboy}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(currentData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Relatório enviado com sucesso.');
+            })
+            .catch(error => {
+                console.error('Erro ao enviar o relatório:', error);
+                alert('Erro ao enviar o relatório.');
             });
         }
     </script>

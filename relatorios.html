@@ -79,7 +79,7 @@
                     ['Endereço', 'Complemento', 'Data e Hora', 'Situação', 'Distância em km', 'Entregador', 'Taxa do entregador', 'Forma de pagamento', 'Detalhes do Pedido', 'Observações'].forEach(field => {
                         const td = document.createElement('td');
                         const value = field === 'Data e Hora' ? combineDateTime(record) : record[field];
-                        td.textContent = formatCellValue(value);
+                        td.textContent = value || '';
                         row.appendChild(td);
                     });
                     table.appendChild(row);
@@ -94,30 +94,18 @@
             const date = record['Data'];
             const time = record['Hora'];
             if (date && time) {
-                return `${formatDate(date)} ${time}`;
+                return `${date} ${time}`;
             }
             return 'Data e Hora Inválidas';
         }
 
         function groupByDate(data) {
             return data.reduce((acc, record) => {
-                const date = record['Data e Hora'] ? formatDate(record['Data e Hora']) : 'Sem Data';
+                const date = record['Data e Hora'] ? record['Data e Hora'] : 'Sem Data';
                 if (!acc[date]) acc[date] = [];
                 acc[date].push(record);
                 return acc;
             }, {});
-        }
-
-        function formatCellValue(value) {
-            return value || '';
-        }
-
-        function formatDate(value) {
-            const date = new Date(value);
-            if (!isNaN(date.getTime())) {
-                return date.toLocaleString('pt-BR');
-            }
-            return 'Data Inválida';
         }
     </script>
 </body>

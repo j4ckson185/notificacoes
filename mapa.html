@@ -3,26 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mapa de Usuários - Cabana Açaí</title>
+    <title>Mapa de Localização</title>
     <style>
         #map {
-            height: 100vh;
+            height: 400px;
             width: 100%;
+        }
+        #backButton {
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
+    <h1>Localização do Endereço</h1>
     <div id="map"></div>
+    <button id="backButton" onclick="history.back()">Voltar</button>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script>
+        function initMap() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const address = urlParams.get('address');
 
-    <!-- Google Maps API -->
-    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E"></script>
+            if (!address) {
+                document.body.innerHTML = '<h1>Erro: Endereço não fornecido</h1>';
+                return;
+            }
 
-    <!-- Nosso script do mapa -->
-    <script src="mapa.js"></script>
+            const geocoder = new google.maps.Geocoder();
+            const map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 15
+            });
+
+            geocoder.geocode({ address: address }, function(results, status) {
+                if (status === 'OK') {
+                    map.setCenter(results[0].geometry.location);
+                    new google.maps.Marker({
+                        map: map,
+                        position: results[0].geometry.location
+                    });
+                } else {
+                    alert('Não foi possível encontrar o endereço: ' + status);
+                }
+            });
+        }
+    </script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB-pF2lRStLTN9Xw9aYQj962qdNFyUXI2E&callback=initMap" async defer></script>
 </body>
 </html>

@@ -1,55 +1,99 @@
+/* styles.css */
+
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilo geral do corpo */
 body {
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
-
-.container {
-    background-color: #fff;
+    color: #333;
     padding: 20px;
+}
+
+/* Container principal */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    width: 300px;
-    text-align: center;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.logo {
-    width: 100px;
+/* Cabeçalhos */
+h1 {
     margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
 }
 
-h1, h2 {
-    margin-bottom: 20px;
+/* Formulários */
+form {
+    display: flex;
+    flex-direction: column;
 }
 
 label {
-    display: block;
-    text-align: left;
-    margin: 10px 0 5px;
+    margin-bottom: 8px;
+    font-weight: bold;
 }
 
-input {
-    width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
+input[type="email"],
+input[type="password"],
+input[type="file"],
+select {
+    padding: 10px;
+    margin-bottom: 20px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    font-size: 16px;
 }
 
 button {
-    width: 100%;
-    padding: 10px;
-    background-color: #28a745;
-    color: white;
+    padding: 10px 20px;
     border: none;
     border-radius: 4px;
+    background-color: #28a745;
+    color: #fff;
+    font-size: 16px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
     background-color: #218838;
 }
+
+/* Tabelas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+table th,
+table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+table th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+}
+
+table tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Seletores */
+select {
+    margin-bottom: 20px;
+}
+

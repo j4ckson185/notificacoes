@@ -1,134 +1,112 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatórios</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-        }
-        #upload {
-            margin-bottom: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        }
-        th {
-            background-color: #f4f4f4;
-        }
-        .date-group {
-            margin-top: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <h1>Relatórios de Pedidos</h1>
-    <input type="file" id="fileInput" accept=".xlsx, .xls">
-    <label for="motoboySelect">Enviar para:</label>
-    <select id="motoboySelect">
-        <option value="">Selecione um motoboy</option>
-        <option value="moises">Moisés</option>
-        <option value="giovanni">Giovanni</option>
-        <option value="felipe">Felipe Augusto</option>
-        <option value="boaz">Boaz</option>
-        <option value="fellipe">Fellipe Matheus</option>
-    </select>
-    <button id="sendButton">Enviar</button>
-    <div id="report"></div>
+    <div class="container">
+        <h1>Upload de Relatório</h1>
+        <form id="uploadForm">
+            <label for="fileInput">Escolha o arquivo Excel:</label>
+            <input type="file" id="fileInput" accept=".xlsx">
+            <label for="motoboySelect">Enviar para:</label>
+            <select id="motoboySelect">
+                <option value="">Selecione um motoboy</option>
+                <option value="moises.html">Moisés</option>
+                <option value="giovanni.html">Giovanni</option>
+                <option value="felipe_augusto.html">Felipe Augusto</option>
+                <option value="boaz.html">Boaz</option>
+                <option value="fellipe_matheus.html">Fellipe Matheus</option>
+            </select>
+            <button type="button" id="uploadButton">Enviar</button>
+        </form>
+        <h2>Relatórios</h2>
+        <table id="reportsTable">
+            <thead>
+                <tr>
+                    <th>N Pedido</th>
+                    <th>Endereço</th>
+                    <th>Data e Hora</th>
+                    <th>Distância em Km</th>
+                    <th>Entregador</th>
+                    <th>Nome do Cliente</th>
+                    <th>Forma de Pagamento</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script>
-        let currentData = [];
+    <script type="module">
+        import { read, utils } from 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
 
         document.getElementById('fileInput').addEventListener('change', handleFile, false);
-        document.getElementById('sendButton').addEventListener('click', sendReport, false);
+        document.getElementById('uploadButton').addEventListener('click', sendToMotoboy, false);
 
-        function handleFile(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                try {
-                    const data = new Uint8Array(event.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
+        function handleFile(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = read(data, { type: 'array' });
                     const sheetName = workbook.SheetNames[0];
                     const sheet = workbook.Sheets[sheetName];
-                    currentData = XLSX.utils.sheet_to_json(sheet, { raw: false });
-                    displayData(currentData);
-                } catch (error) {
-                    console.error('Erro ao processar o arquivo:', error);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        }
+                    const jsonData = utils.sheet_to_json(sheet, { header: 1 });
 
-        function displayData(data) {
-            const reportDiv = document.getElementById('report');
-            reportDiv.innerHTML = '';
-            const groupedData = groupByDate(data);
+                    const tableBody = document.querySelector('#reportsTable tbody');
+                    tableBody.innerHTML = '';
 
-            for (const [date, records] of Object.entries(groupedData)) {
-                const dateDiv = document.createElement('div');
-                dateDiv.classList.add('date-group');
-                dateDiv.innerHTML = `<h2>${date}</h2>`;
-                const table = document.createElement('table');
-                const headerRow = document.createElement('tr');
-                ['Endereço', 'Complemento', 'Situação', 'Distância em km', 'Entregador', 'Taxa do entregador', 'Forma de pagamento', 'Detalhes do Pedido', 'Observações'].forEach(header => {
-                    const th = document.createElement('th');
-                    th.textContent = header;
-                    headerRow.appendChild(th);
-                });
-                table.appendChild(headerRow);
-
-                records.forEach(record => {
-                    const row = document.createElement('tr');
-                    ['Endereço', 'Complemento', 'Situação', 'Distância em km', 'Entregador', 'Taxa do entregador', 'Forma de pagamento', 'Detalhes do Pedido', 'Observações'].forEach(field => {
-                        const td = document.createElement('td');
-                        td.textContent = record[field] || '';
-                        row.appendChild(td);
+                    jsonData.forEach((row, index) => {
+                        if (index === 0) return; // Skip header row
+                        const tr = document.createElement('tr');
+                        row.forEach(cell => {
+                            const td = document.createElement('td');
+                            td.textContent = cell;
+                            tr.appendChild(td);
+                        });
+                        tableBody.appendChild(tr);
                     });
-                    table.appendChild(row);
-                });
-
-                dateDiv.appendChild(table);
-                reportDiv.appendChild(dateDiv);
+                };
+                reader.readAsArrayBuffer(file);
             }
         }
 
-        function groupByDate(data) {
-            return data.reduce((acc, record) => {
-                const date = new Date().toLocaleDateString('pt-BR');
-                if (!acc[date]) acc[date] = [];
-                acc[date].push(record);
-                return acc;
-            }, {});
-        }
-
-        function sendReport() {
-            const motoboy = document.getElementById('motoboySelect').value;
-            if (!motoboy) {
-                alert('Selecione um motoboy.');
+        function sendToMotoboy() {
+            const motoboyFile = document.getElementById('motoboySelect').value;
+            if (!motoboyFile) {
+                alert('Selecione um motoboy para enviar o relatório.');
                 return;
             }
 
-            fetch(`/save-report?motoboy=${motoboy}`, {
+            const tableData = [];
+            document.querySelectorAll('#reportsTable tbody tr').forEach(row => {
+                const rowData = [];
+                row.querySelectorAll('td').forEach(cell => {
+                    rowData.push(cell.textContent);
+                });
+                tableData.push(rowData);
+            });
+
+            fetch(motoboyFile, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(currentData)
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ tableData })
             })
-            .then(response => response.json())
-            .then(data => {
-                alert('Relatório enviado com sucesso.');
+            .then(response => {
+                if (response.ok) {
+                    alert('Relatório enviado com sucesso!');
+                } else {
+                    alert('Erro ao enviar o relatório.');
+                }
             })
             .catch(error => {
-                console.error('Erro ao enviar o relatório:', error);
+                console.error('Erro:', error);
                 alert('Erro ao enviar o relatório.');
             });
         }
